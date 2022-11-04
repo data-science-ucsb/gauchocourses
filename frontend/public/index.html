@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Begin tags for display -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <!-- Bootstrap-vue's recommended  view port config (https://bootstrap-vue.js.org/docs) -->
+    <!-- End tags for display -->
+
+    <!-- Begin Open Graph meta tags-->
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:site_name" content="GauchoCourses">
+    <meta property="og:title" content="GauchoCourses">
+    <meta property="og:image" content="https://gauchocourses.com/beta_logo.png"/>
+    <meta property="og:url" content="https://gauchocourses.com/">
+    <meta property="og:description" content="A free and open source app to help UCSB students plan their class schedules.">
+    <!-- End Open Graph meta tags -->
+
+    <!-- Begin classic meta tags -->
+    <title>GauchoCourses</title>
+    <meta name="description" content="A free app to help UC Santa Barbara students plan their class schedules.">
+    <meta name="keywords" content="UCSB,scheduler,courses">
+    <!-- End classic meta tags -->
+
+    <!-- Begin favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="<%= BASE_URL %>favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="<%= BASE_URL %>favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<%= BASE_URL %>favicons/favicon-16x16.png">
+    <link rel="manifest" href="<%= BASE_URL %>favicons/site.webmanifest">
+    <!-- End favicons -->
+    
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-156974743-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-156974743-1');
+    </script>
+    <!-- End Google analytics -->
+  </head>
+  <body>
+    <noscript>
+      <strong>GauchoCourses doesn't work properly without JavaScript. Please enable JavaScript to continue.</strong>
+    </noscript>
+
+    <div id="app"></div>
+
+  </body>
+</html>
