@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.gaucho</groupId>
+	<artifactId>courses</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>GauchoCourses</name>
+	<description>Open source class schedule organizer for UCSB students.</description>
+
+    <properties>
+        <main.basedir>${project.basedir}</main.basedir>
+
+		<!-- Analysis Tools for CI -->
+		<build-plugin.jacoco.version>0.8.5</build-plugin.jacoco.version>
+		<build-plugin.coveralls.version>4.3.0</build-plugin.coveralls.version>
+    </properties>
+	
+	<modules>
+        <module>frontend</module>
+        <module>backend</module>
+    </modules>
+
+	<build>
+		<plugins>
+			<!--<plugin>-->
+				<!--<groupId>org.jacoco</groupId>-->
+				<!--<artifactId>jacoco-maven-plugin</artifactId>-->
+				<!--<version>${build-plugin.jacoco.version}</version>-->
+				<!--<executions>-->
+					<!--&lt;!&ndash; Prepares the property pointing to the JaCoCo-->
+                    <!--runtime agent which is passed as VM argument when Maven the Surefire plugin-->
+                    <!--is executed. &ndash;&gt;-->
+					<!--<execution>-->
+						<!--<id>pre-unit-test</id>-->
+						<!--<goals>-->
+							<!--<goal>prepare-agent</goal>-->
+						<!--</goals>-->
+					<!--</execution>-->
+					<!--&lt;!&ndash; Ensures that the code coverage report for-->
+                    <!--unit tests is created after unit tests have been run. &ndash;&gt;-->
+					<!--<execution>-->
+						<!--<id>post-unit-test</id>-->
+						<!--<phase>test</phase>-->
+						<!--<goals>-->
+							<!--<goal>report</goal>-->
+						<!--</goals>-->
+					<!--</execution>-->
+				<!--</executions>-->
+			<!--</plugin>-->
+			<!--<plugin>-->
+				<!--<groupId>org.eluder.coveralls</groupId>-->
+				<!--<artifactId>coveralls-maven-plugin</artifactId>-->
+				<!--<version>${build-plugin.coveralls.version}</version>-->
+			<!--</plugin>-->
+		</plugins>
+	</build>
+
+</project>

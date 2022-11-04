@@ -1,0 +1,578 @@
+[
+    {
+        "requirementCode": "A1",
+        "requirementTranslation": "English Reading & Composition",
+        "collegeCode": "ENGR",
+        "objCode": "BS",
+        "courseCount": 1,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "A1",
+        "requirementTranslation": "English Reading & Composition",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 1,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "A1",
+        "requirementTranslation": "English Reading & Composition",
+        "collegeCode": "L&S",
+        "objCode": "BFA",
+        "courseCount": 1,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "A1",
+        "requirementTranslation": "English Reading & Composition",
+        "collegeCode": "L&S",
+        "objCode": "BM",
+        "courseCount": 1,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "A1",
+        "requirementTranslation": "English Reading & Composition",
+        "collegeCode": "L&S",
+        "objCode": "BS",
+        "courseCount": 1,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "A2",
+        "requirementTranslation": "English Reading & Composition",
+        "collegeCode": "ENGR",
+        "objCode": "BS",
+        "courseCount": 1,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "A2",
+        "requirementTranslation": "English Reading & Composition",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 1,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "A2",
+        "requirementTranslation": "English Reading & Composition",
+        "collegeCode": "L&S",
+        "objCode": "BFA",
+        "courseCount": 1,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "A2",
+        "requirementTranslation": "English Reading & Composition",
+        "collegeCode": "L&S",
+        "objCode": "BM",
+        "courseCount": 1,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "A2",
+        "requirementTranslation": "English Reading & Composition",
+        "collegeCode": "L&S",
+        "objCode": "BS",
+        "courseCount": 1,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "AMH",
+        "requirementTranslation": "American History",
+        "collegeCode": "UCSB",
+        "objCode": "UG",
+        "courseCount": 0,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "B",
+        "requirementTranslation": "Foreign Language - L&S",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 1,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "B",
+        "requirementTranslation": "Foreign Language - L&S",
+        "collegeCode": "L&S",
+        "objCode": "BFA",
+        "courseCount": 0,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "B",
+        "requirementTranslation": "Foreign Language - L&S",
+        "collegeCode": "L&S",
+        "objCode": "BM",
+        "courseCount": 0,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "B",
+        "requirementTranslation": "Foreign Language - L&S",
+        "collegeCode": "L&S",
+        "objCode": "BS",
+        "courseCount": 0,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "C",
+        "requirementTranslation": "Science, Math and Technology",
+        "collegeCode": "ENGR",
+        "objCode": "BS",
+        "courseCount": 1,
+        "units": 20.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "C",
+        "requirementTranslation": "Science, Math and Technology",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 3,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "C",
+        "requirementTranslation": "Science, Math and Technology",
+        "collegeCode": "L&S",
+        "objCode": "BFA",
+        "courseCount": 2,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "C",
+        "requirementTranslation": "Science, Math and Technology",
+        "collegeCode": "L&S",
+        "objCode": "BM",
+        "courseCount": 2,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "C",
+        "requirementTranslation": "Science, Math and Technology",
+        "collegeCode": "L&S",
+        "objCode": "BS",
+        "courseCount": 3,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "D",
+        "requirementTranslation": "Social Sciences",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 3,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "D",
+        "requirementTranslation": "Social Sciences",
+        "collegeCode": "L&S",
+        "objCode": "BFA",
+        "courseCount": 2,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "D",
+        "requirementTranslation": "Social Sciences",
+        "collegeCode": "L&S",
+        "objCode": "BM",
+        "courseCount": 2,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "D",
+        "requirementTranslation": "Social Sciences",
+        "collegeCode": "L&S",
+        "objCode": "BS",
+        "courseCount": 2,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "E",
+        "requirementTranslation": "Culture and Thought",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 3,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "E",
+        "requirementTranslation": "Culture and Thought",
+        "collegeCode": "L&S",
+        "objCode": "BFA",
+        "courseCount": 2,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "E",
+        "requirementTranslation": "Culture and Thought",
+        "collegeCode": "L&S",
+        "objCode": "BM",
+        "courseCount": 2,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "E",
+        "requirementTranslation": "Culture and Thought",
+        "collegeCode": "L&S",
+        "objCode": "BS",
+        "courseCount": 2,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "E1",
+        "requirementTranslation": "Western Civilizations",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 2,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "E2",
+        "requirementTranslation": "World Civilizations",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 1,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "ETH",
+        "requirementTranslation": "Ethnicity",
+        "collegeCode": "CRST",
+        "objCode": "BA",
+        "courseCount": 1,
+        "units": 3.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "ETH",
+        "requirementTranslation": "Ethnicity",
+        "collegeCode": "CRST",
+        "objCode": "BS",
+        "courseCount": 1,
+        "units": 3.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "ETH",
+        "requirementTranslation": "Ethnicity",
+        "collegeCode": "ENGR",
+        "objCode": "BS",
+        "courseCount": 1,
+        "units": 3.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "ETH",
+        "requirementTranslation": "Ethnicity",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 1,
+        "units": 3.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "ETH",
+        "requirementTranslation": "Ethnicity",
+        "collegeCode": "L&S",
+        "objCode": "BFA",
+        "courseCount": 1,
+        "units": 3.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "ETH",
+        "requirementTranslation": "Ethnicity",
+        "collegeCode": "L&S",
+        "objCode": "BM",
+        "courseCount": 1,
+        "units": 3.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "ETH",
+        "requirementTranslation": "Ethnicity",
+        "collegeCode": "L&S",
+        "objCode": "BS",
+        "courseCount": 1,
+        "units": 3.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "EUR",
+        "requirementTranslation": "European Traditions",
+        "collegeCode": "ENGR",
+        "objCode": "BS",
+        "courseCount": 1,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "EUR",
+        "requirementTranslation": "European Traditions",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 1,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "F",
+        "requirementTranslation": "Arts",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 2,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "F",
+        "requirementTranslation": "Arts",
+        "collegeCode": "L&S",
+        "objCode": "BS",
+        "courseCount": 1,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "G",
+        "requirementTranslation": "Literature",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 2,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "G",
+        "requirementTranslation": "Literature",
+        "collegeCode": "L&S",
+        "objCode": "BFA",
+        "courseCount": 1,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "G",
+        "requirementTranslation": "Literature",
+        "collegeCode": "L&S",
+        "objCode": "BM",
+        "courseCount": 1,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "G",
+        "requirementTranslation": "Literature",
+        "collegeCode": "L&S",
+        "objCode": "BS",
+        "courseCount": 1,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "H",
+        "requirementTranslation": "Foreign Language - Engr",
+        "collegeCode": "ENGR",
+        "objCode": "BS",
+        "courseCount": 1,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "NWC",
+        "requirementTranslation": "World Cultures",
+        "collegeCode": "ENGR",
+        "objCode": "BS",
+        "courseCount": 1,
+        "units": 3.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "NWC",
+        "requirementTranslation": "World Cultures",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 1,
+        "units": 3.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "NWC",
+        "requirementTranslation": "World Cultures",
+        "collegeCode": "L&S",
+        "objCode": "BFA",
+        "courseCount": 1,
+        "units": 3.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "NWC",
+        "requirementTranslation": "World Cultures",
+        "collegeCode": "L&S",
+        "objCode": "BM",
+        "courseCount": 1,
+        "units": 3.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "NWC",
+        "requirementTranslation": "World Cultures",
+        "collegeCode": "L&S",
+        "objCode": "BS",
+        "courseCount": 1,
+        "units": 3.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "QNT",
+        "requirementTranslation": "Quantitative Relationships",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 0,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "QNT",
+        "requirementTranslation": "Quantitative Relationships",
+        "collegeCode": "L&S",
+        "objCode": "BFA",
+        "courseCount": 0,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "QNT",
+        "requirementTranslation": "Quantitative Relationships",
+        "collegeCode": "L&S",
+        "objCode": "BM",
+        "courseCount": 0,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "QNT",
+        "requirementTranslation": "Quantitative Relationships",
+        "collegeCode": "L&S",
+        "objCode": "BS",
+        "courseCount": 0,
+        "units": 4.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "SUB",
+        "requirementTranslation": "Subject A",
+        "collegeCode": "UCSB",
+        "objCode": "UG",
+        "courseCount": 1,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "WRT",
+        "requirementTranslation": "Writing",
+        "collegeCode": "ENGR",
+        "objCode": "BS",
+        "courseCount": 4,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "WRT",
+        "requirementTranslation": "Writing",
+        "collegeCode": "L&S",
+        "objCode": "BA",
+        "courseCount": 6,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "WRT",
+        "requirementTranslation": "Writing",
+        "collegeCode": "L&S",
+        "objCode": "BFA",
+        "courseCount": 4,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "WRT",
+        "requirementTranslation": "Writing",
+        "collegeCode": "L&S",
+        "objCode": "BFA",
+        "courseCount": 6,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "WRT",
+        "requirementTranslation": "Writing",
+        "collegeCode": "L&S",
+        "objCode": "BM",
+        "courseCount": 6,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "WRT",
+        "requirementTranslation": "Writing",
+        "collegeCode": "L&S",
+        "objCode": "BM",
+        "courseCount": 4,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "WRT",
+        "requirementTranslation": "Writing",
+        "collegeCode": "L&S",
+        "objCode": "BS",
+        "courseCount": 6,
+        "units": 0.0,
+        "inactive": false
+    },
+    {
+        "requirementCode": "WRT",
+        "requirementTranslation": "Writing",
+        "collegeCode": "L&S",
+        "objCode": "BS",
+        "courseCount": 4,
+        "units": 0.0,
+        "inactive": false
+    }
+]
