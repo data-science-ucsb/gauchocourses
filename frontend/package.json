@@ -31,8 +31,6 @@
     "flush-promises": "^1.0.2",
     "jest-transform-css": "^2.0.0",
     "jquery": "^3.5.0",
-    "node-sass": "^4.13.1",
-    "sass-loader": "^8.0.0",
     "vue": "^2.6.10",
     "vue-application-insights": "^1.0.7",
     "vue-dayjs-plugin": "^1.0.0",
