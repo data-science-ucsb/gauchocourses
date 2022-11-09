@@ -1,32 +1,24 @@
 package org.gaucho.courses.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.gaucho.courses.controller.service.GatewayService;
-import org.gaucho.courses.domain.remote.ClassSection;
 import org.gaucho.courses.domain.remote.Department;
 import org.gaucho.courses.domain.remote.Quarter;
 import org.gaucho.courses.domain.remote.Class;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.ws.Response;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
 @Controller
 @RequestMapping("remote/")
 public class Gateway {
