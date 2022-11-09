@@ -12,7 +12,6 @@ import { faInfoCircle, faEdit, faUndo,
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import { getCookieValue, getSlotNameFromURL} from './components/util/util-methods.js'
-import api from '@/components/backend-api.js';
 import '@/plugins/Dayjs';
 import VueDayjs from 'vue-dayjs-plugin'
 
@@ -73,11 +72,5 @@ new Vue({
       }
     }
     this.$appInsights.addTelemetryInitializer(telemetryInitializer);
-  },
-  created() {
-    api
-      .getConfiguration()
-      .then(resp => this.$store.commit('setClientConfiguration', resp.data))
-      .catch(err => console.log(err));
   }
 }).$mount('#app');
