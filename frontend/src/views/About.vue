@@ -4,7 +4,7 @@
 
       <b-row class="mt-2">
         <b-col class="text-left">
-        <h1>About CrunchTime</h1>
+        <h1>About GauchoCourses</h1>
         </b-col>
       </b-row>
 
@@ -12,9 +12,7 @@
         <b-col class="text-left">
         <h5>What is this?</h5>
         <p>
-          CrunchTime is a free and open source application to help university students plan their class schedules.
-          It was originally developed by alumni and students of UC Santa Barbara. The application is white-label, meaning any university
-          can configure the application with their own branding and connect it to their course APIs.
+          GauchoCourses is a free and open source application to help UCSB students plan their class schedules before their pass time.
         </p>
         </b-col>
       </b-row>
@@ -23,7 +21,7 @@
         <b-col class="text-left">
         <h5>How do I report issues?</h5>
         <p>
-          You can report bugs and feature requests on <a href="https://github.com/crunch-time/crunchtime/issues/new">the GitHub Repository</a>. 
+          You can report bugs and feature requests on <a href="https://github.com/data-science-ucsb/gauchocourses/issues">the GitHub Repository</a>. 
         </p>
         </b-col>
       </b-row>
@@ -32,7 +30,7 @@
         <b-col class="text-left">
         <h5>How do I get involved?</h5>
         <p>
-          Join our <a href="https://join.slack.com/t/crunch-time-oss/shared_invite/zt-kpc8eewg-Q3VtKzuMWHTBu5xBDo51Ug">public Slack Group</a> and check out the <a href="https://github.com/crunch-time/crunchtime/wiki">getting-started documentation</a>.
+          Reach out to <a href="">Data Science UCSB</a> and check out the <a href="https://github.com/data-science-ucsb/gauchocourses/wiki">getting-started documentation</a>.
         </p>
         <p>
           The app uses a <a href="https://vuejs.org/">VueJS</a> frontend and a <a href="https://spring.io/projects/spring-boot">Spring Boot</a> backend.

@@ -14,11 +14,11 @@ export default new Vuex.Store({
     selectedCustomEvents: [],
     user: {},
     configuration: {
-      PRIMARY_COLOR: '#047c91',
-      SECONDARY_COLOR: '#a6192e',
+      PRIMARY_COLOR: '#003660',
+      SECONDARY_COLOR: '#FEBC11',
       TERTIARY_COLOR: 'purple',
-      SITE_NAME: 'CrunchTime',
-      ORGANIZATION_NAME: 'CrunchTime Software'
+      SITE_NAME: 'GauchoCourses',
+      ORGANIZATION_NAME: 'Data Science UCSB'
     }
   },
   mutations: {
