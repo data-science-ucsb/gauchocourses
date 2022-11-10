@@ -53,6 +53,7 @@
     "axios-mock-adapter": "^1.17.0",
     "babel-eslint": "^10.0.1",
     "concurrently": "^5.2.0",
+    "chromedriver": "107.0.3",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "geckodriver": "^1.16.2",
