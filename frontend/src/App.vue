@@ -61,13 +61,13 @@
 
           <b-row id="Advertisement">
             <b-col class="text-center">
-              <small class="footer-text">CrunchTime is an open-source app and is deployed here by {{$store.state.configuration.ORGANIZATION_NAME}}.</small>
+              <small class="footer-text">GauchoCourses is an open-source app which is maintained and hosted by <a class="footer-text" href="https://www.datascienceucsb.org/">Data Science UCSB</a>.</small>
             </b-col>
           </b-row>
 
           <b-row id="Copyright">
             <b-col class="text-center">
-              <small class="footer-text">Copyright {{year}} <a class="footer-text" href="https://github.com/crunch-time" target="blank">CrunchTime</a></small>
+              <small class="footer-text">Copyright {{year}} <a class="footer-text" href="https://github.com/data-science-ucsb/gauchocourses" target="blank">GauchoCourses</a></small>
             </b-col>
           </b-row>
         </div>
