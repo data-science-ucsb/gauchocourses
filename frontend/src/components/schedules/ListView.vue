@@ -323,6 +323,7 @@ export default {
 }
 .scheduleListItem {
   padding: 0.5rem 1.25rem !important;
+  border-radius: 0 !important;
 }
 .lightHeart {
   color: #ffc7c7;
