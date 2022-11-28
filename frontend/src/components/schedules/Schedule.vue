@@ -420,4 +420,18 @@ export default {
 .fc-title {
   font-size: 11px;
 }
+
+</style>
+
+<!-- steven: to reduce top/bottom padding in schedule header -->
+<style scoped>
+.card-header {
+  padding: 0;
+}
+
+.no-wrap.d-flex.flex-row.align-items-center {
+  position: relative;
+  padding-left: 5%;
+}
+
 </style>
