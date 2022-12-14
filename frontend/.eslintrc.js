@@ -13,7 +13,7 @@ module.exports = {
     'no-console': 'warn' // TODO: Make this an error for pushes to master
   },
   parserOptions: {
-    parser: 'babel-eslint'
+    parser: '@babel/eslint-parser'
   },
   overrides: [
     {
