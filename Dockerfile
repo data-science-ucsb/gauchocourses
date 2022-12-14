@@ -7,7 +7,7 @@ WORKDIR /project
 
 RUN mvn clean install -P prod -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-FROM openjdk:8-jdk
+FROM openjdk:17
 
 LABEL maintainer="Jason Freeberg"
 
