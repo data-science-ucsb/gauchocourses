@@ -8,8 +8,6 @@ on:
       - gh-actions-pr-issue-5
       - main
 
-description: 'Run unit tests on all new pull requests made to the main branch'
-
 jobs:
   new_pr_test:
     runs-on: ubuntu-latest
