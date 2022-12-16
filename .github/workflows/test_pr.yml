@@ -19,7 +19,7 @@ jobs:
 
       # set up the docker container builder
       - name: set up docker buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v2
 
       # build the image
       - name: build docker image of application
