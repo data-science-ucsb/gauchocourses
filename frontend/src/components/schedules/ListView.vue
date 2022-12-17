@@ -126,6 +126,7 @@ export default {
       coursesComputed: [],
       doneLoading: false,
       scheduleNames: [],
+      scheduleLocal: this.schedule,
     };
   },
   props: {
@@ -306,7 +307,8 @@ export default {
 
       api
         .updateScheduleName(this.schedule[index].id, cleanedName)
-        .then(() => this.schedule[index].name = cleanedName)
+        .then(() => this.scheduleLocal[index].name = cleanedName) // steven: put schedule as a local variable in data (line 129) to avoid mutation error, not sure if right move
+        // .then(() => this.schedule[index].name = cleanedName)
         .catch(resp => resp) // TODO: Better error handling
     },
     editSchedule: async function(schedule) {

@@ -142,7 +142,8 @@ export default {
       scheduleSavedStatus: null,
       scheduleName: this.schedule.name,
       popoverShow: false,
-      errors: []
+      errors: [],
+      scheduleLocal: this.schedule,
     };
   },
   created: function () {
@@ -379,7 +380,8 @@ export default {
       api
         .updateScheduleName(this.schedule.id, this.scheduleName)
         .then(() =>{
-          this.schedule.name = this.scheduleName;
+          // this.schedule.name = this.scheduleName;
+          this.scheduleLocal.name = this.scheduleName;
         })
         .catch((error) => {
           this.errors.push(error);
