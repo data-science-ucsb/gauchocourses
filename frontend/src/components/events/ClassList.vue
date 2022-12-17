@@ -162,6 +162,25 @@ export default {
 
         return goodtime;
       }
+      const abbreviateDays = (days) => {
+        var goodDays = "";
+        if(days.includes("M")){
+          goodDays+="Mon "
+        }
+        if(days.includes("T")){
+          goodDays+="Tue "
+        }
+        if(days.includes("W")){
+          goodDays+="Wed "
+        }
+        if(days.includes("R")){
+          goodDays+="Thu "
+        }
+        if(days.includes("F")){
+          goodDays+="Fri "
+        }
+        return goodDays;
+      }
       var a = "";
       if (timesandplaces.length == 0) {
         a = "This class doesn't have a meeting time";
@@ -174,7 +193,7 @@ export default {
               a += "\n" + " and ";
             }
 
-            a += timesandplaces[i].days;
+            a += abbreviateDays(timesandplaces[i].days);
 
             a += cleanTime(timesandplaces[i].beginTime);
             a += " - ";
