@@ -1,0 +1,28 @@
+name: 'Test New Pull Requests'
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+    branches:
+      - gh-actions-pr-issue-5
+      - main
+
+jobs:
+  new_pr_test:
+    runs-on: ubuntu-latest
+    name: Start a new docker container to run the tests
+    steps:
+      # allow github action workflow access to the repo
+      - name: checkout repo step
+        uses: actions/checkout@v3
+
+      # set up the docker container builder
+      - name: set up docker buildx
+        uses: docker/setup-buildx-action@v2
+
+      # build the image
+      - name: build docker image of application
+        uses: docker/build-push-action@v3
+        with:
+          push: false
+          file: ./Dockerfile
