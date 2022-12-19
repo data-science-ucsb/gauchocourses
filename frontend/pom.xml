@@ -30,7 +30,7 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v16.16.0</nodeVersion>
+                            <nodeVersion>18.0.0</nodeVersion>
                         </configuration>
                     </execution>
                     <!-- Install all project dependencies -->
