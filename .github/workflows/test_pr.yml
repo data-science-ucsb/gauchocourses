@@ -1,6 +1,5 @@
-# action.yml
 name: 'Test New Pull Requests'
-# set triggers for github action in workflow
+
 on:
   pull_request:
     types: [opened, edited, reopened]
