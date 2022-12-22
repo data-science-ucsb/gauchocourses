@@ -142,7 +142,8 @@ export default {
       scheduleSavedStatus: null,
       scheduleName: this.schedule.name,
       popoverShow: false,
-      errors: []
+      errors: [],
+      scheduleLocal: this.schedule,
     };
   },
   created: function () {
@@ -379,7 +380,8 @@ export default {
       api
         .updateScheduleName(this.schedule.id, this.scheduleName)
         .then(() =>{
-          this.schedule.name = this.scheduleName;
+          // this.schedule.name = this.scheduleName;
+          this.scheduleLocal.name = this.scheduleName;
         })
         .catch((error) => {
           this.errors.push(error);
@@ -420,4 +422,18 @@ export default {
 .fc-title {
   font-size: 11px;
 }
+
+</style>
+
+<!-- steven: to reduce top/bottom padding in schedule header -->
+<style scoped>
+.card-header {
+  padding: 0;
+}
+
+.no-wrap.d-flex.flex-row.align-items-center {
+  position: relative;
+  padding-left: 5%;
+}
+
 </style>
