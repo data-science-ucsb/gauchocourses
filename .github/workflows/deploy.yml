@@ -34,8 +34,6 @@ jobs:
           context: .
           push: true
           tags: |
-            user/app:latest
-            user/app:1.0.0
             ghcr.io/user/app:latest
             ghcr.io/user/app:1.0.0
           # registry: docker.pkg.github.com
