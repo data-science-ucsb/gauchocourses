@@ -3,9 +3,9 @@ name: Pushes Docker image to GitHub container registry
 on:
   release:
     types: [created]
-  branches:
-    - main
-    - issue-4
+    branches:
+      - main
+      - issue-4
 
 jobs:
 
