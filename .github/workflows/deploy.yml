@@ -34,5 +34,5 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-           registry: docker.pkg.github.com
-           repository: data-science-ucsb/gauchocourses/gauchocourses:${{ github.event.release.tag_name }}
+          registry: docker.pkg.github.com
+          repository: data-science-ucsb/gauchocourses/gauchocourses:${{ github.event.release.tag_name }}
