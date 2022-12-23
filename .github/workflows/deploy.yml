@@ -1,0 +1,34 @@
+name: Pushes Docker image to GitHub container registry
+
+on:
+  release:
+    types: [created]
+  branches:
+    - main
+    - issue-4
+
+jobs:
+
+  build_and_push_to_github:
+    name: Push Docker image to GitHub Packages
+    runs-on: ubuntu-latest
+    permissions: read-all|write-all
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:          
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build and Push to GitHub Packages
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          registry: docker.pkg.github.com
+          repository: data-science-ucsb/gauchocourses/gauchocourses:${{ github.event.release.tag_name }}
