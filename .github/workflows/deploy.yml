@@ -13,7 +13,7 @@ jobs:
   build_and_push_to_github:
     name: Push Docker image to GitHub Packages
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions: write
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -33,6 +33,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ steps.repository.outputs.tag }}
-          registry: docker.pkg.github.com
-          repository: data-science-ucsb/gauchocourses/gauchocourses:${{ github.event.release.tag_name }}
+          tags: |
+            ghcr.io/user/app:latest
+            ghcr.io/user/app:1.0.0
+          # registry: docker.pkg.github.com
+          # repository: data-science-ucsb/gauchocourses/gauchocourses:${{ github.event.release.tag_name }}
