@@ -32,5 +32,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
+          tags: user/app:latest
           registry: docker.pkg.github.com
           repository: data-science-ucsb/gauchocourses/gauchocourses:${{ github.event.release.tag_name }}
