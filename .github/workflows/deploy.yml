@@ -13,8 +13,7 @@ jobs:
   build_and_push_to_github:
     name: Push Docker image to GitHub Packages
     runs-on: ubuntu-latest
-    permissions: 
-      packages: write
+    permissions: write-all
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
