@@ -164,20 +164,12 @@ export default {
       }
       const abbreviateDays = (days) => {
         var goodDays = "";
-        if(days.includes("M")){
-          goodDays+="Mon "
-        }
-        if(days.includes("T")){
-          goodDays+="Tue "
-        }
-        if(days.includes("W")){
-          goodDays+="Wed "
-        }
-        if(days.includes("R")){
-          goodDays+="Thu "
-        }
-        if(days.includes("F")){
-          goodDays+="Fri "
+        const singleDay = ["M", "T", "W", "R", "F"];
+        const abbDay = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+        for(var i=0;i<singleDay.length;i++){
+          if(days.includes(singleDay[i])){
+            goodDays += abbDay[i]+" ";
+          }
         }
         return goodDays;
       }
