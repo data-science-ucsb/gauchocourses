@@ -20,6 +20,10 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v3
 
+      - name: Get tag
+		id: repository
+		run: echo "::set-output name=tag::$(git describe --tags HEAD)"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         with:
@@ -38,8 +42,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: |
-            ghcr.io/user/app:latest
-            ghcr.io/user/app:1.0.0
+          tags: ghcr.io/${{github.repository}}:${{steps.repository.output.tag}}
           # registry: docker.pkg.github.com
           # repository: data-science-ucsb/gauchocourses/gauchocourses:${{ github.event.release.tag_name }}
