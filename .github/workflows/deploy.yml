@@ -42,6 +42,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{github.repository}}:${{steps.repository.output.tag}}
+          tags: ghcr.io/${{github.repository}}:${{steps.repository.outputs.tag}}
           # registry: docker.pkg.github.com
           # repository: data-science-ucsb/gauchocourses/gauchocourses:${{ github.event.release.tag_name }}
