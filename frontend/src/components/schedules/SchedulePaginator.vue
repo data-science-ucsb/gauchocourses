@@ -384,11 +384,11 @@ export default {
         },
         daysOptions() {
             return [
-                { text: 'Monday' + ' (' + this.numSchedules.MONDAY + ')' , value: 'MONDAY' },
-                { text: 'Tuesday' + ' (' + this.numSchedules.TUESDAY + ')', value: 'TUESDAY' },
-                { text: 'Wednesday' + ' (' + this.numSchedules.WEDNESDAY + ')', value: 'WEDNESDAY' },
-                { text: 'Thursday' + ' (' + this.numSchedules.THURSDAY + ')', value: 'THURSDAY' },
-                { text: 'Friday' + ' (' + this.numSchedules.FRIDAY + ')', value: 'FRIDAY' },
+                { text: 'Monday' + ' (' + this.numSchedules.MONDAY + ')' , value: 'MONDAY', numSchedules: this.numSchedules.MONDAY},
+                { text: 'Tuesday' + ' (' + this.numSchedules.TUESDAY + ')', value: 'TUESDAY', numSchedules: this.numSchedules.TUESDAY },
+                { text: 'Wednesday' + ' (' + this.numSchedules.WEDNESDAY + ')', value: 'WEDNESDAY', numSchedules: this.numSchedules.WEDNESDAY },
+                { text: 'Thursday' + ' (' + this.numSchedules.THURSDAY + ')', value: 'THURSDAY', numSchedules: this.numSchedules.THURSDAY },
+                { text: 'Friday' + ' (' + this.numSchedules.FRIDAY + ')', value: 'FRIDAY', numSchedules: this.numSchedules.FRIDAY },
             ]
         },
         /**
