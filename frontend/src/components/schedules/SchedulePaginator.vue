@@ -374,7 +374,7 @@ export default {
                 return false;
             } else {
                 // (big) TODO: This should also check the contents
-                return this.lastUsedClassSections.length != this.classSections.length;
+                return this.lastUsedClassSections != this.$store.getters.selectedClassSections;
             }
         },
         customEvents: function(){
