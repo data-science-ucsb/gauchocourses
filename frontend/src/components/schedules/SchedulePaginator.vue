@@ -51,7 +51,7 @@
                         <b-form-checkbox-group
                             id="daySelector"
                             v-model="filtering.selected"
-                            :options="filtering.options"
+                            :options="daysOptions"
                             name="daySelector"
                             switch
                             stacked
@@ -365,6 +365,31 @@ export default {
                     return withinDays && withinTime;
                 })
                 .sort((a,b) => (a.sortingAttributes[sortBy] > b.sortingAttributes[sortBy]) ? 1 : -1 )
+        },
+        numSchedules: function() {
+            let dayCount = {
+                'MONDAY': 0,
+                'TUESDAY': 0,
+                'WEDNESDAY': 0,
+                'THURSDAY': 0,
+                'FRIDAY': 0,
+            };
+            const scheduleDays = this.filteredAndSortedSchedules.map(s => s.sortingAttributes.daysWithEvents);
+            scheduleDays.forEach(days => {
+                days.forEach(day => {
+                    dayCount[day] += 1;
+                });
+            });
+            return dayCount;
+        },
+        daysOptions() {
+            return [
+                { text: 'Monday' + ' (' + this.numSchedules.MONDAY + ')' , value: 'MONDAY', numSchedules: this.numSchedules.MONDAY},
+                { text: 'Tuesday' + ' (' + this.numSchedules.TUESDAY + ')', value: 'TUESDAY', numSchedules: this.numSchedules.TUESDAY },
+                { text: 'Wednesday' + ' (' + this.numSchedules.WEDNESDAY + ')', value: 'WEDNESDAY', numSchedules: this.numSchedules.WEDNESDAY },
+                { text: 'Thursday' + ' (' + this.numSchedules.THURSDAY + ')', value: 'THURSDAY', numSchedules: this.numSchedules.THURSDAY },
+                { text: 'Friday' + ' (' + this.numSchedules.FRIDAY + ')', value: 'FRIDAY', numSchedules: this.numSchedules.FRIDAY },
+            ]
         },
         /**
          *
