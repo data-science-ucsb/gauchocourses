@@ -494,4 +494,9 @@ export default {
 .timeslider .b-dropdown-form:focus {
     outline: none !important;
 }
+
+/* removes padding of schedule cards in all views; */
+.card-body {
+    padding: 0;
+}
 </style>
