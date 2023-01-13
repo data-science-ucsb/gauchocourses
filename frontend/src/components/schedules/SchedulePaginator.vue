@@ -275,6 +275,7 @@ export default {
             currentPage: 1,
             currentView: "4",
             lastUsedClassSections: [],
+            lastUsedCustomEvents: [],
             errors: [],
             quarters: [],
             savingScheduleInProgress: false,
@@ -373,8 +374,10 @@ export default {
             if (this.lastUsedClassSections.length == 0) { // For when the component is first created
                 return false;
             } else {
-                // (big) TODO: This should also check the contents
-                return this.lastUsedClassSections != this.$store.getters.selectedClassSections;
+                //checks contents of classSection and customEvents 
+                return this.lastUsedClassSections != this.$store.getters.selectedClassSections || this.lastUsedCustomEvents != this.$store.state.selectedCustomEvents;
+                
+
             }
         },
         customEvents: function(){
@@ -461,7 +464,9 @@ export default {
             this.currentPage = 1;
         },
         schedules: function() {
-          this.lastUsedClassSections = this.classSections;  // Set this as the last used set of events. This is used to check for changes later
+          this.lastUsedClassSections = this.classSections; 
+          this.lastUsedCustomEvents = this.customEvents;
+          // Set this as the last used set of events. This is used to check for changes later
         }
     },
 }
