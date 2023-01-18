@@ -42,6 +42,9 @@ public class ScheduleSortingAttributes {
 
     private LocalTime latestEndTime = LocalTime.MIN;
 
+    // for code refactoring
+    Map<DayOfWeek, List<TimeLocation>> groupedTimes = new HashMap<>();
+
     /**
      * Calculates metrics about the schedule which can be used to sort or otherwise compare schedules.
      * @param scheduledEvents If Events conflict, the attributes are not calculated.
@@ -80,20 +83,7 @@ public class ScheduleSortingAttributes {
     }
 
     private void calculateTotalMinutesBetweenEvents(List<TimeLocation> allTimesAndPlaces) {
-        Map<DayOfWeek, List<TimeLocation>> groupedTimes = new HashMap<>();
-
-        // Group timeLocations by day in groupedTimes
-        allTimesAndPlaces.forEach((TimeLocation timeLocation) ->
-            timeLocation.getFullDays().forEach((DayOfWeek dayOfWeek) -> {
-                // TODO: clean this up using Map.computeIfAbsent(...)
-                if (groupedTimes.containsKey(dayOfWeek)) {
-                    groupedTimes.get(dayOfWeek).add(timeLocation);
-                } else {
-                    groupedTimes.put(dayOfWeek, new ArrayList<>());
-                    groupedTimes.get(dayOfWeek).add(timeLocation);
-                }
-            })
-        );
+        groupTimeLocationByDay(allTimesAndPlaces);
 
         // Sort the values. TODO: Replace List<TimeLocation> with SortedSet<TimeLocation>
         groupedTimes
@@ -109,21 +99,7 @@ public class ScheduleSortingAttributes {
     }
 
     private void calculateTotalMinutesFromMidnight(List<TimeLocation> allTimesAndPlaces) {
-        Map<DayOfWeek, List<TimeLocation>> groupedTimes = new HashMap<>();
-
-        // Group timeLocations by day in groupedTimes
-        // TODO: This is redundant (see other method). This piece can be shared across all the "compute*" methods.
-        allTimesAndPlaces.forEach((TimeLocation timeLocation) ->
-            timeLocation.getFullDays().forEach((DayOfWeek dayOfWeek) -> {
-                // TODO: clean this up using Map.computeIfAbsent(...)
-                if (groupedTimes.containsKey(dayOfWeek)) {
-                    groupedTimes.get(dayOfWeek).add(timeLocation);
-                } else {
-                    groupedTimes.put(dayOfWeek, new ArrayList<>());
-                    groupedTimes.get(dayOfWeek).add(timeLocation);
-                }
-            })
-        );
+        groupTimeLocationByDay(allTimesAndPlaces);
 
         this.totalMinutesFromMidnight = groupedTimes
             .values()
@@ -145,6 +121,24 @@ public class ScheduleSortingAttributes {
             .map(TimeLocation::getFullDays)
             .flatMap(Collection::stream)
             .collect(Collectors.toSet());
+    }
+
+    private void groupTimeLocationByDay(List<TimeLocation> allTimesAndPlaces)
+    {
+        groupedTimes.clear();
+        
+        // Group timeLocations by day in groupedTimes
+        allTimesAndPlaces.forEach((TimeLocation timeLocation) ->
+            timeLocation.getFullDays().forEach((DayOfWeek dayOfWeek) -> {
+                // TODO: clean this up using Map.computeIfAbsent(...)
+                if (groupedTimes.containsKey(dayOfWeek)) {
+                    groupedTimes.get(dayOfWeek).add(timeLocation);
+                } else {
+                    groupedTimes.put(dayOfWeek, new ArrayList<>());
+                    groupedTimes.get(dayOfWeek).add(timeLocation);
+                }
+            })
+        );
     }
 
 }
