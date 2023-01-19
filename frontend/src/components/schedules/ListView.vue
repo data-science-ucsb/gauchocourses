@@ -102,8 +102,8 @@
   </b-list-group-item>
 </b-list-group>
 
-  <div v-else>
-    <b-spinner variant="primary" label="Spinning"></b-spinner>
+  <div v-else class="text-center">
+    <b-spinner class="m-2" variant="primary" label="Spinning"></b-spinner>
   </div>
 
 </template>
@@ -126,6 +126,7 @@ export default {
       coursesComputed: [],
       doneLoading: false,
       scheduleNames: [],
+      scheduleLocal: this.schedule,
     };
   },
   props: {
@@ -306,7 +307,8 @@ export default {
 
       api
         .updateScheduleName(this.schedule[index].id, cleanedName)
-        .then(() => this.schedule[index].name = cleanedName)
+        .then(() => this.scheduleLocal[index].name = cleanedName) // steven: put schedule as a local variable in data (line 129) to avoid mutation error, not sure if right move
+        // .then(() => this.schedule[index].name = cleanedName)
         .catch(resp => resp) // TODO: Better error handling
     },
     editSchedule: async function(schedule) {
@@ -323,6 +325,7 @@ export default {
 }
 .scheduleListItem {
   padding: 0.5rem 1.25rem !important;
+  border-radius: 0 !important;
 }
 .lightHeart {
   color: #ffc7c7;
