@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.gaucho.courses.domain.remote.TimeLocation;
 
-import javax.persistence.*;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +12,6 @@ import java.util.stream.Collectors;
 /**
  * Core parent class for all schedule-able events. Provides methods for finding conflicting events.
  */
-@MappedSuperclass
 @Data
 public abstract class Event implements Serializable {
 
@@ -24,8 +21,7 @@ public abstract class Event implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonProperty("timeLocations")
-    @ManyToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<TimeLocation> timeLocations = new ArrayList<>();
+    protected List<TimeLocation> timeLocations = new ArrayList<>();
 
     /**
      * Returns true if this Event instance conflicts with the given Event. False otherwise.

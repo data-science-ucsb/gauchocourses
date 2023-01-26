@@ -54,7 +54,7 @@ class ScheduleControllerTest {
         schedule.setQuarter("20192");
 
         Schedule savedScheduleMock = testObjects.getSchedule();
-        final Long id = 1L;
+        final String id = "1";
         savedScheduleMock.setId(id);
 
         when(scheduleRepository.save(schedule)).thenReturn(savedScheduleMock);
@@ -81,7 +81,7 @@ class ScheduleControllerTest {
     @Test
     void whenAScheduleWasPreviouslySaved_thenItCanBeUpdated() {
         Schedule savedSchedule = testObjects.getSchedule();
-        final long id = 1L;
+        final String id = "1";
         savedSchedule.setUserEmail("dummy_email@email.com");
         savedSchedule.setQuarter("20192");
         savedSchedule.setId(id);

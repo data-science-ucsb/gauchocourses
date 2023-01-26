@@ -29,13 +29,10 @@ public class ScheduleSortingAttributes {
 
     public ScheduleSortingAttributes() { }
 
-    @Column(columnDefinition = "int8 default 0")
     private long totalMinutesBetweenEvents = 0;
 
-    @Column(columnDefinition = "int8 default 0")
     private long totalMinutesFromMidnight = 0;
 
-    @ElementCollection
     private Set<DayOfWeek> daysWithEvents = new HashSet<>();
 
     private LocalTime earliestBeginTime = LocalTime.MAX;

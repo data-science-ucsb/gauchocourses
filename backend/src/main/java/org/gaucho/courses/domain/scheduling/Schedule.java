@@ -6,6 +6,9 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.gaucho.courses.domain.remote.ClassSection;
 import org.gaucho.courses.domain.core.Event;
+import org.gaucho.courses.domain.remote.CustomEvent;
+import org.springframework.data.mongodb.core.mapping.FieldType;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -19,26 +22,29 @@ import java.util.stream.Stream;
 @Data
 @NoArgsConstructor
 @Slf4j
-@Entity(name = "schedules")
 public class Schedule implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    @MongoId(FieldType.OBJECT_ID)
+    private String id;
 
     /**
      * Fluent builder class to generate a Schedule.
      */
     @Data
-    @Accessors(chain=true)
+    @Accessors(chain = true)
     public static class ScheduleBuilder {
 
         /**
          * Constructor. Quarter and useremail are required properties.
-         * @param quarter The academic quarter.
+         *
+         * @param quarter   The academic quarter.
          * @param userEmail The user's email.
          */
         public ScheduleBuilder(String quarter, String userEmail) {
             this.setQuarter(quarter)
-                .setUserEmail(userEmail);
+                    .setUserEmail(userEmail);
         }
 
         private String quarter;
@@ -51,6 +57,7 @@ public class Schedule implements Serializable {
 
         /**
          * Builds a schedule given the properties set earlier.
+         *
          * @return A Schedule object.
          */
         public Schedule build() {
@@ -58,30 +65,25 @@ public class Schedule implements Serializable {
         }
     }
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
-
-    @OneToMany(
-        cascade = CascadeType.PERSIST)
     private List<CourseAndClassIds> classes = new ArrayList<>();
 
-    @ManyToMany(
-        cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-        fetch = FetchType.EAGER)
-    private List<CustomEvent> customEvents = new ArrayList<CustomEvent>();
+    //change back to private
+    private List<CustomEvent> customEvents = new ArrayList<>();
 
     @Embedded
     private ScheduleSortingAttributes sortingAttributes;
 
-    @NotNull private String quarter;
-    @NotNull private String userEmail;
+    @NotNull
+    private String quarter;
+    @NotNull
+    private String userEmail;
     private String name;
     private int totalUnits;
     private Boolean conflicting;
 
     /**
      * Constructor. For user with the ScheduleBuilder inner class.
+     *
      * @param builder A schedule builder object.
      */
     public Schedule(ScheduleBuilder builder) {
@@ -93,9 +95,9 @@ public class Schedule implements Serializable {
 
         builder.getSelectedClasses().forEach((ClassSection section) -> {
             Optional<CourseAndClassIds> maybe = this.classes
-                .stream()
-                .filter(c-> c.courseId.equals(section.getCourseId()))
-                .findFirst();
+                    .stream()
+                    .filter(c -> c.courseId.equals(section.getCourseId()))
+                    .findFirst();
             if (maybe.isPresent()) {
                 maybe.get().selectedEnrollCodes.add(section.getEnrollCode());
             } else {
@@ -108,9 +110,9 @@ public class Schedule implements Serializable {
 
         builder.getScheduledClasses().forEach((ClassSection section) -> {
             Optional<CourseAndClassIds> maybe = this.classes
-                .stream()
-                .filter(c -> c.courseId.equals(section.getCourseId()))
-                .findFirst();
+                    .stream()
+                    .filter(c -> c.courseId.equals(section.getCourseId()))
+                    .findFirst();
             if (maybe.isPresent()) {
                 maybe.get().scheduledEnrollCodes.add(section.getEnrollCode());
             } else {
@@ -122,10 +124,10 @@ public class Schedule implements Serializable {
         });
 
         List<? extends Event> allEvents = Stream.of(
-                builder.getScheduledClasses(),
-                this.getCustomEvents())
-            .flatMap(Collection::stream)
-            .collect(Collectors.toList());
+                        builder.getScheduledClasses(),
+                        this.getCustomEvents())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
 
         this.setConflicting(Event.eventsHaveConflicts(allEvents));
         this.setSortingAttributes(new ScheduleSortingAttributes(allEvents));
@@ -134,8 +136,6 @@ public class Schedule implements Serializable {
     private void setCustomEvents(List<CustomEvent> events) {
         if (events != null) {
             this.customEvents = events;
-            this.customEvents.forEach((CustomEvent c) -> c.addSchedule(this));  // Set back-reference for JPA
         }
     }
-
 }
