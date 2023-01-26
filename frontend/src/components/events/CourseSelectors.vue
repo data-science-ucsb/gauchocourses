@@ -3,7 +3,7 @@
 -->
 <template>
   <b-card no-body>
-    <b-card-body class="pb-0"> <!-- Card body provides padding for the selectors -->
+    <b-card-body class="pb-0" id="course-selectors"> <!-- Card body provides padding for the selectors -->
       <b-form-group label-cols="3" label-cols-md="5" label="Quarter:" label-for="quarterselect" label-size="sm">
           <b-form-select
               size="sm"
@@ -347,6 +347,11 @@ export default {
 <style>
 .course-search-results {
   overflow-y: scroll;
+  flex: 1 1 0%;
+}
+
+#course-selectors {
+  flex: 0 1 auto;
 }
 
 #addCourse:hover {
