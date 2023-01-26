@@ -114,7 +114,7 @@
                           id="showFavoritedSchedules"
                           icon="heart"
                           size="sm"
-                          style="color: #ED0303;">
+                          style="color: #FFC7C7;">
                         </font-awesome-icon>
                     </router-link>
 
@@ -125,7 +125,7 @@
                         icon="heart"
                         size="sm"
                         :id="'favorite-icon'+_uid"
-                        style="color: #FFC7C7;">
+                        style="color: #ED0303;">
                       </font-awesome-icon>
                       </router-link>
                 </b-nav-item>
