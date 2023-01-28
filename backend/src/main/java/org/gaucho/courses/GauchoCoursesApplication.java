@@ -20,7 +20,8 @@ public class GauchoCoursesApplication {
 		return ConfigureRedisAction.NO_OP;
 	}
 
-//	static { System.setProperty("os.arch", "i686_64"); }
+	// Uncomment if Embedded Mongo does not work on local OS
+	// static { System.setProperty("os.arch", "i686_64"); }
 
 	public static void main(String[] args) {
 		SpringApplication.run(GauchoCoursesApplication.class, args);
