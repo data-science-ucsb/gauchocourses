@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.gaucho.courses.domain.core.Event;
 
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -72,10 +71,6 @@ public class ClassSection extends Event implements Serializable {
     public boolean isLecture(){
         return this.getSection().endsWith("00");
     }
-
-    @JsonIgnore
-    @Transient
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public ClassSection() { }
 }

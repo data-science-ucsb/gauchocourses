@@ -10,9 +10,6 @@ import org.gaucho.courses.domain.remote.CustomEvent;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 import java.io.Serializable;
 
 import java.util.*;
@@ -70,12 +67,9 @@ public class Schedule implements Serializable {
     //change back to private
     private List<CustomEvent> customEvents = new ArrayList<>();
 
-    @Embedded
     private ScheduleSortingAttributes sortingAttributes;
 
-    @NotNull
     private String quarter;
-    @NotNull
     private String userEmail;
     private String name;
     private int totalUnits;

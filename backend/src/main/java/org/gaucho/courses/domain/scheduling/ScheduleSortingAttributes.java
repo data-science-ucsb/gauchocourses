@@ -5,9 +5,6 @@ import one.util.streamex.StreamEx;
 import org.gaucho.courses.domain.core.Event;
 import org.gaucho.courses.domain.remote.TimeLocation;
 
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.*;
@@ -23,7 +20,6 @@ import static java.time.temporal.ChronoUnit.MINUTES;
  * - The scoring for totalMinutesFromMidnight should be done by the earliest event for that day. Currently it calculates
  *   based on all events for all days.
  */
-@Embeddable
 @Data
 public class ScheduleSortingAttributes {
 

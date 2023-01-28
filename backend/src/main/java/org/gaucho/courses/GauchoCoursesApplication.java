@@ -19,8 +19,10 @@ public class GauchoCoursesApplication {
 	public static ConfigureRedisAction configureRedisAction() {
 		return ConfigureRedisAction.NO_OP;
 	}
+
+//	static { System.setProperty("os.arch", "i686_64"); }
+
 	public static void main(String[] args) {
-		System.setProperty("os.arch", "x86_64");
 		SpringApplication.run(GauchoCoursesApplication.class, args);
 	}
 
