@@ -20,7 +20,7 @@ public class GauchoCoursesApplication {
 		return ConfigureRedisAction.NO_OP;
 	}
 
-	// Uncomment if Embedded Mongo does not work on local OS
+	// Required if embedded mongo does not work on local architecture
 	// static { System.setProperty("os.arch", "i686_64"); }
 
 	public static void main(String[] args) {
