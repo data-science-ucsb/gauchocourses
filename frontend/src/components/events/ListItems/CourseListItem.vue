@@ -11,8 +11,11 @@
     <template v-slot:popoverContent>
       <div v-if="Object.getOwnPropertyNames(groupedRequirements).length != 0">
         <div v-for="[college, ges] in Object.entries(groupedRequirements)" v-bind:key="college">
-          <strong>{{ college }} GEs: </strong> {{ displayGEs(ges) }}
-          <!-- <span v-for="ge in ges.sort()" v-bind:key="ge.geCode">{{ ge['geCode'].trim() }}, </span> -->
+          <span> <strong> {{ college }} GE's: </strong> </span>
+          <template v-for="ge in ges.sort()">
+            <span v-if="ge!=ges.sort().at(-1)" v-bind:key="ge.geCode">{{ ge['geCode'].trim() }}, </span>
+            <span v-else v-bind:key="ge.geCode">{{ ge['geCode'].trim() }}</span>
+          </template>
         </div>
       </div>
       <div v-else>
@@ -83,17 +86,6 @@ export default {
           " units"
         );
       }
-    },
-    /**
-     * Outputs GE requirements list. Allows ease of removing commas
-     */
-     displayGEs: function(ges) {
-      let displayString = "";
-      for (let ge in ges.sort()) {
-        displayString += ge['geCode'].trim() + ", ";
-      }
-      print(displayString)
-      return displayString.slice(0, -2);
     }
   }
 };
