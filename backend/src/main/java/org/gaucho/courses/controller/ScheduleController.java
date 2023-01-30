@@ -1,5 +1,6 @@
 package org.gaucho.courses.controller;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.extern.slf4j.Slf4j;
 import org.gaucho.courses.DTO.ScheduleControllerRequest;
@@ -242,6 +243,8 @@ public class ScheduleController {
     }
 
     private Schedule applyPatchToSchedule(JsonPatch patch, Schedule targetSchedule) throws JsonPatchException, JsonProcessingException {
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         JsonNode patched = patch.apply(objectMapper.convertValue(targetSchedule, JsonNode.class));
         return objectMapper.treeToValue(patched, Schedule.class);
     }
