@@ -15,3 +15,4 @@ public interface ScheduleRepository extends MongoRepository<Schedule, String> {
     List<Schedule> findByUserEmail(String userEmail);
 
 }
+

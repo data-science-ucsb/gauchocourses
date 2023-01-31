@@ -123,7 +123,7 @@ public class ScheduleController {
         List<Schedule> userSchedules = scheduleRepository.findByUserEmail(authenticatedUsersEmail);
 
         // Record exists, persist
-        // In order to use IDs to check if schedule already exist,
+        // In order to use IDs to check if a schedule already exists,
         // we can try hashing objects to IDs or something similar.
         for (Schedule userSchedule : userSchedules) {
             if (userSchedule.getClasses().equals(schedule.getClasses()) && userSchedule.getQuarter().equals(schedule.getQuarter()) && userSchedule.getCustomEvents().equals(schedule.getCustomEvents())) {
@@ -161,7 +161,9 @@ public class ScheduleController {
     @GetMapping(value = "/")
     @Secured("ROLE_USER")
     public ResponseEntity getAllSchedulesForEmail(@RequestParam("userEmail") String userEmail) {
+
         String authenticatedUsersEmail = userController.getUserEmail();
+
         if (authenticatedUsersEmail == null) {
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -180,8 +182,10 @@ public class ScheduleController {
     @PostMapping(value = "/delete")
     @Secured("ROLE_USER")
     public ResponseEntity deleteSchedule(@RequestBody Schedule schedule) {
-        String email = userController.getUserEmail();
-        if (!email.equals(schedule.getUserEmail())) {
+
+        String authenticatedUsersEmail = userController.getUserEmail();
+
+        if (!authenticatedUsersEmail.equals(schedule.getUserEmail())) {
             return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body("Authenticated user's email does not match schedule's email");

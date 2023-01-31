@@ -67,21 +67,11 @@
 			<version>19.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>de.flapdoodle.embed</groupId>
-			<artifactId>de.flapdoodle.embed.mongo</artifactId>
-			<version>2.2.0</version>
-		</dependency>
-		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>1.18.22</version>
 			<optional>true</optional>
 		</dependency>
-
 		<dependency>
 			<groupId>one.util</groupId>
 			<artifactId>streamex</artifactId>
@@ -91,6 +81,16 @@
 			<groupId>com.microsoft.azure</groupId>
 			<artifactId>applicationinsights-spring-boot-starter</artifactId>
 			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.flapdoodle.embed</groupId>
+			<artifactId>de.flapdoodle.embed.mongo</artifactId>
+			<version>2.2.0</version>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- Test dependencies -->
@@ -117,14 +117,12 @@
 			<version>5.5.2</version>
 			<!--<scope>test</scope>-->
 		</dependency>
-
 		<dependency>
 			<groupId>com.github.java-json-tools</groupId>
 	    		<artifactId>json-patch</artifactId>
 	    		<version>1.12</version>
 		</dependency>
 		<!-- End test dependencies -->
-
 	</dependencies>
 
 	<build>
@@ -196,9 +194,9 @@
 			<properties>
 				<spring.profiles.active>dev</spring.profiles.active>
 			</properties>
-    	</profile>
+		</profile>
     	<profile>
-		<id>prod</id>
+			<id>prod</id>
 			<properties>
 				<spring.profiles.active>prod</spring.profiles.active>
 			</properties>

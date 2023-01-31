@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.gaucho.courses.domain.remote.ClassSection;
 import org.gaucho.courses.domain.core.Event;
 import org.gaucho.courses.domain.remote.CustomEvent;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
