@@ -105,7 +105,6 @@
   <div v-else class="text-center">
     <b-spinner class="m-2" variant="primary" label="Spinning"></b-spinner>
   </div>
-
 </template>
 
 <script>

@@ -5,6 +5,12 @@
 -->
 
 <template>
+<div ref="schedule">
+  <b-button
+          variant="primary"
+          ref="button"
+          @click="exportPDF"
+        >Export to PDF</b-button>
   <b-card no-body>
     <template v-slot:header>
       <div class="no-wrap d-flex flex-row align-items-center">
@@ -102,6 +108,7 @@
       <b-spinner class="m-2" variant="primary" label="Spinning"></b-spinner>
     </div>
   </b-card>
+</div>
 </template>
 
 <script>
@@ -114,6 +121,8 @@ import {
   getBorderColor,
 } from "@/components/util/color-utils.js";
 import xss from "xss";
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
 
 export default {
   components: {
@@ -390,6 +399,26 @@ export default {
     editSchedule: async function(schedule) {
       await this.$store.dispatch('initializeStoreAsync',schedule);
       this.$eventHub.$emit('generate-schedules', null);
+    },
+    exportPDF() {
+      // const element = document.getElementById('schedule-export')
+      // const pdf = new jsPDF()
+      // // pdf.setMargins(40, 40, 40)
+      // // pdf.fromHTML(element, 40, 40)
+      // pdf.setLineWidth(0.1)
+      // pdf.setLineHeightFactor(1.5)
+      // pdf.save('schedule.pdf')
+      var component = this.$refs.schedule
+      // var canvas = null
+
+      html2canvas(component).then(function(canvas) {
+        var pdf = new jsPDF('p', 'mm', 'a4')
+        var width = pdf.internal.pageSize.getWidth()
+        var height = pdf.internal.pageSize.getHeight()
+
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, width, height)
+        pdf.save("schedule.pdf")
+  })
     }
   },
 };

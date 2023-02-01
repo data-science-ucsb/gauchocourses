@@ -29,8 +29,10 @@
     "css-loader": "^3.2.0",
     "dayjs": "^1.9.7",
     "flush-promises": "^1.0.2",
+    "html2canvas": "^1.4.1",
     "jest-transform-css": "^6.0.0",
     "jquery": "^3.5.0",
+    "jspdf": "^2.5.1",
     "sass": "^1.56.1",
     "sass-loader": "^8.0.0",
     "vue": "^2.6.10",
@@ -42,7 +44,6 @@
     "xss": "^1.0.6"
   },
   "devDependencies": {
-    "@vue/vue2-jest": "^27.0.0",
     "@babel/eslint-parser": "^7.19.1",
     "@vue/cli-plugin-babel": "^5.0.8",
     "@vue/cli-plugin-e2e-nightwatch": "^5.0.8",
@@ -52,6 +53,7 @@
     "@vue/cli-plugin-vuex": "^5.0.8",
     "@vue/cli-service": "^5.0.8",
     "@vue/test-utils": "1.0.0-beta.29",
+    "@vue/vue2-jest": "^27.0.0",
     "axios-mock-adapter": "^1.17.0",
     "chromedriver": "107.0.3",
     "concurrently": "^5.2.0",
