@@ -401,20 +401,12 @@ export default {
       this.$eventHub.$emit('generate-schedules', null);
     },
     exportPDF() {
-      // const element = document.getElementById('schedule-export')
-      // const pdf = new jsPDF()
-      // // pdf.setMargins(40, 40, 40)
-      // // pdf.fromHTML(element, 40, 40)
-      // pdf.setLineWidth(0.1)
-      // pdf.setLineHeightFactor(1.5)
-      // pdf.save('schedule.pdf')
       var component = this.$refs.schedule
-      // var canvas = null
 
-      html2canvas(component).then(function(canvas) {
-        var pdf = new jsPDF('p', 'mm', 'a4')
-        var width = pdf.internal.pageSize.getWidth()
-        var height = pdf.internal.pageSize.getHeight()
+      html2canvas(component, {scale: 2}).then(function(canvas) {
+        let pdf = new jsPDF('l', 'mm', 'a4')
+        let width = pdf.internal.pageSize.getWidth()
+        let height = pdf.internal.pageSize.getHeight()
 
         pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, width, height)
         pdf.save("schedule.pdf")
