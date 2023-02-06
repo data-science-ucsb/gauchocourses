@@ -18,6 +18,10 @@ module.exports = {
         target: proxy_url,
         changeOrigin: true
       },
+      '/logout': {
+        target: proxy_url,
+        changeOrigin: true
+      },
       '/api': {
         target: proxy_url,
         ws: true,
