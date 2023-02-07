@@ -38,14 +38,14 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Log in to the Azure docker container registry
-      - uses: azure/docker-login@v1
+        uses: azure/docker-login@v1
         with:
           login-server: ${{secrets.REGISTRY_SERVER}}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
-      - name: run
-      - run: |
+      - name: Build and push to Azure container registry
+        run: |
           docker build . -t ${{ secrets.REGISTRY_SERVER }}/myapp:${{ github.sha }}
           docker push ${{ secrets.REGISTRY_SERVER }}/myapp:${{ github.sha }}
 
