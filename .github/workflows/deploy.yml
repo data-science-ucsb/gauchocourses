@@ -45,8 +45,8 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
       - run: |
-        docker build . -t ${{secrets.REGISTRY_SERVER}}/myapp:${{ github.sha }}
-        docker push ${{secrets.REGISTRY_SERVER}}/myapp:${{ github.sha }}
+          docker build . -t ${{ secrets.REGISTRY_SERVER }}/myapp:${{ github.sha }}
+          docker push ${{ secrets.REGISTRY_SERVER }}/myapp:${{ github.sha }}
         
       - name: Build and Push to GitHub Packages
         uses: docker/build-push-action@v2
