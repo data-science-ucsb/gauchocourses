@@ -45,7 +45,9 @@
                   <h5 class="text-center" style="white-space: pre;">{{ printDaysAndTimes(class_.timeLocations) }}</h5>
                   <small class="ml-1">{{ printUnits(class_) }}</small>
                 </div>
-                <b-form-invalid-feedback :state="selectionsAreValid">Select a least one lecture</b-form-invalid-feedback>
+                <b-form-invalid-feedback :state="selectionsAreValid">{{class_.isLecture ? "Select a least one lecture" : ""}}</b-form-invalid-feedback>
+                <b-form-invalid-feedback :state="sectionsAreValid">{{!class_.isLecture ? "Select a least one section" : ""}}</b-form-invalid-feedback>
+
                 <small class="mb-1">
                   <strong>{{ class_.isLecture ? 'Lecture' : 'Section' }}</strong>
                   {{ printBuildingsAndRooms(class_.timeLocations) }} {{ printInstructors(class_.instructors) }}
@@ -89,7 +91,11 @@ export default {
     },
     selectionsAreValid: function() {
       return this.classSections.filter(c => c.isLecture && c.selected).length >= 1;
-    }
+    },
+    sectionsAreValid: function() {
+      return this.classSections.filter(c => c.selected).length > 1;
+    },
+
   },
   methods: {
     /**
@@ -162,6 +168,17 @@ export default {
 
         return goodtime;
       }
+      const abbreviateDays = (days) => {
+        var goodDays = "";
+        const singleDay = ["M", "T", "W", "R", "F"];
+        const abbDay = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+        for(var i=0;i<singleDay.length;i++){
+          if(days.includes(singleDay[i])){
+            goodDays += abbDay[i]+" ";
+          }
+        }
+        return goodDays;
+      }
       var a = "";
       if (timesandplaces.length == 0) {
         a = "This class doesn't have a meeting time";
@@ -174,7 +191,7 @@ export default {
               a += "\n" + " and ";
             }
 
-            a += timesandplaces[i].days;
+            a += abbreviateDays(timesandplaces[i].days);
 
             a += cleanTime(timesandplaces[i].beginTime);
             a += " - ";

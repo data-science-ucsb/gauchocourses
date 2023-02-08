@@ -3,7 +3,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import BootstrapVue from 'bootstrap-vue'
-import VueAppInsights from 'vue-application-insights'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faInfoCircle, faEdit, faUndo,
@@ -11,7 +10,6 @@ import { faInfoCircle, faEdit, faUndo,
   faExclamationCircle, faStar, faHeart, faThumbtack, faBorderAll, faColumns, faCalendar, faList, faChevronRight, faChevronDown, faCheck } from '@fortawesome/free-solid-svg-icons'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import { getCookieValue, getSlotNameFromURL} from './components/util/util-methods.js'
 import '@/plugins/Dayjs';
 import VueDayjs from 'vue-dayjs-plugin'
 
@@ -27,25 +25,6 @@ Vue.use(BootstrapVue, VueDayjs);
 // Configure global event hub
 Vue.prototype.$eventHub = new Vue();
 
-// Configure application insights
-Vue.use(VueAppInsights, {
-  id: 'da2fab5d-c6fb-4688-8823-303dda0c7ad6',
-  router
-})
-
-Vue.mixin({
-  methods: {
-    /**
-     * Sends custom telemetry to Application Insights
-     * @param {string} metric_name The name of the metric being tracked (eg: "num_schedules_generated", "")
-     * @param {object} data an optional data object to send with the event. (eg: {count: 4})
-     */
-    trackMetric(event_name, data) {
-      this.$appInsights.trackEvent({name: event_name}, data);
-    }
-  }
-})
-
 // Subscribe to mutations on the Vuex store and cache the store on the browser's local storage
 store.subscribe((mutation, state) => localStorage.setItem('store', JSON.stringify({...state, 'user': undefined})));
 
@@ -60,17 +39,5 @@ new Vue({
   beforeCreate() {
     this.$store.commit('initializeStore');
     this.$store.dispatch('setUserInfoAsync');
-
-    var telemetryInitializer = (envelope) => {
-      const slot = getCookieValue('x-ms-routing-name') || getSlotNameFromURL()  || 'local';
-
-      if (slot == 'local') {
-        return false;  // Do not send telemetry for local development.
-      } else {
-        envelope.tags["ai.cloud.role"] = "app-service-slot";
-        envelope.data['slot'] = slot;
-      }
-    }
-    this.$appInsights.addTelemetryInitializer(telemetryInitializer);
   }
 }).$mount('#app');
