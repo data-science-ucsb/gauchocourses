@@ -2,10 +2,9 @@ package org.gaucho.courses;
 
 import lombok.Data;
 import org.assertj.core.util.Lists;
-import org.gaucho.courses.controller.ScheduleController;
 import org.gaucho.courses.domain.remote.Class;
 import org.gaucho.courses.domain.remote.ClassSection;
-import org.gaucho.courses.domain.scheduling.CustomEvent;
+import org.gaucho.courses.domain.remote.CustomEvent;
 import org.gaucho.courses.domain.scheduling.Schedule;
 import org.gaucho.courses.domain.remote.TimeLocation;
 

@@ -3,9 +3,8 @@ package org.gaucho.courses.controller.service;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.gaucho.courses.domain.remote.ClassSection;
-import org.gaucho.courses.domain.scheduling.CustomEvent;
+import org.gaucho.courses.domain.remote.CustomEvent;
 import org.gaucho.courses.domain.scheduling.Schedule;
-import org.gaucho.courses.domain.scheduling.ScheduleSortingAttributes;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,7 +60,6 @@ public class LazyCartesianProductScheduler {
                 .setSelectedClasses(classSections)
                 .setCustomEvents(customEvents)
                 .build();
-            
             if (!schedule.getConflicting()) {
                 schedules.add(schedule);  // Only return non-conflicting schedules
             } else {
