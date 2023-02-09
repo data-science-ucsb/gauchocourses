@@ -79,14 +79,19 @@
             size="sm" />
             </router-link>
         </div>
-
+        
+        <div>
+          <b-col md="4" offset-md="4"><b-button @click="createEvent" size="sm">Google Calendar</b-button></b-col>
+        </div>
       </div>
     </template>
+
     <div v-if="doneLoading" class="weekly-calendar">
       <FullCalendar
         height="auto"
         @hook:mounted="manuallyFixCSS"
         :events="events"
+        :googleCal="googleCal"
         :plugins="calendarPlugins"
         :weekends="false"
         :columnHeaderText="columnHeaderText"
@@ -114,6 +119,10 @@ import {
   getBorderColor,
 } from "@/components/util/color-utils.js";
 import xss from "xss";
+import axios from 'axios';
+const API_KEY = 'AIzaSyAy36_Hv2ZYPbVAnEApYakkRcJej67Ko6M';
+const ACCESS_TOKEN = 'ya29.a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc-geyMOkTsxwqOVYnA29wMRslYcHJhgaCgYKATgSARESFQGbdwaIJT5a7TEyaOSlDYb4KQ9yEw0163';
+
 
 export default {
   components: {
@@ -185,6 +194,9 @@ export default {
     events: function () {
       return this.parseScheduleToEventList(this.schedule, this.coursesComputed);
     },
+    googleCal: function () {
+      return this.createEvent(this.schedule, this.coursesComputed);
+    },
     quarter: function () {
       return this.$store.state.selectedQuarter;
     },
@@ -199,7 +211,6 @@ export default {
         const course = courses.find(
           (course) => course.courseId == classSection.courseId
         );
-
         if (classSection.name != undefined) {
           //if it is a custom event
           const dayInt = {
@@ -235,7 +246,153 @@ export default {
       customevents.forEach((item) => {
         totalevents.push(item);
       });
+      console.log(totalevents)
       return totalevents;
+    },
+    async insertEvent(schedule, courses) {
+      const API_KEY = 'AIzaSyAy36_Hv2ZYPbVAnEApYakkRcJej67Ko6M';
+      const accessToken = 'a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc';
+      const calendarId = 'primary';
+
+      var eventList = this.parseScheduleToEventList(schedule, courses);
+
+      for (var i = 0; i < eventList.length; i++){
+        var title = eventList[i].title;
+        var startTime = eventList[i].startTime;
+        var endTime = eventList[i].endTime;
+        var daysOfWeek = eventList[i].daysOfWeek;
+        /* eslint-disable */ //testing purposes
+        console.log(title);
+        console.log(startTime);
+        console.log(endTime);
+        console.log(daysOfWeek);
+        // Create Google Calendar event
+        const event = {
+          summary: title,
+          start: {
+            dateTime: startTime,
+            timeZone: 'America/Los_Angeles',
+          },
+          end: {
+            dateTime: endTime,
+            timeZone: 'America/Los_Angeles',
+          },
+        };
+
+        try {
+          const response = await axios.post(
+            `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${API_KEY}`,
+            event,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          console.log(response.data);
+        } catch (error) {
+          console.error(error);
+        }
+        // axios({
+        //   method: 'post',
+        //   url: ('https://www.googleapis.com/calendar/v3/calendars/primary/events'),
+        //   headers: {
+        //     'Authorization': 'Bearer ' + ACCESS_TOKEN,
+        //     'Key': API_KEY
+        //   },
+        //   data: {
+        //     event
+        //   },
+        // })
+        // .then(response => {
+        //   // handle success
+        //   console.log('Event created:', response.data);
+        // })
+        // .catch(error => {
+        //   // handle error
+        //   console.log('ERROR, event not created');
+        // });
+      }  
+
+      // const event = {
+      //   summary: 'Test Event',
+      //   description: 'Testing the Google Calendar API',
+      //   start: {
+      //     dateTime: new Date().toISOString(),
+      //     timeZone: 'UTC',
+      //   },
+      //   end: {
+      //     dateTime: new Date().toISOString(),
+      //     timeZone: 'UTC',
+      //   },
+      // };
+
+      // try {
+      //   const response = await axios.post(
+      //     `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${API_KEY}`,
+      //     event,
+      //     {
+      //       headers: {
+      //         Authorization: `Bearer ${accessToken}`,
+      //         'Content-Type': 'application/json',
+      //       },
+      //     }
+      //   );
+      //   console.log(response.data);
+      // } catch (error) {
+      //   console.error(error);
+      // }
+    },
+    /**
+     * Parses a schedule and map each event to a Google Calendar invite.
+     */
+    createEvent: function (schedule, courses) {
+      //const _this = this;
+      var eventList = this.parseScheduleToEventList(schedule, courses);
+
+      for (var i = 0; i < eventList.length; i++){
+        var title = eventList[i].title;
+        var startTime = eventList[i].startTime;
+        var endTime = eventList[i].endTime;
+        var daysOfWeek = eventList[i].daysOfWeek;
+        /* eslint-disable */ //testing purposes
+        console.log(title);
+        console.log(startTime);
+        console.log(endTime);
+        console.log(daysOfWeek);
+        // Create Google Calendar event
+        const event = {
+          summary: title,
+          start: {
+            dateTime: startTime,
+            timeZone: 'America/Los_Angeles',
+          },
+          end: {
+            dateTime: endTime,
+            timeZone: 'America/Los_Angeles',
+          },
+        };
+        axios({
+          method: 'post',
+          url: ('https://www.googleapis.com/calendar/v3/calendars/primary/events'),
+          headers: {
+            'Authorization': 'Bearer ' + ACCESS_TOKEN,
+            'Key': API_KEY
+          },
+          data: {
+            event
+          },
+        })
+        .then(response => {
+          // handle success
+          console.log('Event created:', response.data);
+        })
+        .catch(error => {
+          // handle error
+          console.log('ERROR, event not created');
+        });
+      }  
     },
     /* Uses an enroll code and the course object to return an event object
      * that is compatible with FullCalendar.

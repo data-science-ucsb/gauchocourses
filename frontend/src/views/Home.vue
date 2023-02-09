@@ -69,10 +69,10 @@ export default {
                 currentIndex = response.data.lastScheduleIndex;
             }
         }
-        this.$appInsights.trackMetric({
-            name: 'schedules_generated',
-            count: this.schedules.length
-        })
+        // this.$appInsights.trackMetric({
+        //     name: 'schedules_generated',
+        //     count: this.schedules.length
+        // })
 
     },
   },
