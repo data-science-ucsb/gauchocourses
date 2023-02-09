@@ -403,7 +403,7 @@ export default {
     exportPDF() {
       var component = this.$refs.schedule
 
-      html2canvas(component, {scale: 1}).then(function(canvas) {
+      html2canvas(component, {imageQuality: 1}).then(function(canvas) {
         let pdf = new jsPDF('l', 'mm', 'a4')
         let imgData = canvas.toDataURL('image/jpeg');
         let width = pdf.internal.pageSize.getWidth()
