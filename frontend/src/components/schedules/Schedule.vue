@@ -5,13 +5,13 @@
 -->
 
 <template>
-<div ref="schedule">
+<div>
   <b-button
           variant="primary"
           ref="button"
           @click="exportPDF"
         >Export to PDF</b-button>
-  <b-card no-body>
+  <b-card no-body ref="schedule">
     <template v-slot:header>
       <div class="no-wrap d-flex flex-row align-items-center">
         <span class="d-inline-block" tabindex="0">
@@ -403,12 +403,16 @@ export default {
     exportPDF() {
       var component = this.$refs.schedule
 
-      html2canvas(component, {scale: 2}).then(function(canvas) {
+      html2canvas(component, {scale: 1}).then(function(canvas) {
         let pdf = new jsPDF('l', 'mm', 'a4')
+        let imgData = canvas.toDataURL('image/jpeg');
         let width = pdf.internal.pageSize.getWidth()
         let height = pdf.internal.pageSize.getHeight()
+        let widthRatio = width / canvas.width
+        let heightRatio = height / canvas.height
+        let ratio = widthRatio > heightRatio ? heightRatio : widthRatio
 
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, width, height)
+        pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width * ratio, canvas.height * ratio)
         pdf.save("schedule.pdf")
   })
     }
