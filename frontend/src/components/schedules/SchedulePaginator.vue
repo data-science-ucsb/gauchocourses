@@ -21,7 +21,7 @@
                         size="sm"
                         :icon="viewIcons[currentView]"
                     />
-                </b-nav-item>
+                </b-nav-item> <!--TODO-->
 
                 <!-- Optional quarter selector -->
                 <b-nav-item-dropdown
@@ -212,9 +212,15 @@
             :show="selectedClassSectionsHaveUpdated">
             Your class selections have changed. Refreshing your schedules...
         </b-alert>
+        <BuilderView
+          v-if="currentView == 3"
+          :schedules="schedulesToRender[0]"
+          :numShow="1"
+          :showEditButton="showEditButton">
+        </BuilderView>
         <ListView
           :schedule="this.filteredAndSortedSchedules.slice((this.currentPage-1)*this.currentView, this.currentPage*this.currentView)"
-          v-if="currentView == 10"
+          v-else-if="currentView == 10"
           :showEditButton="showEditButton"
           :courses="$store.state.selectedCourses">
         </ListView>
@@ -232,6 +238,7 @@ import VueSlider from 'vue-slider-component';
 import 'vue-slider-component/theme/default.css';
 import ListView from './ListView.vue';
 import ScheduleView from './ScheduleView.vue';
+import BuilderView from './BuilderView.vue';
 import { getQuarters } from '@/components/util/util-methods.js';
 
 export default {
@@ -239,7 +246,8 @@ export default {
     components: {
         VueSlider,
         ListView,
-        ScheduleView
+        ScheduleView,
+        BuilderView
     },
     props: {
         schedules: {
@@ -308,7 +316,7 @@ export default {
                 ]
             },
             sortingInProgress: false,
-            viewIcons: {1: "calendar", 2: "columns", 4:"border-all", 10: "list"},
+            viewIcons: {1: "calendar", 2: "columns", 4:"border-all", 10: "list", 3: "pencil-alt"}, //TODO
         }
     },
     computed: {
