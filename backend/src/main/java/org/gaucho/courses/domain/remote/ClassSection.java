@@ -8,8 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.gaucho.courses.domain.core.Event;
 
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +36,6 @@ import java.util.Map;
 })
 @Slf4j
 @Data
-@MappedSuperclass  // Prevents JPA from mapping this class to an entity
 @EqualsAndHashCode(callSuper = true)
 public class ClassSection extends Event implements Serializable {
 
@@ -74,10 +71,6 @@ public class ClassSection extends Event implements Serializable {
     public boolean isLecture(){
         return this.getSection().endsWith("00");
     }
-
-    @JsonIgnore
-    @Transient
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public ClassSection() { }
 }

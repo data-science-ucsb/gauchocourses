@@ -1,5 +1,6 @@
 package org.gaucho.courses.controller;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.extern.slf4j.Slf4j;
 import org.gaucho.courses.DTO.ScheduleControllerRequest;
@@ -116,36 +117,37 @@ public class ScheduleController {
     @PostMapping(value = "/")
     @Secured("ROLE_USER")
     public ResponseEntity<?> saveSchedule(@RequestBody Schedule schedule) {
-        Optional<Schedule> optional;
-        Long id = schedule.getId();
-        if (id != null) {
-            optional = scheduleRepository.findById(id);
-        } else {
-            optional = Optional.empty();
-        }
-        if (optional.isPresent()) { // Record exists, set the ID and persist
-            schedule.setId(optional.get().getId());
-            Schedule savedSchedule = scheduleRepository.save(schedule);
-            return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
-                .body(savedSchedule.getId());
-        } else { // Record does not exist
-            if (schedule.getUserEmail() == null) {
+
+        String authenticatedUsersEmail = userController.getUserEmail();
+
+        List<Schedule> userSchedules = scheduleRepository.findByUserEmail(authenticatedUsersEmail);
+
+        // Record exists, persist
+        // In order to use IDs to check if a schedule already exists,
+        // we can try hashing objects to IDs or something similar.
+        for (Schedule userSchedule : userSchedules) {
+            if (userSchedule.getClasses().equals(schedule.getClasses()) && userSchedule.getQuarter().equals(schedule.getQuarter()) && userSchedule.getCustomEvents().equals(schedule.getCustomEvents())) {
                 return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("User email cannot be null");
+                        .status(HttpStatus.ACCEPTED)
+                        .body(userSchedule.getId());
+            }
+        }
+        // Record does not exist
+        if (schedule.getUserEmail() == null) {
+            return ResponseEntity
+                .status(HttpStatus.NOT_ACCEPTABLE)
+                .body("User email cannot be null");
+        } else {
+            String currentUserEmail = userController.getUserEmail();
+            if (!schedule.getUserEmail().equals(currentUserEmail)) {
+                return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Authenticated user's  email does not match the schedule's email property.");
             } else {
-                String currentUserEmail = userController.getUserEmail();
-                if (!schedule.getUserEmail().equals(currentUserEmail)) {
-                    return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body("Authenticated user's  email does not match the schedule's email property.");
-                } else {
-                    Schedule savedSchedule = scheduleRepository.save(schedule);
-                    return ResponseEntity
-                        .status(HttpStatus.CREATED)
-                        .body(savedSchedule.getId());
-                }
+                Schedule savedSchedule = scheduleRepository.save(schedule);
+                return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(savedSchedule.getId());
             }
         }
     }
@@ -159,7 +161,9 @@ public class ScheduleController {
     @GetMapping(value = "/")
     @Secured("ROLE_USER")
     public ResponseEntity getAllSchedulesForEmail(@RequestParam("userEmail") String userEmail) {
+
         String authenticatedUsersEmail = userController.getUserEmail();
+
         if (authenticatedUsersEmail == null) {
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -178,8 +182,10 @@ public class ScheduleController {
     @PostMapping(value = "/delete")
     @Secured("ROLE_USER")
     public ResponseEntity deleteSchedule(@RequestBody Schedule schedule) {
-        String email = userController.getUserEmail();
-        if (!email.equals(schedule.getUserEmail())) {
+
+        String authenticatedUsersEmail = userController.getUserEmail();
+
+        if (!authenticatedUsersEmail.equals(schedule.getUserEmail())) {
             return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body("Authenticated user's email does not match schedule's email");
@@ -205,7 +211,7 @@ public class ScheduleController {
      */
         @PatchMapping(value = "/{id}", consumes = "application/json")
         @Secured("ROLE_USER")
-        public ResponseEntity updateSchedule(@PathVariable Long id, @RequestBody JsonPatch patch){
+        public ResponseEntity updateSchedule(@PathVariable String id, @RequestBody JsonPatch patch){
           Optional<Schedule> optional = scheduleRepository.findById(id);
           String email = userController.getUserEmail();
           Schedule schedulePatched;
@@ -241,6 +247,8 @@ public class ScheduleController {
     }
 
     private Schedule applyPatchToSchedule(JsonPatch patch, Schedule targetSchedule) throws JsonPatchException, JsonProcessingException {
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         JsonNode patched = patch.apply(objectMapper.convertValue(targetSchedule, JsonNode.class));
         return objectMapper.treeToValue(patched, Schedule.class);
     }
