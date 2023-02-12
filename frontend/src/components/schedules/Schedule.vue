@@ -120,8 +120,8 @@ import {
 } from "@/components/util/color-utils.js";
 import xss from "xss";
 import axios from 'axios';
-const API_KEY = 'AIzaSyAy36_Hv2ZYPbVAnEApYakkRcJej67Ko6M';
-const ACCESS_TOKEN = 'ya29.a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc-geyMOkTsxwqOVYnA29wMRslYcHJhgaCgYKATgSARESFQGbdwaIJT5a7TEyaOSlDYb4KQ9yEw0163';
+// const API_KEY = 'AIzaSyAy36_Hv2ZYPbVAnEApYakkRcJej67Ko6M';
+// const ACCESS_TOKEN = 'ya29.a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc-geyMOkTsxwqOVYnA29wMRslYcHJhgaCgYKATgSARESFQGbdwaIJT5a7TEyaOSlDYb4KQ9yEw0163';
 
 
 export default {
@@ -250,9 +250,8 @@ export default {
       return totalevents;
     },
     async insertEvent(schedule, courses) {
-      const API_KEY = 'AIzaSyAy36_Hv2ZYPbVAnEApYakkRcJej67Ko6M';
+      //const API_KEY = 'AIzaSyAy36_Hv2ZYPbVAnEApYakkRcJej67Ko6M';
       const accessToken = 'a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc';
-      const calendarId = 'primary';
 
       var eventList = this.parseScheduleToEventList(schedule, courses);
 
@@ -280,8 +279,7 @@ export default {
         };
 
         try {
-          const response = await axios.post(
-            `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${API_KEY}`,
+          const response = await axios.post('/api/calendar/create-event',
             event,
             {
               headers: {
@@ -373,13 +371,12 @@ export default {
             timeZone: 'America/Los_Angeles',
           },
         };
-        axios({
-          method: 'post',
-          url: ('https://www.googleapis.com/calendar/v3/calendars/primary/events'),
-          headers: {
-            'Authorization': 'Bearer ' + ACCESS_TOKEN,
-            'Key': API_KEY
-          },
+
+        axios.post('/api/calendar/create-event', {
+          // headers: {
+          //   'Authorization': 'Bearer ' + ACCESS_TOKEN,
+          //   'Key': API_KEY
+          // },
           data: {
             event
           },
