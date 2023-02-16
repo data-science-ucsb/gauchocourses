@@ -4,8 +4,12 @@
       <b-row>
         <b-col sm="12" md="12" lg="3">
           <b-row>
-            <b-col sm="12" md="6" lg="12" class="p-1 home-course-selectors"><CourseSelectors class="h-100" /></b-col>
-            <b-col sm="12" md="6" lg="12" class="p-1 home-selected-events"><SelectedEvents class="h-100" /></b-col>
+            <b-col sm="12" md="6" lg="12" class="p-1" :class="selectedIsOpen? 'open-course-selectors' : 'close-course-selectors'">
+              <CourseSelectors class="h-100" />
+            </b-col>
+            <b-col sm="12" md="6" lg="12" class="p-1" :class="selectedIsOpen? 'open-selected-events' : 'close-selected-events'">
+              <SelectedEvents class="h-100" :selectedIsOpen="selectedIsOpen" :toggleSelected="toggleSelected" />
+            </b-col>
           </b-row>
         </b-col>
         <b-col sm="12" md="12" lg="9" class="p-1"><SchedulePaginator :schedules="schedules" class="h-100"/></b-col>
@@ -32,6 +36,7 @@ export default {
   data: function() {
       return {
         schedules: [],
+        selectedIsOpen: true
       }
     },
   created: function() {
@@ -70,6 +75,9 @@ export default {
             }
         }
     },
+    toggleSelected: function() {
+      this.selectedIsOpen = !this.selectedIsOpen;
+    }
   },
   computed: {
     customEvents: function(){
@@ -86,20 +94,17 @@ export default {
 </script>
 
 <style>
-.home-course-selectors {
-  height: 465px;
+.open-course-selectors {
+  height: 460px;
 }
-.home-selected-events {
-  height: 265px;
+.open-selected-events {
+  height: 250px;
 }
 
-@media (min-width: 992px) {
-  /* 60% of view height - height of nav bar / 2 */
-  .home-course-selectors {
-    height: calc(60vh - 56px/2);
-  }
-  .home-selected-events {
-    height: calc(40vh - 56px/2);
-  }
+.close-course-selectors {
+  height: 645px;
+}
+.close-selected-events {
+  height: 65px;
 }
 </style>

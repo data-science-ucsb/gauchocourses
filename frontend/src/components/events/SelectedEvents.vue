@@ -15,24 +15,30 @@
             style="height: 100%"
         >
         <template v-slot:header>
-          <b class="float-left mt-1">Selected Courses</b>
-          <div id="conflictingEventIcon" class="ml-2 mb-0">
-            <font-awesome-icon
-              v-if="$store.getters.selectionsAreConflicting"
-              size="lg"
-              icon='info-circle'
-              :style="{ color: 'red' }"/>
-            <b-tooltip target="conflictingEventIcon">Some of your chosen lectures are conflicting! Click the edit button to deselect the conflicting lecture(s).</b-tooltip>
-          </div>
-          <a @click="$eventHub.$emit('start-new-custom-course', 0)">
-              <div id="addCustomEventIcon" class="float-right add-event-button-outline">
-                  <font-awesome-icon icon="calendar-plus"/>
-                  <small class="ml-1" for="addCustomEventIcon">Add custom event</small>
-                  <b-tooltip target="addCustomEventIcon">Add custom event</b-tooltip>
-              </div>
-          </a>
+            <b class="float-left mt-1">Selected Courses</b>
+            <div id="conflictingEventIcon" class="ml-2 mb-0">
+                <font-awesome-icon
+                v-if="$store.getters.selectionsAreConflicting"
+                size="lg"
+                icon='info-circle'
+                :style="{ color: 'red' }"/>
+                <b-tooltip target="conflictingEventIcon">Some of your chosen lectures are conflicting! Click the edit button to deselect the conflicting lecture(s).</b-tooltip>
+            </div>
+            <a @click="$eventHub.$emit('start-new-custom-course', 0)">
+                <div id="addCustomEventIcon" class="float-right add-event-button-outline">
+                    <font-awesome-icon icon="calendar-plus"/>
+                    <small class="ml-1" for="addCustomEventIcon">Add custom event</small>
+                    <b-tooltip target="addCustomEventIcon">Add custom event</b-tooltip>
+                </div>
+            </a>
+            <b-button v-if="!selectedIsOpen" class="course-selector-button" variant="outline" size="sm" @click="toggleSelected">
+                <font-awesome-icon icon="chevron-up" size="sm" />
+            </b-button>
+            <b-button v-if="selectedIsOpen" class="course-selector-button" variant="outline" size="sm" @click="toggleSelected">
+                <font-awesome-icon icon="chevron-down" size="sm" />
+            </b-button>
         </template>
-        <div class="event-card-body" >
+        <div class="event-card-body" v-show="selectedIsOpen">
             <template v-if="$store.state.selectedCourses.length == 0 & $store.state.selectedCustomEvents.length == 0">
                 <b-card-body class="text-center no-events-placeholder">
                     <font-awesome-icon icon="exclamation-circle" size="lg"/>
@@ -114,6 +120,10 @@ export default {
         CourseListItem,
         CustomEventListItem
     },
+    props: [
+        'selectedIsOpen',
+        'toggleSelected'
+    ],
     data: function() {
         return {
             getSchedulesThrottleMs: 5000, // milliseconds
