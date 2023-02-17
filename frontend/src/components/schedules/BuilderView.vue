@@ -36,7 +36,7 @@
 <!--          class="mb-4"-->
 <!--      ></ScheduleB>-->
       <ScheduleC
-        :schedule="schedules"
+        :customEvents="$store.state.selectedCustomEvents"
         :courses="$store.state.selectedCourses"
         :showEditButton="showEditButton"
         class="mb-4"
@@ -60,10 +60,6 @@ export default {
     },
     courses: {
       type: Array,
-      required: false,
-    },
-    schedules: {
-      type: Object,
       required: false,
     },
     showEditButton: {

@@ -176,9 +176,9 @@ export default {
       type: Array,
       required: false
     },
-    schedule: {
-      type: Object,
-      required: false,
+    customEvents: {
+      type: Array,
+      required: false
     },
     showEditButton: {
       type: Boolean,
@@ -190,13 +190,13 @@ export default {
       doneLoading: false,
       savingScheduleInProgress: false,
       scheduleSavedStatus: null,
-      scheduleName: this.schedule.name,
+      // scheduleName: this.schedule.name,
       popoverShow: false,
       errors: [],
-      scheduleLocal: this.schedule,
-      minTime: "07:00:00",
-      maxTime: "22:00:00",
-      eventsComputed: []
+      // scheduleLocal: this.schedule,
+      // minTime: "07:00:00",
+      // maxTime: "22:00:00",
+      // eventsComputed: []
     };
   },
   created: function () {
@@ -210,7 +210,7 @@ export default {
     calendarOptions: function() {
       return {
         height: 'auto',
-        events: this.parseScheduleToEventList(this.schedule, this.courses),
+        events: this.parseScheduleToEventList(this.customEvents, this.courses),
         headerToolbar: "",
         dayHeaders: true,
         dayHeaderFormat: {weekday: 'short'},
@@ -253,7 +253,7 @@ export default {
 
      TODO: ADD THE NUMBER OF SPOTS AVAILABLE AS WELL TO SCHEDULE TITLE
      */
-    parseScheduleToEventList: function (schedule, courses) { //this.schedule, this.courses
+    parseScheduleToEventList: function (customEvents, courses) { //this.schedule, this.courses
       const _this = this;
 
       function classSectionToFullCalendarEvent(classSection) {
@@ -295,6 +295,7 @@ export default {
           );
         }
       }
+      //PARSE ARRAY
 
       var totalevents = schedule.classes
           .map(classSectionToFullCalendarEvent)
@@ -307,7 +308,7 @@ export default {
         totalevents.push(item);
       })
       // console.log(JSON.stringify(totalevents));
-      this.eventsComputed = totalevents;
+      // this.eventsComputed = totalevents;
       return totalevents;
     },
     /* Uses an enroll code and the course object to return an event object

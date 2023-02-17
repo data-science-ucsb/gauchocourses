@@ -215,7 +215,6 @@
         </b-alert>
         <BuilderView
           v-if="currentView == 3"
-          :schedules="schedulesToRender[0]"
           :numShow="1"
           :showEditButton="showEditButton">
         </BuilderView>

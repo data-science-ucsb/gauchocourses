@@ -147,6 +147,7 @@ export default {
     };
   },
   created: function () {
+    console.log(JSON.stringify(this.schedule));
     // console.log(JSON.stringify(this.schedule.sortingAttributes.earliestBeginTime));
     //if this.courses has courses that are in the schedule, add them to the coursesComputed
     this.schedule.classes.forEach((course) => {
