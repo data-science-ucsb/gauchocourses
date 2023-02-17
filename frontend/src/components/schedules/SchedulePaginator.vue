@@ -21,7 +21,7 @@
                         size="sm"
                         :icon="viewIcons[currentView]"
                     />
-                </b-nav-item> <!--TODO-->
+                </b-nav-item>
 
                 <!-- Optional quarter selector -->
                 <b-nav-item-dropdown
@@ -106,9 +106,8 @@
 
                 <!-- Button that links to /user -->
                 <b-nav-item
-                    v-b-tooltip.hover title="Show favorite schedules">
+                    v-if="showFavoritesButton" v-b-tooltip.hover title="Show favorite schedules">
                     <router-link
-                    v-if="showFavoritesButton"
                     :to="{name:'user'}">
                       <font-awesome-icon
                           id="showFavoritedSchedules"
@@ -117,18 +116,20 @@
                           style="color: #ED0303;">
                         </font-awesome-icon>
                     </router-link>
-
-                    <router-link
-                    v-else
-                    :to="{name:'home'}">
-                      <font-awesome-icon
-                        icon="heart"
-                        size="sm"
-                        :id="'favorite-icon'+_uid"
-                        style="color: #FFC7C7;">
-                      </font-awesome-icon>
-                      </router-link>
                 </b-nav-item>
+
+              <b-nav-item
+                  v-else v-b-tooltip.hover title="Show all schedules">
+                <router-link
+                    :to="{name:'home'}">
+                  <font-awesome-icon
+                      icon="heart"
+                      size="sm"
+                      :id="'favorite-icon'+_uid"
+                      style="color: #FFC7C7;">
+                  </font-awesome-icon>
+                </router-link>
+              </b-nav-item>
 
 
 
@@ -176,8 +177,8 @@
             Schedule saved! Click My Schedules in the top right to view it.
         </b-alert>
         <b-alert
-            v-if="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0) ? true : false"
-            :show="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0) ? true : false"
+            v-if="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0 && currentView != 3) ? true : false"
+            :show="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0 && currentView != 3) ? true : false"
             variant="danger">
             No schedules match your selections. Try selecting more days or more times.
         </b-alert>
@@ -430,7 +431,7 @@ export default {
         },
         //Method for changing shown view
         changeView: function() {
-            let arr = Object.keys(this.viewIcons);
+          let arr = Object.keys(this.viewIcons);
             this.currentView = arr[(arr.indexOf(this.currentView) + 1) % arr.length];
         },
         /**

@@ -96,18 +96,7 @@ Schedule is passed in two arrays:
     </template>
     <div v-if="doneLoading" class="weekly-calendar">
       <FullCalendar
-        height="auto"
-        @hook:mounted="manuallyFixCSS"
-        :events="events"
-        :plugins="calendarPlugins"
-        :weekends="false"
-        :columnHeaderText="columnHeaderText"
-        allDaySlot="false"
-        defaultView="timeGridWeek"
-        header="false"
-        editable="false"
-        :minTime="schedule.sortingAttributes.earliestBeginTime"
-        :maxTime="schedule.sortingAttributes.latestEndTime"
+          :options="calendarOptions"
       />
     </div>
     <div v-else class="text-center">
@@ -147,7 +136,6 @@ export default {
   },
   data: function () {
     return {
-      calendarPlugins: [timeGridPlugin],
       coursesComputed: [],
       doneLoading: false,
       savingScheduleInProgress: false,
@@ -159,6 +147,7 @@ export default {
     };
   },
   created: function () {
+    // console.log(JSON.stringify(this.schedule.sortingAttributes.earliestBeginTime));
     //if this.courses has courses that are in the schedule, add them to the coursesComputed
     this.schedule.classes.forEach((course) => {
       const match = this.courses.find(item => item.courseId == course.courseId);
@@ -185,16 +174,32 @@ export default {
     .catch(err => console.error(err))
     .finally(() => this.doneLoading = true);
   },
-  mounted: function () {
-    this.manuallyFixCSS();
+  mounted() {
+    // Emits on mount
+    // this.emitInterface();
   },
   computed: {
     /**
      * The schedules array is mapped to a format that can be passed to the WeeklySchedule component.
      * This array has the same length as the schedules array.
      */
-    events: function () {
-      return this.parseScheduleToEventList(this.schedule, this.coursesComputed);
+    calendarOptions: function() {
+      return {
+        height: 'auto',
+        events: this.parseScheduleToEventList(this.schedule, this.courses),
+        headerToolbar: "",
+        dayHeaders: true,
+        dayHeaderFormat: {weekday: 'short'},
+        plugins: [timeGridPlugin],
+        weekends: false,
+        stickyHeaderDates: false,
+        allDaySlot: false,
+        // id: this.schedule.name,
+        initialView: 'timeGridWeek',
+        editable: false,
+        slotMinTime: this.schedule.sortingAttributes.earliestBeginTime,
+        slotMaxTime: this.schedule.sortingAttributes.latestEndTime,
+      }
     },
     quarter: function () {
       return this.$store.state.selectedQuarter;
@@ -290,41 +295,14 @@ export default {
           backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
         };
         for (var k = 0; k < multipletimeandplace.length; k++) {
-          classinfo.classSections.daysOfWeek = multipletimeandplace[
+          classinfo.daysOfWeek = multipletimeandplace[
             k
           ].daysOfWeek.map((a) => dayInt[a]);
-          classinfo.classSections.startTime = multipletimeandplace[k].beginTime;
-          classinfo.classSections.endTime = multipletimeandplace[k].endTime;
+          classinfo.startTime = multipletimeandplace[k].beginTime;
+          classinfo.endTime = multipletimeandplace[k].endTime;
           multipleevents.push(classinfo);
         }
         return multipleevents;
-      }
-    },
-    manuallyFixCSS: function () {
-      // This removes the "allDaySlot". The Vue plugin for FullCalendar does not remove it
-      // even though it is configured to remove it
-      $(".fc-day-grid").remove();
-      $(".fc-divider.fc-widget-header").remove();
-
-      // Remove empty toolbar
-      $(".fc-toolbar").remove();
-    },
-    columnHeaderText: function (date) {
-      switch (date.getDay()) {
-        case 1:
-          return "Mon";
-        case 2:
-          return "Tue";
-        case 3:
-          return "Wed";
-        case 4:
-          return "Thu";
-        case 5:
-          return "Fri";
-        case 6:
-          return "Sat";
-        default:
-          return " ";
       }
     },
     calculateUnits: function (schedule, courses) {
@@ -404,21 +382,33 @@ export default {
     editSchedule: async function(schedule) {
       await this.$store.dispatch('initializeStoreAsync',schedule);
       this.$eventHub.$emit('generate-schedules', null);
-    }
+    },
+    // emitInterface() {
+    //   this.$emit("interface", {
+    //     addCount: () => alert(this.schedule.name)
+    //   });
+    // }
   },
 };
 </script>
 
 <style>
-@import "~@fullcalendar/core/main.css";
-@import "~@fullcalendar/timegrid/main.css";
-@import "~@fullcalendar/daygrid/main.css";
+/*@import "~@fullcalendar/core/main.css";*/
+/*@import "~@fullcalendar/timegrid/main.css";*/
+/*@import "~@fullcalendar/daygrid/main.css";*/
 
-/* Transparent background. Fix for issue #78 */
-.fc-unthemed td.fc-today {
-  background: #dee2e600;
+.fc-col-header-cell-cushion {
+  color: #2c3e50;
+}
+.fc-col-header-cell-cushion:hover {
+  text-decoration: none;
+  color: #2c3e50;
 }
 
+/* Transparent background. Fix for issue #78 */
+.fc .fc-timegrid-col.fc-day-today {
+  background-color: #dee2e600;
+}
 #inner-box > * {
   position: absolute;
   top: 50%;
@@ -436,7 +426,6 @@ export default {
 .fc-title {
   font-size: 11px;
 }
-
 </style>
 
 <!-- steven: to reduce top/bottom padding in schedule header -->
@@ -444,7 +433,6 @@ export default {
 .card-header {
   padding: 0;
 }
-
 .no-wrap.d-flex.flex-row.align-items-center {
   position: relative;
   padding-left: 5%;
