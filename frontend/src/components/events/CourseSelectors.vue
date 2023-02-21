@@ -285,7 +285,7 @@ export default {
         minUnits: filters.minUnits,
         maxUnits: filters.maxUnits,
         objLevelCode: filters.graduateClass ? "" : "U",
-        openSections: !filters.fullClasses,
+        // openSections: !filters.fullClasses,
         deptCode: this.currentDepartment,
         areas: this.currentCollege ? filters.selectedRequirement : "",
       }
