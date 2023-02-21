@@ -8,17 +8,17 @@
     <template v-slot:header>
       <div class="no-wrap d-flex flex-row align-items-center">
         <span class="d-inline-block" tabindex="0">
-<!--          <font-awesome-icon-->
-<!--              v-if="schedule.favorited"-->
-<!--              icon="heart"-->
-<!--              size="sm"-->
-<!--              :id="'favorite-icon'+_uid"-->
-<!--              style="color: #ED0303;"-->
-<!--              @click="unFavoriteSchedule(schedule)"-->
-<!--          />-->
-
-          <!-- v-else -->
           <font-awesome-icon
+              v-if="schedule.favorited"
+              icon="heart"
+              size="sm"
+              :id="'favorite-icon'+_uid"
+              style="color: #ED0303;"
+              @click="unFavoriteSchedule(schedule)"
+          />
+
+          <font-awesome-icon
+              v-else
               icon="heart"
               size="sm"
               :id="'favorite-icon'+_uid"
@@ -34,7 +34,7 @@
         </b-tooltip>
 
         <b-toast :id="'deleted-toast-' + _uid" title="You deleted a schedule!" variant="warning">
-          The schedule, "{{ scheduleName }}" was deleted. Click the button to undo.
+          The schedule, "{{ schedule.name }}" was deleted. Click the button to undo.
           <b-button @click="saveSchedule(schedule)" variant="warning">Undo</b-button>
         </b-toast>
 
@@ -43,7 +43,7 @@
             variant="link"
             ref="button"
             @click="popoverShow = !popoverShow"
-        >{{ scheduleName }}</b-button>
+        >{{ schedule.name }}</b-button>
 
         <b-popover
             :id="'popover'+ _uid"
@@ -58,7 +58,7 @@
           </template>
           <b-row>
             <b-col cols="10" class="px-2">
-              <b-form-input v-model="scheduleName"></b-form-input>
+              <b-form-input v-model="schedule.name"></b-form-input>
             </b-col>
             <b-col class="p-2">
               <font-awesome-icon
@@ -70,14 +70,6 @@
             </b-col>
           </b-row>
         </b-popover>
-
-        <div v-if="showEditButton">
-          <router-link v-on:click.native="editSchedule(schedule)" :to="{name:'home'}">
-            <font-awesome-icon
-                icon="edit"
-                size="sm" />
-          </router-link>
-        </div>
 
       </div>
     </template>
@@ -121,29 +113,21 @@ export default {
       type: Array,
       required: false
     },
-    showEditButton: {
-      type: Boolean,
-      default: false,
-    }
   },
   data: function () {
     return {
-      schedule: [],
-      scheduleName: "Custom Schedule",
+      schedule: {
+        name: "My Schedule",
+      },
+      finishedSchedule: false,
       doneLoading: false,
       savingScheduleInProgress: false,
       scheduleSavedStatus: null,
-      // scheduleName: this.schedule.name,
       popoverShow: false,
       errors: [],
-      // scheduleLocal: this.schedule,
-      // minTime: "07:00:00",
-      // maxTime: "22:00:00",
-      // eventsComputed: []
     };
   },
   created: function () {
-    // console.log(JSON.stringify(this.$store.state.selectedCustomEvents));
     this.doneLoading = true;
   },
   computed: {
@@ -662,16 +646,15 @@ export default {
           }
         }
       }
-      //TODO: If no events dont add a calendar (Mounted MinTimMaxTime needs exception?)
-      //TODO npm install TRIVIAL
-      //TODO make schedule builder affected by sorting and filtering options? INSANE
-      //TODO Should not show custombuilder if no schedules possible and alert messages EASY-PEASY
-      //TODO: Hover over an event in the calendar should show the number of seats available, etc INSANE
+      //TODO alerts conditionals when there are full classes
+      //TODO hide edit courses for current view == 3
+      //NOT TODO npm install TRIVIAL
+      //NOT TODO reset filters in schedule paginator affects schedule builder? INSANE
+      //NOT TODO make schedule builder affected by sorting and filtering options? INSANE
+      //NOT TODO make schedule builder affected by edit class section Sections? INSANE
       //TODO: Seperate Bugs INSANE
-      //TODO: Liked? INSANE
-      //TODO What would show up on MySchedules tab? INSANE
-      //TODO: Make this the main page INSANE
-      // TODO: Put Back all features INSANE
+      // TODO: Put Back all features like LikedINSANE
+      //TODO: Saved schedules does not load if it does not match
       this.handleRemoveTabIndexFromEvents();
     },
     eventDidMount: function(info) {
@@ -737,18 +720,18 @@ export default {
     //  * Removes the favorite status from a schedule, Removes the schedule from the backend,
     //  * delivers a toast showing that it has been deleted.
     //  */
-    // unFavoriteSchedule: async function (schedule) {
-    //   if (this.$store.getters.userIsAuthenticated) {
-    //     const resp = await api.deleteSchedule(schedule);
-    //     if (resp.status > 400) {
-    //       return;
-    //     } else {
-    //       this.$bvToast.show('deleted-toast-' + this._uid);
-    //       this.$set(schedule, 'favorited', false);
-    //       this.$forceUpdate();
-    //     }
-    //   }
-    // },
+    unFavoriteSchedule: async function (schedule) {
+      if (this.$store.getters.userIsAuthenticated) {
+        const resp = await api.deleteSchedule(schedule);
+        if (resp.status > 400) {
+          return;
+        } else {
+          this.$bvToast.show('deleted-toast-' + this._uid);
+          this.$set(schedule, 'favorited', false);
+          this.$forceUpdate();
+        }
+      }
+    },
     onClose() {
       this.popoverShow = false;
     },
@@ -764,10 +747,6 @@ export default {
           .catch((error) => {
             this.errors.push(error);
           });
-    },
-    editSchedule: async function(schedule) {
-      await this.$store.dispatch('initializeStoreAsync',schedule);
-      this.$eventHub.$emit('generate-schedules', null);
     },
     handleRemoveTabIndexFromEvents: function() {
       let events = document.querySelectorAll(".fc-event");

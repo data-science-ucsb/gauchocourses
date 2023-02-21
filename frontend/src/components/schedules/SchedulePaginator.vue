@@ -148,10 +148,9 @@
                   </font-awesome-icon>
                 </router-link>
               </b-nav-item>
-
-
-
-                <b-nav-item class="ml-auto"
+                <b-nav-item
+                    class="ml-auto"
+                    v-if="currentView != 3"
                     v-b-tooltip.hover title="Reset filters">
                     <font-awesome-icon
                         id="resetFiltersAndSorters"
@@ -161,6 +160,8 @@
                 </b-nav-item>
 
                 <b-nav-item
+                    v-if="currentView == 3"
+                    class="ml-auto"
                     v-b-tooltip.hover title="Help">
                     <font-awesome-icon
                         v-b-modal.filteringHelpModal
@@ -168,19 +169,34 @@
                         icon='info-circle'
                         size="sm"/>
                 </b-nav-item>
-
+              <b-nav-item
+                  v-else
+                  v-b-tooltip.hover title="Help">
+                <font-awesome-icon
+                    v-b-modal.filteringHelpModal
+                    id="help-circle"
+                    icon='info-circle'
+                    size="sm"/>
+              </b-nav-item>
                 <b-modal
                    id="filteringHelpModal"
                    title="Filtering and sorting schedules"
                    scrollable>
-                   <p class="my-4">Once you have selected your classes, you can use this toolbar to find your favorite schedules.</p>
+                  <template v-if="currentView != 3">
+                   <p class="my-4">Once you have selected your classes, you can use this toolbar to find schedules that you like.</p>
                    <p class="my-4">
                        Click the <strong>Days</strong> dropdown to hide schedules that have classes on Fridays (or any other day). Use the <strong>Time</strong> dropdown to hide schedules that have early or late classes.
-                       Finally, you can <strong>Sort</strong> your schedules to see which have the least gaps between classes, or by the start time. Or, you may switch to the custom schedule builder by clicking on the icon to the very left.
+                       Finally, you can <strong>Sort</strong> your schedules to see which have the least gaps between classes, or by the start time.
                    </p>
                    <p class="my-4">
                        When you find a schedule that you like, press <strong>Save</strong>. You can see all your saved schedules in your dashboard (top right corner).
                    </p>
+                  </template>
+                  <template v-else>
+                    <p class="my-4">Once you have selected your classes, you can use this toolbar to find schedules that you like.</p>
+                    <p class="my-4">
+                      Click the <strong>Change View</strong> pencil icon to visit randomly generated example schedules from your selected courses. Click the <strong>Show Favorite Schedules</strong> heart icon to look at all your favorite schedules.</p>
+                  </template>
                </b-modal>
 
             </b-nav>
@@ -195,22 +211,22 @@
             Schedule saved! Click My Schedules in the top right to view it.
         </b-alert>
         <b-alert
-            v-if="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0 && currentView != 3) ? true : false"
-            :show="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0 && currentView != 3) ? true : false"
+            v-if="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0) ? true : false"
+            :show="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0) ? true : false"
             variant="danger">
             No schedules match your selections. Try selecting more days or more times.
         </b-alert>
         <b-alert
-          v-if="(schedules.length == 0 && showFavoritesButton == true && currentView != 3) ? true : false"
-          :show="(schedules.length == 0 && showFavoritesButton == true && currentView != 3) ? true : false"
+          v-if="(schedules.length == 0 && showFavoritesButton) ? true : false"
+          :show="(schedules.length == 0 && showFavoritesButton) ? true : false"
           variant="info"
           class="text-center">
           Your schedules will appear here. <br>
           Use the course selectors to add courses that you want to include in your schedules.
         </b-alert>
         <b-alert
-          v-if="(schedules.length == 0 && showFavoritesButton == false && currentView != 3) ? true : false"
-          :show="(schedules.length == 0 && showFavoritesButton == false && currentView != 3) ? true : false"
+          v-if="(schedules.length == 0 && !showFavoritesButton) ? true : false"
+          :show="(schedules.length == 0 && !showFavoritesButton) ? true : false"
           variant="info"
           class="text-center">
           You haven't saved any schedules yet! Try generating some on the Home page
@@ -226,15 +242,15 @@
             There was a problem saving your schedule.
         </b-alert>
         <b-alert
-            v-if="selectedClassSectionsHaveUpdated"
+            v-if="selectedClassSectionsHaveUpdated && currentView != 3"
             variant="warning"
-            :show="selectedClassSectionsHaveUpdated">
+            :show="selectedClassSectionsHaveUpdated && currentView != 3">
             Your class selections have changed. Refreshing your schedules...
         </b-alert>
         <BuilderView
           v-if="currentView == 3"
-          :numShow="1"
-          :showEditButton="showEditButton">
+          :schedules="schedulesToRender.length"
+          :numShow="1">
         </BuilderView>
         <ListView
           :schedule="this.filteredAndSortedSchedules.slice((this.currentPage-1)*this.currentView, this.currentPage*this.currentView)"
@@ -291,7 +307,7 @@ export default {
     created: function() {
         // Register event hooks
         this.$eventHub.$on('generate-schedules', this.resetView); //Component is more reliable when set to initial view on this event
-
+        this.resetView();
         this.quarters = this.getQuarters();
 
         // Use a setter to initialize selectedClassSectionsHaveUpdated to false?
@@ -299,7 +315,7 @@ export default {
     data: function() {
         return {
             currentPage: 1,
-            currentView: "4",
+            currentView: "3",
             lastUsedClassSections: [],
             lastUsedCustomEvents: [],
             errors: [],
@@ -443,8 +459,13 @@ export default {
         return getQuarters();
       },
         //simple method for resetting view to default
-        resetView: function(){
-          this.currentView = "4";
+        resetView: function() {
+          if(this.$route.name == 'user') {
+            this.currentView = "4";
+          }
+          else {
+            this.currentView = "3";
+          }
         },
         //Method for changing shown view
         changeView: function(onAll) {
@@ -508,7 +529,7 @@ export default {
             this[selection] = newVal;
           }
 
-          this.currentView = "1";
+          this.currentView = "4";
 
         },
     },

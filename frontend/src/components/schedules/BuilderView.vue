@@ -36,9 +36,9 @@
 <!--          class="mb-4"-->
 <!--      ></ScheduleB>-->
       <ScheduleC
+        v-if="schedules > 0"
         :customEvents="$store.state.selectedCustomEvents"
         :courses="$store.state.selectedCourses"
-        :showEditButton="showEditButton"
         class="mb-4"
       ></ScheduleC>
 
@@ -58,14 +58,14 @@ export default {
       required: true,
       default: 1,
     },
+    schedules: {
+      type: Number,
+      required: false,
+    },
     courses: {
       type: Array,
       required: false,
     },
-    showEditButton: {
-      type: Boolean,
-      default: false
-    }
   },
   components: {
     ScheduleC,
