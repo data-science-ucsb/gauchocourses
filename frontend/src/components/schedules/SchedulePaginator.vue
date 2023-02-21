@@ -2,6 +2,7 @@
     <b-card style="">
         <template v-slot:header>
             <b-pagination
+                v-if="currentView != 3"
                 id="schedule-paginator"
                 class="mb-1"
                 align="fill"
@@ -13,6 +14,19 @@
                 :per-page="currentView"
                 aria-controls="calendar">
             </b-pagination>
+          <b-pagination
+              v-else
+              id="schedule-paginator"
+              class="mb-1"
+              align="fill"
+              size="sm"
+              first-number
+              last-number
+              v-model="currentPage"
+              :total-rows="1"
+              :per-page="1"
+              aria-controls="calendar">
+          </b-pagination>
             <b-nav>
                 <b-nav-item
                     v-b-tooltip.hover title="Change view"
@@ -42,6 +56,7 @@
                 </b-nav-item-dropdown>
 
                 <b-nav-item-dropdown
+                    v-if="currentView != 3"
                     class="filter-drop-down"
                     text="Days">
                     <b-dropdown-header id="dropdown-header-label">
@@ -69,6 +84,7 @@
                 </b-nav-item-dropdown>
 
                 <b-nav-item-dropdown
+                    v-if="currentView != 3"
                     class="filter-drop-down"
                     text="Time">
                         <b-dropdown-header id="dropdown-header-label">
@@ -88,6 +104,7 @@
                 </b-nav-item-dropdown>
 
                 <b-nav-item-dropdown
+                    v-if="currentView != 3"
                     class="filter-drop-down"
                     text="Sort">
                     <b-dropdown-header id="dropdown-header-label">
@@ -106,8 +123,9 @@
 
                 <!-- Button that links to /user -->
                 <b-nav-item
-                    v-if="showFavoritesButton" v-b-tooltip.hover title="Show favorite schedules">
-                    <router-link
+                    v-if="showFavoritesButton && currentView == 3" v-b-tooltip.hover title="Show favorite schedules"
+                    @click="changeView">
+                  <router-link
                     :to="{name:'user'}">
                       <font-awesome-icon
                           id="showFavoritedSchedules"
@@ -117,6 +135,19 @@
                         </font-awesome-icon>
                     </router-link>
                 </b-nav-item>
+
+              <b-nav-item
+                  v-if="showFavoritesButton && currentView != 3" v-b-tooltip.hover title="Show favorite schedules">
+                <router-link
+                    :to="{name:'user'}">
+                  <font-awesome-icon
+                      id="showFavoritedSchedules"
+                      icon="heart"
+                      size="sm"
+                      style="color: #ED0303;">
+                  </font-awesome-icon>
+                </router-link>
+              </b-nav-item>
 
               <b-nav-item
                   v-else v-b-tooltip.hover title="Show all schedules">
@@ -158,7 +189,7 @@
                    <p class="my-4">Once you have selected your classes, you can use this toolbar to find your favorite schedules.</p>
                    <p class="my-4">
                        Click the <strong>Days</strong> dropdown to hide schedules that have classes on Fridays (or any other day). Use the <strong>Time</strong> dropdown to hide schedules that have early or late classes.
-                       Finally, you can <strong>Sort</strong> your schedules to see which have the least gaps between classes, or by the start time.
+                       Finally, you can <strong>Sort</strong> your schedules to see which have the least gaps between classes, or by the start time. Or, you may switch to the custom schedule builder by clicking on the icon to the very left.
                    </p>
                    <p class="my-4">
                        When you find a schedule that you like, press <strong>Save</strong>. You can see all your saved schedules in your dashboard (top right corner).
@@ -183,16 +214,16 @@
             No schedules match your selections. Try selecting more days or more times.
         </b-alert>
         <b-alert
-          v-if="(schedules.length == 0 && showFavoritesButton == true) ? true : false"
-          :show="(schedules.length == 0 && showFavoritesButton == true) ? true : false"
+          v-if="(schedules.length == 0 && showFavoritesButton == true && currentView != 3) ? true : false"
+          :show="(schedules.length == 0 && showFavoritesButton == true && currentView != 3) ? true : false"
           variant="info"
           class="text-center">
           Your schedules will appear here. <br>
           Use the course selectors to add courses that you want to include in your schedules.
         </b-alert>
         <b-alert
-          v-if="(schedules.length == 0 && showFavoritesButton == false) ? true : false"
-          :show="(schedules.length == 0 && showFavoritesButton == false) ? true : false"
+          v-if="(schedules.length == 0 && showFavoritesButton == false && currentView != 3) ? true : false"
+          :show="(schedules.length == 0 && showFavoritesButton == false && currentView != 3) ? true : false"
           variant="info"
           class="text-center">
           You haven't saved any schedules yet! Try generating some on the Home page
@@ -430,6 +461,10 @@ export default {
         },
         //Method for changing shown view
         changeView: function() {
+          // if(onLiked && this.currentView == 10) {
+          //   let arr = Object.keys(this.viewIcons);
+          //   this.currentView = arr[(arr.indexOf(this.currentView) + 1) % arr.length];
+          // }
           let arr = Object.keys(this.viewIcons);
             this.currentView = arr[(arr.indexOf(this.currentView) + 1) % arr.length];
         },
