@@ -28,7 +28,6 @@ export default {
       return axios_instance.get(`/remote/academics/curriculums/v1/classes/search?quarter=${quarter}&deptCode=${deptcode}&pageSize=${pageSize}&pageNumber=${pageNumber}&includeClassSections=true`);
     },
     coursesWithFilters(quarter, filters){
-        console.log(filters);
         let filterQuery = [];
         for(let key in filters){
             //only add to filterQuery if key has a non null value

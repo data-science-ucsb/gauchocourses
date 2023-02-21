@@ -3,6 +3,7 @@
     :title="course.fullCourseNumber"
     :borderColor="borderColor"
     :backgroundColor="backgroundColor"
+    :full="full"
   >
     <template v-slot:subtext>
       <strong>{{ displayUnits }}</strong>
@@ -61,6 +62,16 @@ export default {
     backgroundColor: function() {
       // TODO: Once we have class definitions on the frontend, consolidate any usages of "getColor" stuff to the class definitions.
       return getBackgroundColor(this.course.courseId.slice(7, 14));
+    },
+    full: function() {
+      let full = true;
+      this.course.classSections.forEach((classSection) => {
+        if (classSection.enrolledTotal < classSection.maxEnroll) {
+          full = false;
+        }
+        // console.log(classSection.enrolledTotal - classSection.maxEnroll);
+      });
+      return full;
     },
     /**
      * Returns the requirements fulfilled by the course, grouped by the college.
