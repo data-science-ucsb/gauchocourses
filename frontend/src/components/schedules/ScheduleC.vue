@@ -282,7 +282,7 @@ export default {
 
       let titletodisplay;
       if(section.isLecture === true) {
-        titletodisplay = course.fullCourseNumber + ": (L) " + enrollcode;
+        titletodisplay = course.fullCourseNumber + ": " + enrollcode;
       }
       else {
         titletodisplay = course.fullCourseNumber + ": " + enrollcode;
