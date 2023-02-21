@@ -30,7 +30,7 @@
             <b-nav>
                 <b-nav-item
                     v-b-tooltip.hover title="Change view"
-                    @click="changeView">
+                    @click="changeView(showFavoritesButton)">
                     <font-awesome-icon
                         size="sm"
                         :icon="viewIcons[currentView]"
@@ -123,8 +123,7 @@
 
                 <!-- Button that links to /user -->
                 <b-nav-item
-                    v-if="showFavoritesButton && currentView == 3" v-b-tooltip.hover title="Show favorite schedules"
-                    @click="changeView">
+                    v-if="showFavoritesButton" v-b-tooltip.hover title="Show favorite schedules">
                   <router-link
                     :to="{name:'user'}">
                       <font-awesome-icon
@@ -136,18 +135,6 @@
                     </router-link>
                 </b-nav-item>
 
-              <b-nav-item
-                  v-if="showFavoritesButton && currentView != 3" v-b-tooltip.hover title="Show favorite schedules">
-                <router-link
-                    :to="{name:'user'}">
-                  <font-awesome-icon
-                      id="showFavoritedSchedules"
-                      icon="heart"
-                      size="sm"
-                      style="color: #ED0303;">
-                  </font-awesome-icon>
-                </router-link>
-              </b-nav-item>
 
               <b-nav-item
                   v-else v-b-tooltip.hover title="Show all schedules">
@@ -348,7 +335,7 @@ export default {
                 ]
             },
             sortingInProgress: false,
-            viewIcons: {1: "calendar", 2: "columns", 4:"border-all", 10: "list", 3: "pencil-alt"},
+            viewIcons: {1: "calendar", 2: "columns", 3: "pencil-alt", 4:"border-all", 10: "list", },
         }
     },
     computed: {
@@ -460,13 +447,14 @@ export default {
           this.currentView = "4";
         },
         //Method for changing shown view
-        changeView: function() {
-          // if(onLiked && this.currentView == 10) {
-          //   let arr = Object.keys(this.viewIcons);
-          //   this.currentView = arr[(arr.indexOf(this.currentView) + 1) % arr.length];
-          // }
+        changeView: function(onAll) {
           let arr = Object.keys(this.viewIcons);
+          if(!onAll && this.currentView == 2) {
+            this.currentView = arr[(arr.indexOf(this.currentView) + 2) % arr.length];
+          }
+          else {
             this.currentView = arr[(arr.indexOf(this.currentView) + 1) % arr.length];
+          }
         },
         /**
          * Resets the selected days (in the filter). If any days selected, this method deselects all options. If none
