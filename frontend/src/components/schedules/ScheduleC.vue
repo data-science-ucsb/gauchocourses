@@ -106,6 +106,7 @@ import {
 } from "@/components/util/color-utils.js";
 import xss from "xss";
 // import xss from "xss";
+import { Tooltip } from "bootstrap";
 
 export default {
   components: {
@@ -152,6 +153,7 @@ export default {
      */
     calendarOptions: function() {
       return {
+        eventDidMount: this.eventDidMount,
         height: 'auto',
         events: this.parseScheduleToEventList(this.customEvents, this.courses),
         headerToolbar: "",
@@ -295,7 +297,7 @@ export default {
       };
 
       if (section.timeLocations.length == 1) {
-        let classInfo = {
+        return {
           title: titletodisplay, //course.fullCourseNumber,
           courseId: course.courseId,
           groupId: enrollcode,
@@ -304,16 +306,15 @@ export default {
           endTime: section.timeLocations[0].endTime,
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
-          isLecture: 1,
+          isLecture: section.isLecture ? 1 : 2,
           sectionSelected: false,
           overlaid: [],
           lectureSectionGroup: section.lectureSectionGroup,
           relatedSelected: false,
+          enrolledTotal: section.enrolledTotal,
+          maxEnroll: section.maxEnroll,
+          enrollCode: section.enrollCode,
         };
-        if(section.isLecture == true) { // Lecture
-          classInfo.isLecture = 2;
-        }
-        return classInfo;
       } else {
         let multipleevents = [];
         let multipletimeandplace = section.timeLocations;
@@ -326,15 +327,15 @@ export default {
           endTime: "",
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
-          isLecture: 1,
+          isLecture: section.isLecture ? 1 : 2,
           sectionSelected: false,
           overlaid: [],
           lectureSectionGroup: section.lectureSectionGroup,
           relatedSelected: false, //FOR Lectures and Sections
+          enrolledTotal: section.enrolledTotal,
+          maxEnroll: section.maxEnroll,
+          enrollCode: section.enrollCode,
         };
-        if(section.isLecture == true) {// Lecture
-          classinfo.isLecture = 2;
-        }
         for (let k = 0; k < multipletimeandplace.length; k++) {
           classinfo.daysOfWeek = multipletimeandplace[
               k
@@ -673,7 +674,21 @@ export default {
       // TODO: Put Back all features INSANE
       this.handleRemoveTabIndexFromEvents();
     },
-
+    eventDidMount: function(info) {
+      // alert(JSON.stringify(info.event.extendedProps));
+      if (info.event.extendedProps.isLecture != 0) {
+        return new Tooltip(info.el, {
+          title: (info.event.extendedProps.isLecture == 1 ? "Section: " : "Lecture: ") + info.event.extendedProps.courseId + "<br>" +
+                  "Enroll Code: " + info.event.extendedProps.enrollCode + "<br>" +
+                  "Seats: " + info.event.extendedProps.enrolledTotal + "/" + info.event.extendedProps.maxEnroll,
+          html: true,
+          template: '<div class="tooltip course-tooltip" role="tooltip"><div class="arrow"></div><div class="tooltip-inner course-tooltip"></div></div>',
+          placement: "top",
+          trigger: "hover",
+          container: "body",
+        });
+      }
+    },
 
 
     calculateUnits: function (schedule, courses) {
@@ -782,7 +797,6 @@ export default {
   cursor: pointer;
 }
 
-
 #inner-box > * {
   position: absolute;
   top: 50%;
@@ -804,6 +818,11 @@ a:focus {
 
 }
 
+.tooltip > .tooltip-inner.course-tooltip {
+  text-align: left;
+  font-size: 9pt;
+}
+
 </style>
 
 <!-- steven: to reduce top/bottom padding in schedule header -->
@@ -815,4 +834,5 @@ a:focus {
   position: relative;
   padding-left: 5%;
 }
+
 </style>

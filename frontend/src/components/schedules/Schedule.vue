@@ -115,6 +115,7 @@ import {
   getBorderColor,
 } from "@/components/util/color-utils.js";
 import xss from "xss";
+import { Tooltip } from "bootstrap";
 
 export default {
   components: {
@@ -185,6 +186,7 @@ export default {
      */
     calendarOptions: function() {
       return {
+        eventDidMount: this.eventDidMount,
         height: 'auto',
         events: this.parseScheduleToEventList(this.schedule, this.courses),
         headerToolbar: "",
@@ -234,6 +236,7 @@ export default {
             startTime: classSection.timeLocations[0].beginTime,
             endTime: classSection.timeLocations[0].endTime,
             color: getBackgroundColor(classSection.name),
+            isLecture: 0,
           };
         } else {
           return classSection.scheduledEnrollCodes.map((section) =>
@@ -277,22 +280,32 @@ export default {
       if (section.timeLocations.length == 1) {
         return {
           title: titletodisplay, //course.fullCourseNumber,
+          courseId: course.courseId,
           daysOfWeek: section.timeLocations[0].fullDays.map((a) => dayInt[a]),
           startTime: section.timeLocations[0].beginTime,
           endTime: section.timeLocations[0].endTime,
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
+          isLecture: section.isLecture ? 1 : 2,
+          enrolledTotal: section.enrolledTotal,
+          maxEnroll: section.maxEnroll,
+          enrollCode: section.enrollCode,
         };
       } else {
         var multipleevents = [];
         var multipletimeandplace = section.timeLocations;
         var classinfo = {
           title: titletodisplay, //course.fullCourseNumber,
+          courseId: course.courseId,
           daysOfWeek: "",
           startTime: "",
           endTime: "",
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
+          isLecture: section.isLecture ? 1 : 2,
+          enrolledTotal: section.enrolledTotal,
+          maxEnroll: section.maxEnroll,
+          enrollCode: section.enrollCode,
         };
         for (var k = 0; k < multipletimeandplace.length; k++) {
           classinfo.daysOfWeek = multipletimeandplace[
@@ -383,6 +396,21 @@ export default {
       await this.$store.dispatch('initializeStoreAsync',schedule);
       this.$eventHub.$emit('generate-schedules', null);
     },
+    eventDidMount: function(info) {
+      // alert(JSON.stringify(info.event.extendedProps));
+      if (info.event.extendedProps.isLecture != 0) {
+        return new Tooltip(info.el, {
+          title: (info.event.extendedProps.isLecture == 1 ? "Section: " : "Lecture: ") + info.event.extendedProps.courseId + "<br>" +
+                  "Enroll Code: " + info.event.extendedProps.enrollCode + "<br>" +
+                  "Seats: " + info.event.extendedProps.enrolledTotal + "/" + info.event.extendedProps.maxEnroll,
+          html: true,
+          template: '<div class="tooltip course-tooltip" role="tooltip"><div class="arrow"></div><div class="tooltip-inner course-tooltip"></div></div>',
+          placement: "top",
+          trigger: "hover",
+          container: "body",
+        });
+      }
+    },
     // emitInterface() {
     //   this.$emit("interface", {
     //     addCount: () => alert(this.schedule.name)
@@ -425,6 +453,11 @@ export default {
 
 .fc-title {
   font-size: 11px;
+}
+
+.tooltip > .tooltip-inner.course-tooltip {
+  text-align: left;
+  font-size: 9pt;
 }
 </style>
 
