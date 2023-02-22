@@ -498,7 +498,7 @@ export default {
 }
 .no-wrap.d-flex.flex-row.align-items-center {
   position: relative;
-  padding-left: 5%;
+  padding-left: 10px;
 }
 
 </style>
