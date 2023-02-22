@@ -3,6 +3,7 @@
         :title="customEvent.name"
         :borderColor="customEvent.borderColor"
         :backgroundColor="customEvent.backgroundColor"
+        :full=false
     >
         <template v-slot:subtext>
             {{days}}
