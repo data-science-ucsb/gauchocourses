@@ -44,7 +44,8 @@
                                 <img :src="$store.getters.userInfo.photoURL"
                                     :alt="$store.getters.userInfo.fullName"
                                     height="42"
-                                    width="42">
+                                    width="42"
+                                    referrerpolicy="no-referrer">
                             </b-col>
                             <b-col cols=9>
                                 <b-table stacked
