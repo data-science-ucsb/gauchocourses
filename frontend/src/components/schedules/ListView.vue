@@ -4,40 +4,43 @@
       class="scheduleListItem"
       v-for="(schedule, index) in schedule"
       :key="index"
-    >
+      >
+
       <div class="d-flex flex-row align-items-center">
-        <span class="d-inline-block" tabindex="0">
-          <font-awesome-icon
-            v-if="schedule.favorited"
-            icon="heart"
-            size="sm"
-            :id="'heart-favorited-' + index"
-            style="color: #ED0303;"
-            @click="unFavoriteSchedule(schedule, index)"
-          />
-
-          <font-awesome-icon
-            v-else
-            icon="heart"
-            size="sm"
-            :id="'heart-icon-' + index"
-            style="color: #FFC7C7;"
-            @click="saveSchedule(schedule)"
-          />
-        </span>
-
-        <b-tooltip v-if="!$store.getters.userIsAuthenticated" :target="'heart-icon-' + index">
-          You must sign in to save schedules.
-        </b-tooltip>
-
-        <b-toast :id="'deleted-toast-' + index" title="You deleted a schedule!" variant="warning">
-          The schedule, "{{schedule.name}}" was deleted. Click the button to undo.
-          <b-button @click="saveSchedule(schedule)" variant="warning">
-          Undo
-          </b-button>
-        </b-toast>
 
         <div class="flex-grow-1">
+
+          <span class="d-inline-block" tabindex="0">
+            <font-awesome-icon
+              v-if="schedule.favorited"
+              icon="heart"
+              size="sm"
+              :id="'heart-favorited-' + index"
+              style="color: #ED0303;"
+              @click="unFavoriteSchedule(schedule, index)"
+            />
+
+            <font-awesome-icon
+              v-else
+              icon="heart"
+              size="sm"
+              :id="'heart-icon-' + index"
+              style="color: #FFC7C7;"
+              @click="saveSchedule(schedule)"
+            />
+          </span>
+
+          <b-tooltip v-if="!$store.getters.userIsAuthenticated" :target="'heart-icon-' + index">
+            You must sign in to save schedules.
+          </b-tooltip>
+
+          <b-toast :id="'deleted-toast-' + index" title="You deleted a schedule!" variant="warning">
+            The schedule, "{{schedule.name}}" was deleted. Click the button to undo.
+            <b-button @click="saveSchedule(schedule)" variant="warning">
+            Undo
+            </b-button>
+          </b-toast>
+
           <b-button
             :id="'popover-button-sync-' + index"
             ref="button"
@@ -74,7 +77,7 @@
           <div>
             Start: {{formatTime(schedule.sortingAttributes.earliestBeginTime)}} - End: {{formatTime(schedule.sortingAttributes.latestEndTime)}}
             <br />
-            Classes on {{getAbbreviatedDays(schedule.sortingAttributes.daysWithEvents).join(', ')}} -- {{schedule.totalUnits}} units
+            Classes on {{getAbbreviatedDays(schedule.sortingAttributes.daysWithEvents).join(', ')}} — {{schedule.totalUnits}} units
           </div>
         </div>
 
@@ -341,5 +344,13 @@ export default {
 }
 .schedule-table-container {
   overflow-x: auto;
+}
+.padding {
+  margin-bottom: 10px;
+}
+</style>
+<style scoped>
+.d-flex.flex-row.align-items-center {
+  margin-bottom: 10px;
 }
 </style>
