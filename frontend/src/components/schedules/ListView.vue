@@ -117,7 +117,7 @@ import api from "@/components/backend-api.js";
 import xss from "xss";
 
 export default {
-  data: () => {
+  data: function() {
     return {
       popoverShow: [],
       savingScheduleInProgress: false,
@@ -145,6 +145,8 @@ export default {
     }
   },
   created: function () {
+
+
     this.schedule.forEach((schedule, i) => {
       //if this.courses has courses that are in the schedule, add them to the coursesComputed
       schedule.classes.forEach((course) => {
@@ -158,29 +160,30 @@ export default {
       const courseNames = this.coursesComputed.map((course) => course.courseId);
       //check if schedule has courses that aren't yet in coursesComputed
       schedule.classes.forEach((course) => {
-        if(courseNames.includes(course.courseId) == false) { //if course isnt in there yet
+        if (courseNames.includes(course.courseId) == false) { //if course isnt in there yet
           //add the enroll code to codesNeeded
           codesNeeded.push(course.scheduledEnrollCodes[0]);
         }
       });
 
       Promise.all(
-        codesNeeded.map((code) => api.coursefromEnrollCode(schedule.quarter, code)))
-        .then((responses) => {
-          responses
-          .map((r) => r.data.classes[0])
-          .forEach((course) => {
-            this.coursesComputed.push(course);
+          codesNeeded.map((code) => api.coursefromEnrollCode(schedule.quarter, code)))
+          .then((responses) => {
+            responses
+                .map((r) => r.data.classes[0])
+                .forEach((course) => {
+                  this.coursesComputed.push(course);
+                });
+          })
+          .catch(err => console.error(err))
+          .finally(() => {
+            this.popoverShow[i] = false;
+            schedule.totalUnits = this.calculateUnits(schedule, this.coursesComputed);
+            this.scheduleNames[i] = schedule.name;
           });
-        })
-        .catch(err => console.error(err))
-        .finally(() => {
-          this.popoverShow[i] = false;
-          schedule.totalUnits = this.calculateUnits(schedule, this.coursesComputed);
-          this.scheduleNames[i] = schedule.name;
-        });
 
     });
+
     this.doneLoading = true;
   },
   computed: {

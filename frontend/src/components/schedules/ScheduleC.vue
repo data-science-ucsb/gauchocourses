@@ -33,6 +33,13 @@
           Sign in to save schedules.
         </b-tooltip>
 
+        <b-tooltip
+            v-else-if="finishedSchedule"
+            :target="'favorite-icon'+_uid">
+          Select all events to save schedule.
+        </b-tooltip>
+
+        <!--TODO: Can either save the schedule that was deleted for undo or get rid of this toast if schedule changes-->
         <b-toast :id="'deleted-toast-' + _uid" title="You deleted a schedule!" variant="warning">
           The schedule, "{{ schedule.name }}" was deleted. Click the button to undo.
           <b-button @click="saveSchedule(schedule)" variant="warning">Undo</b-button>
@@ -43,7 +50,7 @@
             variant="link"
             ref="button"
             @click="popoverShow = !popoverShow"
-        >{{ schedule.name }}</b-button>
+        >{{ updatedScheduleName }}</b-button>
 
         <b-popover
             :id="'popover'+ _uid"
@@ -116,9 +123,15 @@ export default {
   },
   data: function () {
     return {
+      undoSchedule: {
+        name: "My Schedule",
+        favorited: false,
+      },
       schedule: {
         name: "My Schedule",
+        favorited: false,
       },
+      updatedScheduleName: "My Schedule",
       finishedSchedule: false,
       doneLoading: false,
       savingScheduleInProgress: false,
@@ -646,7 +659,12 @@ export default {
           }
         }
       }
-      //TODO alerts conditionals when there are full classes
+      //DONE TODO: You can now edit schedule name on home page
+      //TODO Add Updated Schedule Name to ListView and any applicable changes from Ramon
+      //TODO:  Remove extraneous Edit Schedule feature
+      //TODO: Let FullCalendar components :mintime and :maxtime variables be inclusive of custom events
+      //TODO set "Favorite Schedules" to true if it is already saved, same with the name and everything else..
+      //TODO alerts conditionals when there are full classes (wait for ramon to push)
       //TODO hide edit courses for current view == 3
       //NOT TODO npm install TRIVIAL
       //NOT TODO reset filters in schedule paginator affects schedule builder? INSANE
@@ -654,7 +672,6 @@ export default {
       //NOT TODO make schedule builder affected by edit class section Sections? INSANE
       //TODO: Seperate Bugs INSANE
       // TODO: Put Back all features like LikedINSANE
-      //TODO: Saved schedules does not load if it does not match
       this.handleRemoveTabIndexFromEvents();
     },
     eventDidMount: function(info) {
@@ -688,13 +705,14 @@ export default {
     //  * POSTS the given schedule to the backend for storage. Sets the quarter, name, units, and userEmail properties on the schedule.
     //  */
     saveSchedule: function (schedule) {
+      console.log("Yes");
       if (this.$store.getters.userIsAuthenticated) {
         //if user isn't logged in, nothing happens
         this.savingScheduleInProgress = true;
         $("span").css("pointer-events", "none"); //anything in a span will be disabled
         schedule.quarter = this.quarter;
         schedule.userEmail = this.$store.getters.userInfo.email;
-        schedule.name = xss(schedule.name);
+        schedule.name = xss(this.updatedScheduleName);
         schedule.totalUnits = this.calculateUnits(
             schedule,
             this.coursesComputed
@@ -736,7 +754,8 @@ export default {
       this.popoverShow = false;
     },
     saveName: function () {
-      this.scheduleName = xss(this.scheduleName);
+      this.schedule.name = xss(this.schedule.name);
+      this.updatedScheduleName = this.schedule.name;
       this.popoverShow = false;
       api
           .updateScheduleName(this.schedule.id, this.scheduleName)

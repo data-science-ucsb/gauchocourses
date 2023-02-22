@@ -56,7 +56,7 @@ Schedule is passed in two arrays:
           variant="link"
           ref="button"
           @click="popoverShow = !popoverShow"
-        >{{ schedule.name }}</b-button>
+        >{{ updatedScheduleName }}</b-button>
 
         <b-popover
           :id="'popover'+ _uid"
@@ -97,6 +97,7 @@ Schedule is passed in two arrays:
     <div v-if="doneLoading" class="weekly-calendar">
       <FullCalendar
           :options="calendarOptions"
+          ref=""
       />
     </div>
     <div v-else class="text-center">
@@ -141,6 +142,7 @@ export default {
       doneLoading: false,
       savingScheduleInProgress: false,
       scheduleSavedStatus: null,
+      updatedScheduleName: this.schedule.name,
       scheduleName: this.schedule.name,
       popoverShow: false,
       errors: [],
@@ -176,6 +178,28 @@ export default {
     .finally(() => this.doneLoading = true);
   },
   mounted() {
+    //TODO: Loop through coursesComputed instead of every single event
+    let calendarApi = this.$refs.calendar.getApi();
+
+    let earliestTime = 23;
+    let latestTime = 0;
+    let earliestEvent;
+    let latestEvent;
+    calendarApi.getEvents().forEach(function (event) {
+      if(new Date(event.start).getHours() < earliestTime) {
+        earliestTime = new Date(event.start).getHours()
+        earliestEvent = event;
+      }
+      if(new Date(event.end).getHours() > latestTime) {
+        latestTime = new Date(event.end).getHours()
+        latestEvent = event;
+      }
+    });
+    if(earliestEvent) {
+      calendarApi.setOption('slotMinTime', new Date(earliestEvent.start).toTimeString());
+      calendarApi.setOption('slotMaxTime', new Date(latestEvent.end).toTimeString());
+    }
+
     // Emits on mount
     // this.emitInterface();
   },
@@ -188,7 +212,7 @@ export default {
       return {
         eventDidMount: this.eventDidMount,
         height: 'auto',
-        events: this.parseScheduleToEventList(this.schedule, this.courses),
+        events: this.parseScheduleToEventList(this.schedule, this.coursesComputed),
         headerToolbar: "",
         dayHeaders: true,
         dayHeaderFormat: {weekday: 'short'},
@@ -196,11 +220,8 @@ export default {
         weekends: false,
         stickyHeaderDates: false,
         allDaySlot: false,
-        // id: this.schedule.name,
         initialView: 'timeGridWeek',
         editable: false,
-        slotMinTime: this.schedule.sortingAttributes.earliestBeginTime,
-        slotMaxTime: this.schedule.sortingAttributes.latestEndTime,
       }
     },
     quarter: function () {
@@ -331,6 +352,7 @@ export default {
     /**
      * POSTS the given schedule to the backend for storage. Sets the quarter, name, units, and userEmail properties on the schedule.
      */
+
     saveSchedule: function (schedule) {
       if (this.$store.getters.userIsAuthenticated) {
         //if user isn't logged in, nothing happens
@@ -338,7 +360,7 @@ export default {
         $("span").css("pointer-events", "none"); //anything in a span will be disabled
           schedule.quarter = this.quarter;
           schedule.userEmail = this.$store.getters.userInfo.email;
-          schedule.name = xss(schedule.name);
+          schedule.name = xss(this.updatedScheduleName);
           schedule.totalUnits = this.calculateUnits(
             schedule,
             this.coursesComputed
@@ -382,6 +404,8 @@ export default {
     saveName: function () {
       this.scheduleName = xss(this.scheduleName);
       this.popoverShow = false;
+      this.updatedScheduleName = this.scheduleName;
+      //TODO: Stop errors from occuring by checking if we are on liked schedules page or all page (known in SchedulePaginator)
       api
         .updateScheduleName(this.schedule.id, this.scheduleName)
         .then(() =>{
