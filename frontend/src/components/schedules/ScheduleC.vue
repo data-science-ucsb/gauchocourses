@@ -292,7 +292,6 @@ export default {
         FRIDAY: 5,
         SATURDAY: 6,
       };
-
       if (section.timeLocations.length == 1) {
         return {
           title: titletodisplay, //course.fullCourseNumber,
@@ -311,6 +310,8 @@ export default {
           enrolledTotal: section.enrolledTotal,
           maxEnroll: section.maxEnroll,
           enrollCode: section.enrollCode,
+          location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
+          instructor: section.instructors[0].instructor,
         };
       } else {
         let multipleevents = [];
@@ -332,6 +333,8 @@ export default {
           enrolledTotal: section.enrolledTotal,
           maxEnroll: section.maxEnroll,
           enrollCode: section.enrollCode,
+          location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
+          instructor: section.instructors[0].instructor,
         };
         for (let k = 0; k < multipletimeandplace.length; k++) {
           classinfo.daysOfWeek = multipletimeandplace[
@@ -659,6 +662,7 @@ export default {
           }
         }
       }
+
       //DONE TODO: You can now edit schedule name on home page
       //TODO Add Updated Schedule Name to ListView and any applicable changes from Ramon
       //TODO:  Remove extraneous Edit Schedule feature
@@ -678,9 +682,11 @@ export default {
       // alert(JSON.stringify(info.event.extendedProps));
       if (info.event.extendedProps.isLecture != 0) {
         return new Tooltip(info.el, {
-          title: (info.event.extendedProps.isLecture == 1 ? "Section: " : "Lecture: ") + info.event.extendedProps.courseId + "<br>" +
-                  "Enroll Code: " + info.event.extendedProps.enrollCode + "<br>" +
-                  "Seats: " + info.event.extendedProps.enrolledTotal + "/" + info.event.extendedProps.maxEnroll,
+          title: "<b>" + info.event.extendedProps.courseId + " — " + (info.event.extendedProps.isLecture == 1 ? "Section" : "Lecture") + "</b><br>" +
+                 "Instructor: " + info.event.extendedProps.instructor + "<br>" +
+                 "Seats: " + info.event.extendedProps.enrolledTotal + "/" + info.event.extendedProps.maxEnroll + "<br>" +
+                 "Location: " + info.event.extendedProps.location + "<br>" +
+                 "Enroll Code: " + info.event.extendedProps.enrollCode + "<br>",
           html: true,
           template: '<div class="tooltip course-tooltip" role="tooltip"><div class="arrow"></div><div class="tooltip-inner course-tooltip"></div></div>',
           placement: "top",

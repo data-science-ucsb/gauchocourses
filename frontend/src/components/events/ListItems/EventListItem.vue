@@ -6,7 +6,8 @@
       ></div>
       <div class="my-1 ml-2">
         <p class="mb-0">
-          <strong class="event-name">{{ this.title }}</strong>
+          <strong class="event-name" v-if="full === false">{{ this.title }}</strong>
+          <strong class="event-name" v-else>{{ this.title }} (Full)</strong>
         </p>
         <span class="subtext" :id="'popover'+title">
           <small>
@@ -39,6 +40,9 @@ export default {
         borderColor: {
             type: String
         },
+        full: {
+            type: Boolean
+        }
     }
 }
 </script>
