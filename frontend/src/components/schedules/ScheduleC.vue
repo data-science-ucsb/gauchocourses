@@ -664,17 +664,17 @@ export default {
       }
 
       //DONE TODO: You can now edit schedule name on home page
-      //TODO Add Updated Schedule Name to ListView and any applicable changes from Ramon
-      //TODO:  Remove extraneous Edit Schedule feature
+      //TODO: Double View Obscures first calendar
+      //TODO ListView SaveName should be based on updatedScheduleName
+      //NOT TODO:  Remove extraneous Edit Schedule feature
       //TODO: Let FullCalendar components :mintime and :maxtime variables be inclusive of custom events
-      //TODO set "Favorite Schedules" to true if it is already saved, same with the name and everything else..
+      //NOT TODO set "Favorite Schedules" to true if it is already saved, same with the name and everything else..
       //TODO alerts conditionals when there are full classes (wait for ramon to push)
-      //TODO hide edit courses for current view == 3
+      //NOT TODO hide edit courses for current view == 3
       //NOT TODO npm install TRIVIAL
       //NOT TODO reset filters in schedule paginator affects schedule builder? INSANE
       //NOT TODO make schedule builder affected by sorting and filtering options? INSANE
       //NOT TODO make schedule builder affected by edit class section Sections? INSANE
-      //TODO: Seperate Bugs INSANE
       // TODO: Put Back all features like LikedINSANE
       this.handleRemoveTabIndexFromEvents();
     },

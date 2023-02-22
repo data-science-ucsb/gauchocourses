@@ -97,7 +97,7 @@ Schedule is passed in two arrays:
     <div v-if="doneLoading" class="weekly-calendar">
       <FullCalendar
           :options="calendarOptions"
-          ref=""
+          ref="r0"
       />
     </div>
     <div v-else class="text-center">
@@ -127,6 +127,10 @@ export default {
       type: Array,
       required: false
     },
+    referenceString: {
+      type: String,
+      required: false
+    },
     schedule: {
       type: Object,
       required: false,
@@ -147,6 +151,7 @@ export default {
       popoverShow: false,
       errors: [],
       scheduleLocal: this.schedule,
+
     };
   },
   created: function () {
@@ -178,28 +183,6 @@ export default {
     .finally(() => this.doneLoading = true);
   },
   mounted() {
-    //TODO: Loop through coursesComputed instead of every single event
-    let calendarApi = this.$refs.calendar.getApi();
-
-    let earliestTime = 23;
-    let latestTime = 0;
-    let earliestEvent;
-    let latestEvent;
-    calendarApi.getEvents().forEach(function (event) {
-      if(new Date(event.start).getHours() < earliestTime) {
-        earliestTime = new Date(event.start).getHours()
-        earliestEvent = event;
-      }
-      if(new Date(event.end).getHours() > latestTime) {
-        latestTime = new Date(event.end).getHours()
-        latestEvent = event;
-      }
-    });
-    if(earliestEvent) {
-      calendarApi.setOption('slotMinTime', new Date(earliestEvent.start).toTimeString());
-      calendarApi.setOption('slotMaxTime', new Date(latestEvent.end).toTimeString());
-    }
-
     // Emits on mount
     // this.emitInterface();
   },
@@ -222,6 +205,8 @@ export default {
         allDaySlot: false,
         initialView: 'timeGridWeek',
         editable: false,
+        slotMinTime: this.schedule.sortingAttributes.earliestBeginTime,
+        slotMaxTime: this.schedule.sortingAttributes.latestEndTime,
       }
     },
     quarter: function () {
