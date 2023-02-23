@@ -36,7 +36,7 @@
         <b-tooltip
             v-else-if="!finishedSchedule"
             :target="'favorite-icon'+_uid">
-          Select all events to save schedule.
+          All events must be selected to save a schedule!
         </b-tooltip>
 
         <!--TODO: Can either save the schedule that was deleted for undo or get rid of this toast if schedule changes-->
@@ -128,13 +128,13 @@ export default {
         classes: [],
         customEvents: [],
         sortingAttributes: {
-          totalMinutesBetweenEvents: 70,
-          totalMinutesFromMidnight: 4740,
+          totalMinutesBetweenEvents: 0,
+          totalMinutesFromMidnight: 0,
           daysWithEvents: {},
-          earliestBeginTime: '08:00:00',
-          latestEndTime: '22:00:00',
+          earliestBeginTime: '00:00:00',
+          latestEndTime: '23:59:59',
         },
-        quarter	:	20231,
+        quarter: null,
         userEmail	:	null,
         name: "My Schedule",
         totalUnits	:	0,
@@ -686,6 +686,67 @@ export default {
       this.finishedSchedule = !calendarApi.getEvents().some(function(event) {
         return (event.display == "auto" && event.borderColor != "blue");
       });
+      // if(this.finishedSchedule) {
+      //   //TODO: Clear last schedule, or set it equal to savable schedule.
+      //   // let savableSchedule = {};
+      //   calendarApi.getEvents().forEach(function(event) {
+      //     if(event.display == "auto") {
+      //       if(event.extendedProps.isLecture === 0) {
+      //         if(!this.schedule.customEvents.find(customEvent => customEvent.name == event.title)) {
+      //           this.customEvents.push(this.customEvents );
+      //         }
+      //       }
+      //       else if(event.extendedProps.isLecture === 1) {
+      //         let foundIndex = this.schedule.classes.findIndex(course => course.courseId == event.extendedProps.courseId);
+      //         if(!foundIndex) { //If this course hasn't already been added to schedule.classes
+      //           this.schedule.classes.push({
+      //             courseId: event.extendedProps.courseId,
+      //             scheduledEnrollCodes: [
+      //               event.extendedProps.enrollCode,
+      //             ],
+      //             selectedEnrollCodes: [],
+      //           });
+      //         }
+      //         else {
+      //           this.schedule.classes[foundIndex].scheduledEnrollCodes.push(event.extendedProps.enrollCode);
+      //         }
+      //       }
+      //       else { //Lecture event
+      //         let foundIndex = this.schedule.classes.findIndex(course => course.courseId == event.extendedProps.courseId);
+      //         if(!foundIndex) { //If this course hasn't already been added to schedule.classes
+      //           this.schedule.classes.push({
+      //             courseId: event.extendedProps.courseId,
+      //             scheduledEnrollCodes: [
+      //               event.extendedProps.enrollCode,
+      //             ],
+      //             selectedEnrollCodes: [],
+      //           });
+      //         }
+      //         else {
+      //           this.schedule.classes[foundIndex].scheduledEnrollCodes.unshift(event.extendedProps.enrollCode);
+      //         }
+      //       }
+      //     }
+      //   });
+      // }
+
+      // id: '',
+      //     classes: [],
+      //     customEvents: this.customEvents, //have to check whether customEvents is blocked out still
+      //     sortingAttributes: {
+      //   totalMinutesBetweenEvents: 0,
+      //       totalMinutesFromMidnight: 0,
+      //       daysWithEvents: {},
+      //   earliestBeginTime: '00:00:00',
+      //       latestEndTime: '23:59:59',
+      // },
+      // quarter	:	this.exampleSchedule.quarter,
+      //     userEmail	:	null,
+      //     name: "My Schedule",
+      //     totalUnits	:	0,
+      //     conflicting	:	false,
+      //     favorited: false,
+
       //DONE TODO: You can now edit schedule name on home page
       //TODO ListView SaveName should be based on updatedScheduleName
       //NOT TODO:  Remove extraneous Edit Schedule feature

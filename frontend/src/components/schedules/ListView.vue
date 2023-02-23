@@ -345,9 +345,6 @@ export default {
 .schedule-table-container {
   overflow-x: auto;
 }
-.padding {
-  margin-bottom: 10px;
-}
 </style>
 <style scoped>
 .d-flex.flex-row.align-items-center {

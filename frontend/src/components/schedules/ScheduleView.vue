@@ -7,7 +7,6 @@
         :md="numColumns">
         <Schedule
           :schedule="schedule"
-          :referenceString="'r' + schedules.indexOf(schedule)"
           :courses="$store.state.selectedCourses"
           :showEditButton="showEditButton"
           class="mb-4"

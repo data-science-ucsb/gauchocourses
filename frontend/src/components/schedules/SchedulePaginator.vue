@@ -249,8 +249,7 @@
         </b-alert>
         <BuilderView
           v-if="currentView == 3"
-          :schedules="schedules[0]"
-          :numShow="1">
+          :schedules="schedules.length">
         </BuilderView>
         <ListView
           :schedule="this.filteredAndSortedSchedules.slice((this.currentPage-1)*this.currentView, this.currentPage*this.currentView)"

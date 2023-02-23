@@ -28,7 +28,7 @@
   <b-row>
     <b-col
         cols="12"
-        :md="numColumns">
+        :md="12">
 <!--      <ScheduleB-->
 <!--          :customEvents="$store.state.selectedCustomEvents"-->
 <!--          :courses="$store.state.selectedCourses"-->
@@ -37,7 +37,6 @@
 <!--      ></ScheduleB>-->
       <ScheduleC
         v-if="schedules"
-        :schedule="schedules"
         :customEvents="$store.state.selectedCustomEvents"
         :courses="$store.state.selectedCourses"
         class="mb-4"
@@ -53,14 +52,8 @@ import ScheduleC from "./ScheduleC.vue";
 
 export default {
   props: {
-    //number of schedules to show (1,2,4)
-    numShow: {
-      //type: Number,
-      required: true,
-      default: 1,
-    },
     schedules: {
-      type: Object,
+      type: Number,
       required: false,
     },
     courses: {
@@ -70,16 +63,6 @@ export default {
   },
   components: {
     ScheduleC,
-  },
-  computed: {
-    numColumns: function () {
-      switch (this.numShow) {
-        case "1": return "12";
-        case "2": return "6";
-        case "4": return "6";
-        default: return "12";
-      }
-    }
   },
 };
 </script>

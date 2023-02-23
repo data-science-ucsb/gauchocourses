@@ -97,7 +97,6 @@ Schedule is passed in two arrays:
     <div v-if="doneLoading" class="weekly-calendar">
       <FullCalendar
           :options="calendarOptions"
-          ref="r0"
       />
     </div>
     <div v-else class="text-center">
@@ -125,10 +124,6 @@ export default {
   props: {
     courses: {
       type: Array,
-      required: false
-    },
-    referenceString: {
-      type: String,
       required: false
     },
     schedule: {
