@@ -160,7 +160,7 @@ public class ScheduleController {
      */
     @GetMapping(value = "/")
     @Secured("ROLE_USER")
-    public ResponseEntity getAllSchedulesForEmail(@RequestParam("userEmail") String userEmail) {
+    public ResponseEntity getAllSchedulesForEmail() {
 
         String authenticatedUsersEmail = userController.getUserEmail();
 
@@ -168,14 +168,10 @@ public class ScheduleController {
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body("");
-        } else if (!authenticatedUsersEmail.equals(userEmail)) {
-            return ResponseEntity
-                .status( HttpStatus.UNAUTHORIZED)
-                .body("Authenticated user's email does not match the queried userEmail");
         } else {
             return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(scheduleRepository.findByUserEmail(userEmail));
+                .body(scheduleRepository.findByUserEmail(authenticatedUsersEmail));
         }
     }
 

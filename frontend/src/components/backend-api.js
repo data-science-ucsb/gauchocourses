@@ -75,8 +75,8 @@ export default {
      * Gets the schedules for the specified user email address.
      * @param {string} userEmail Filters schedules for this user email
      */
-    getSchedulesForUser(userEmail) {
-        return axios_instance.get('/api/schedules/?userEmail='+userEmail);
+    getSchedulesForUser() {
+        return axios_instance.get('/api/schedules/');
     },
     /**
      * Deletes

@@ -136,7 +136,7 @@ export default {
      * 3. Get & set the quarters.
      */
     created: function() {
-        api.getSchedulesForUser(this.$store.getters.userInfo.email)
+        api.getSchedulesForUser()
           .then(response =>  this.schedules = response.data)
           .catch(error => {
               this.errors.push(error);
