@@ -34,7 +34,7 @@
         </b-tooltip>
 
         <b-tooltip
-            v-else-if="finishedSchedule"
+            v-else-if="!finishedSchedule"
             :target="'favorite-icon'+_uid">
           Select all events to save schedule.
         </b-tooltip>
@@ -123,12 +123,22 @@ export default {
   },
   data: function () {
     return {
-      undoSchedule: {
-        name: "My Schedule",
-        favorited: false,
-      },
       schedule: {
+        id: '',
+        classes: [],
+        customEvents: [],
+        sortingAttributes: {
+          totalMinutesBetweenEvents: 70,
+          totalMinutesFromMidnight: 4740,
+          daysWithEvents: {},
+          earliestBeginTime: '08:00:00',
+          latestEndTime: '22:00:00',
+        },
+        quarter	:	20231,
+        userEmail	:	null,
         name: "My Schedule",
+        totalUnits	:	0,
+        conflicting	:	false,
         favorited: false,
       },
       updatedScheduleName: "My Schedule",
@@ -172,17 +182,26 @@ export default {
   mounted: function() {
     this.handleRemoveTabIndexFromEvents();
     let calendarApi = this.$refs.calendar.getApi();
-    let earliestTime = 23;
+    let earliestTime = 1349;
     let latestTime = 0;
     let earliestEvent;
     let latestEvent;
     calendarApi.getEvents().forEach(function (event) {
-      if(new Date(event.start).getHours() < earliestTime) {
-        earliestTime = new Date(event.start).getHours()
+      let eventDate = new Date(event.start);
+      var minutes = eventDate.getMinutes();
+      var hours = eventDate.getHours();
+      var eventTime = (60 * hours) + minutes;
+      if(eventTime < earliestTime) {
+        earliestTime = eventTime;
         earliestEvent = event;
       }
-      if(new Date(event.end).getHours() > latestTime) {
-        latestTime = new Date(event.end).getHours()
+
+      eventDate = new Date(event.end);
+      minutes = eventDate.getMinutes();
+      hours = eventDate.getHours();
+      eventTime = (60 * hours) + minutes;
+      if(eventTime > latestTime) {
+        latestTime = eventTime;
         latestEvent = event;
       }
     });
@@ -662,19 +681,19 @@ export default {
           }
         }
       }
-
+      this.finishedSchedule = !calendarApi.getEvents().some(function(event) {
+        return (event.display == "auto" && event.borderColor != "blue");
+      });
       //DONE TODO: You can now edit schedule name on home page
-      //TODO: Double View Obscures first calendar
       //TODO ListView SaveName should be based on updatedScheduleName
       //NOT TODO:  Remove extraneous Edit Schedule feature
-      //TODO: Let FullCalendar components :mintime and :maxtime variables be inclusive of custom events
       //NOT TODO set "Favorite Schedules" to true if it is already saved, same with the name and everything else..
-      //TODO alerts conditionals when there are full classes (wait for ramon to push)
       //NOT TODO hide edit courses for current view == 3
       //NOT TODO npm install TRIVIAL
       //NOT TODO reset filters in schedule paginator affects schedule builder? INSANE
       //NOT TODO make schedule builder affected by sorting and filtering options? INSANE
       //NOT TODO make schedule builder affected by edit class section Sections? INSANE
+      //TODO: Merge features like Export to PDF
       // TODO: Put Back all features like LikedINSANE
       this.handleRemoveTabIndexFromEvents();
     },
@@ -711,9 +730,8 @@ export default {
     //  * POSTS the given schedule to the backend for storage. Sets the quarter, name, units, and userEmail properties on the schedule.
     //  */
     saveSchedule: function (schedule) {
-      console.log("Yes");
-      if (this.$store.getters.userIsAuthenticated) {
-        //if user isn't logged in, nothing happens
+      if(this.finishedSchedule && this.$store.getters.userIsAuthenticated) {
+        //if user isn't logged in or not all events are selected, nothing happens
         this.savingScheduleInProgress = true;
         $("span").css("pointer-events", "none"); //anything in a span will be disabled
         schedule.quarter = this.quarter;
@@ -721,9 +739,9 @@ export default {
         schedule.name = xss(this.updatedScheduleName);
         schedule.totalUnits = this.calculateUnits(
             schedule,
-            this.coursesComputed
-        );
-
+            this.courses
+        ); //This will break
+          //This will break
         api
             .saveSchedule(schedule)
             .then((response) => {

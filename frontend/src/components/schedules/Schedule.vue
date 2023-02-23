@@ -343,6 +343,7 @@ export default {
      */
 
     saveSchedule: function (schedule) {
+      console.log(JSON.stringify(schedule));
       if (this.$store.getters.userIsAuthenticated) {
         //if user isn't logged in, nothing happens
         this.savingScheduleInProgress = true;
@@ -376,6 +377,8 @@ export default {
      * delivers a toast showing that it has been deleted.
      */
     unFavoriteSchedule: async function (schedule) {
+      console.log(JSON.stringify(schedule));
+
       if (this.$store.getters.userIsAuthenticated) {
         const resp = await api.deleteSchedule(schedule);
         if (resp.status > 400) {
@@ -393,7 +396,6 @@ export default {
     saveName: function () {
       this.scheduleName = xss(this.scheduleName);
       this.popoverShow = false;
-      this.updatedScheduleName = this.scheduleName;
       //TODO: Stop errors from occuring by checking if we are on liked schedules page or all page (known in SchedulePaginator)
       api
         .updateScheduleName(this.schedule.id, this.scheduleName)

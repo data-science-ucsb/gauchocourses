@@ -211,8 +211,8 @@
             Schedule saved! Click My Schedules in the top right to view it.
         </b-alert>
         <b-alert
-            v-if="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0) ? true : false"
-            :show="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0) ? true : false"
+            v-if="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0 && currentView != 3) ? true : false"
+            :show="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0 && currentView != 3) ? true : false"
             variant="danger">
             No schedules match your selections. Try selecting more days or more times.
         </b-alert>
@@ -249,7 +249,7 @@
         </b-alert>
         <BuilderView
           v-if="currentView == 3"
-          :schedules="schedulesToRender.length"
+          :schedules="schedules[0]"
           :numShow="1">
         </BuilderView>
         <ListView
@@ -377,37 +377,36 @@ export default {
             let maxTime = '23:00';
 
             let intervals = [];
+             if (this.schedules.length != 0) {
+               this.schedules.forEach(schedule => {
+                 minTime = (schedule.minTime < minTime) ? schedule.minTime : minTime;
+                 maxTime = (schedule.maxTime > maxTime) ? schedule.maxTime : maxTime;
+               });
+             }
 
-            if (this.schedules.length != 0) {
-                this.schedules.forEach(schedule => {
-                    minTime = (schedule.minTime < minTime) ? schedule.minTime : minTime;
-                    maxTime = (schedule.maxTime > maxTime) ? schedule.maxTime : maxTime;
-                });
-            }
+             maxTime = this.$date(maxTime, 'HH:mm').add(1, 'hour').startOf('hour');
+             minTime = this.$date(minTime, 'HH:mm').subtract(1, 'hour').startOf('hour');
 
-            maxTime = this.$date(maxTime, 'HH:mm').add(1, 'hour').startOf('hour');
-            minTime = this.$date(minTime, 'HH:mm').subtract(1, 'hour').startOf('hour');
-
-            while (minTime < maxTime) {
-                intervals.push(minTime.format('HH:mm'));
-                minTime = minTime.add(30, 'minute');
-            }
+             while (minTime < maxTime) {
+               intervals.push(minTime.format('HH:mm'));
+               minTime = minTime.add(30, 'minute');
+             }
 
             return intervals;
         },
         filteredAndSortedSchedules: function() {
             const sortBy = this.sorting.attributes.selected;
-            this.schedules.map((x, index) => x.name = x.name ?  x.name : "Schedule "+index);
+            this.schedules.map((x, index) => x.name = x.name ? x.name : "Schedule " + index);
             return this.schedules
                 .filter(sched => {
-                    const withinDays = this.checkIfSubset(this.filtering.selected, sched.sortingAttributes.daysWithEvents);
-                    const withinTime = (
-                        sched.sortingAttributes.earliestBeginTime > this.filtering.selectedTimes[0] &&
-                        sched.sortingAttributes.latestEndTime < this.filtering.selectedTimes[1]
-                        )
-                    return withinDays && withinTime;
+                  const withinDays = this.checkIfSubset(this.filtering.selected, sched.sortingAttributes.daysWithEvents);
+                  const withinTime = (
+                      sched.sortingAttributes.earliestBeginTime > this.filtering.selectedTimes[0] &&
+                      sched.sortingAttributes.latestEndTime < this.filtering.selectedTimes[1]
+                  )
+                  return withinDays && withinTime;
                 })
-                .sort((a,b) => (a.sortingAttributes[sortBy] > b.sortingAttributes[sortBy]) ? 1 : -1 )
+                .sort((a, b) => (a.sortingAttributes[sortBy] > b.sortingAttributes[sortBy]) ? 1 : -1)
         },
         numSchedules: function() {
             let dayCount = {

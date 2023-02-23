@@ -36,7 +36,8 @@
 <!--          class="mb-4"-->
 <!--      ></ScheduleB>-->
       <ScheduleC
-        v-if="schedules > 0"
+        v-if="schedules"
+        :schedule="schedules"
         :customEvents="$store.state.selectedCustomEvents"
         :courses="$store.state.selectedCourses"
         class="mb-4"
@@ -59,7 +60,7 @@ export default {
       default: 1,
     },
     schedules: {
-      type: Number,
+      type: Object,
       required: false,
     },
     courses: {
