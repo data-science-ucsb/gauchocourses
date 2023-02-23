@@ -338,7 +338,7 @@ export default {
                 },
             },
             filtering: {
-                selectedTimes: ['06:00', '19:00'],
+                selectedTimes: ['00:00', '23:30'],
                 selected: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY'],
                 allSelected: true,
                 options: [
@@ -487,7 +487,7 @@ export default {
          */
         resetFiltersAndSorters() {
             this.filtering.selected = this.filtering.options.map(a => a.value);
-            this.filtering.selectedTimes =  ['07:00', '19:00'];
+            this.filtering.selectedTimes =  ['00:00', '23:30'];
             this.sorting.attributes.selected = this.sorting.attributes.options[0].value;
         },
         /**
