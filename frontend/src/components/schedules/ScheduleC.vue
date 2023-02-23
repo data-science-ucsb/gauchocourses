@@ -307,11 +307,12 @@ export default {
           overlaid: [],
           lectureSectionGroup: section.lectureSectionGroup,
           relatedSelected: false,
-          enrolledTotal: section.enrolledTotal,
+          //enrolledTotal is null if none enrolled
+          enrolledTotal: (section.enrolledTotal ?? section.maxEnroll),
           maxEnroll: section.maxEnroll,
           enrollCode: section.enrollCode,
           location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
-          instructor: section.instructors[0].instructor,
+          instructor: (section.instructors[0]?.instructor ?? "TBA"),
         };
       } else {
         let multipleevents = [];
@@ -330,11 +331,12 @@ export default {
           overlaid: [],
           lectureSectionGroup: section.lectureSectionGroup,
           relatedSelected: false, //FOR Lectures and Sections
-          enrolledTotal: section.enrolledTotal,
+          //enrolledTotal is null if none enrolled
+          enrolledTotal: (section.enrolledTotal ?? section.maxEnroll),
           maxEnroll: section.maxEnroll,
           enrollCode: section.enrollCode,
           location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
-          instructor: section.instructors[0].instructor,
+          instructor: (section.instructors[0]?.instructor ?? "TBA"),
         };
         for (let k = 0; k < multipletimeandplace.length; k++) {
           classinfo.daysOfWeek = multipletimeandplace[

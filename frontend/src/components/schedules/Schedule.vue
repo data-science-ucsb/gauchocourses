@@ -282,7 +282,6 @@ export default {
         FRIDAY: 5,
         SATURDAY: 6,
       };
-
       if (section.timeLocations.length == 1) {
         return {
           title: titletodisplay, //course.fullCourseNumber,
@@ -293,11 +292,12 @@ export default {
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
           isLecture: section.isLecture ? 2 : 1,
-          enrolledTotal: section.enrolledTotal,
+          //enrolledTotal is null if none enrolled
+          enrolledTotal: (section.enrolledTotal ?? section.maxEnroll),
           maxEnroll: section.maxEnroll,
           enrollCode: section.enrollCode,
           location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
-          instructor: section.instructors[0].instructor,
+          instructor: (section.instructors[0]?.instructor ?? "TBA"),
         };
       } else {
         var multipleevents = [];
@@ -311,11 +311,12 @@ export default {
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
           isLecture: section.isLecture ? 2 : 1,
-          enrolledTotal: section.enrolledTotal,
+          //enrolledTotal is null if none enrolled
+          enrolledTotal: (section.enrolledTotal ?? section.maxEnroll),
           maxEnroll: section.maxEnroll,
           enrollCode: section.enrollCode,
           location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
-          instructor: section.instructors[0].instructor,
+          instructor: (section.instructors[0]?.instructor ?? "TBA"),
         };
         for (var k = 0; k < multipletimeandplace.length; k++) {
           classinfo.daysOfWeek = multipletimeandplace[

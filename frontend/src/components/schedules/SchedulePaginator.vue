@@ -551,7 +551,7 @@ export default {
 
 <style scoped>
 
-/deep/ .nav-link.dropdown-toggle {
+.nav-link.dropdown-toggle {
     padding: 0.5rem;
 }
 
