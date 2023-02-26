@@ -711,15 +711,9 @@ export default {
       this.finishedSchedule = !calendarApi.getEvents().some(function(event) {
         return (event.display == "auto" && event.borderColor != "blue");
       });
-
-      //Noah's TODO's for Application:
-      //TODO ListView's SaveName should be based on updatedScheduleName (the name should be updated on frontend when saved)
-      //NOT TODO:  Remove extraneous Edit Schedule feature?
-      //NOT TODO set "Favorite Schedules" to true if it is already saved, same with the name and everything else for the entire application
-      //NOT TODO reset filters in schedule paginator affects schedule builder?
-      //NOT TODO make ScheduleC affected by sorting and filtering options?
-      //NOT TODO make ScheduleC affected by edit class section Sections?
-      //TODO: Merge features like Export to PDF
+      //TODO reset filters in schedule paginator affects schedule builder?
+      //TODO make ScheduleC affected by sorting and filtering options?
+      //TODO make ScheduleC affected by edit class section Sections?
       this.handleRemoveTabIndexFromEvents();
     },
     eventDidMount: function(info) {

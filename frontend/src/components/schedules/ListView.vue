@@ -147,7 +147,7 @@ export default {
     }
   },
   created: function () {
-
+    //TODO ListView's SaveName should be based on updatedScheduleName (the name should be updated on frontend when saved)
 
     this.schedule.forEach((schedule, i) => {
       //if this.courses has courses that are in the schedule, add them to the coursesComputed
