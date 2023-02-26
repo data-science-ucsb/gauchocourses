@@ -27,7 +27,7 @@
               :per-page="1"
               aria-controls="calendar">
           </b-pagination>
-            <b-nav>
+            <b-nav class="header-template">
                 <b-nav-item
                     v-b-tooltip.hover title="Change view"
                     @click="changeView(showFavoritesButton)">
@@ -36,6 +36,27 @@
                         :icon="viewIcons[currentView]"
                     />
                 </b-nav-item>
+
+
+              <b-nav-text
+                  v-if="currentView==3"
+                  class="navTitle"
+              >
+                Schedule Builder
+              </b-nav-text>
+              <b-nav-text
+                  v-else-if="currentView==4"
+                  class="navTitle"
+
+              >
+                Schedule View
+              </b-nav-text>
+              <b-nav-text
+                  v-else-if="currentView==10"
+                  class="navTitle"
+              >
+                List View
+              </b-nav-text>
 
                 <!-- Optional quarter selector -->
                 <b-nav-item-dropdown
@@ -158,6 +179,7 @@
                         size="sm"
                         @click="resetFiltersAndSorters"/>
                 </b-nav-item>
+
 
                 <b-nav-item
                     v-if="currentView == 3"
@@ -351,7 +373,8 @@ export default {
                 ]
             },
             sortingInProgress: false,
-            viewIcons: {1: "calendar", 2: "columns", 3: "pencil-alt", 4:"border-all", 10: "list", },
+            // viewIcons: {1: "calendar", 2: "columns", 3: "pencil-alt", 4:"border-all", 10: "list", },
+            viewIcons: {3: "pencil-alt", 4:"border-all", 10: "list", },
         }
     },
     computed: {
@@ -575,9 +598,13 @@ export default {
 .timeslider .b-dropdown-form:focus {
     outline: none !important;
 }
-
 /* removes padding of schedule cards in all views; */
 .card-body {
     padding: 0;
+}
+.navTitle {
+  font-weight: bold;
+  line-height: 28px;
+  height: 28px;
 }
 </style>

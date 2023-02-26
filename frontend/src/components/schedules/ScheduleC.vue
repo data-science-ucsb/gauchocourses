@@ -178,6 +178,7 @@ export default {
         initialView: 'timeGridWeek',
         editable: false,
         eventClick: this.eventClick,
+        eventClassNames: ['unselected']
       }
     },
     quarter: function () {
@@ -247,6 +248,7 @@ export default {
             startTime: classSection.timeLocations[0].beginTime,
             endTime: classSection.timeLocations[0].endTime,
             color: getBackgroundColor(classSection.name),
+            className: 'unselected',
             isLecture: 0,
             lectureSectionGroup: '',
             overlaid: [],
@@ -320,6 +322,7 @@ export default {
           endTime: section.timeLocations[0].endTime,
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
+          className: 'unselected',
           isLecture: section.isLecture ? 2 : 1,
           sectionSelected: false,
           overlaid: [],
@@ -344,7 +347,10 @@ export default {
           endTime: "",
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
+          className: 'unselected',
+
           isLecture: section.isLecture ? 2 : 1,
+
           sectionSelected: false,
           overlaid: [],
           lectureSectionGroup: section.lectureSectionGroup,
@@ -376,6 +382,8 @@ export default {
       if(arg.event.borderColor != "blue") { //If it is being selected
         if(arg.event.extendedProps.isLecture === 2) { //If Lecture
           arg.event.setProp( 'borderColor', 'blue' );
+          arg.event.setProp('classNames', ['selected']);
+
           this.selectedEvents.push(arg.event);
           calendarApi.getEvents().forEach(event => { //Loop through each event in calendar
             if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":"))) {
@@ -416,6 +424,7 @@ export default {
 
         else if (arg.event.extendedProps.isLecture === 1) { //If Section
           arg.event.setProp( 'borderColor', 'blue' );
+          arg.event.setProp('classNames', ['selected']);
           this.selectedEvents.push(arg.event);
           calendarApi.getEvents().forEach(event => { //Loop through each event in calendar
             if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":"))) { //If the same course
@@ -427,6 +436,7 @@ export default {
               else if(event.extendedProps.isLecture === 2) { //If it's part of the same course, lecturesection group, and it is this lecture, select it
                 if(event.borderColor != 'blue') {
                   event.setProp('borderColor', 'blue');
+                  event.setProp('classNames', ['selected']);
                   this.selectedEvents.push(event);
                 }
                 calendarApi.getEvents().forEach(function (eventTwo) { //get rid of all overlapping events of the lectures
@@ -476,6 +486,7 @@ export default {
 
         else { //If CustomEvent
           arg.event.setProp( 'borderColor', 'blue' );
+          arg.event.setProp('classNames', ['selected']);
           this.selectedEvents.push(arg.event);
           calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
             if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) { //Get rid of all overlapping events for this customevent
@@ -539,11 +550,13 @@ export default {
               (course) => course.courseId == arg.event.extendedProps.courseId
           );
           arg.event.setProp('borderColor', getBorderColor(course.deptCode));
+          arg.event.setProp('classNames', ['unselected']);
           this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != arg.event.groupId);
           calendarApi.getEvents().forEach(event => { //Loop through each event in calendar
             if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":"))) { //If it's the same course
               if(event.extendedProps.isLecture === 1 && event.borderColor == "blue") { //deselect the selected sections for this lecture and then show all sections
                 event.setProp('borderColor', getBorderColor(course.deptCode));
+                event.setProp('classNames', ['unselected']);
                 this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != event.groupId);
                 calendarApi.getEvents().forEach(function (eventTwo) { //Adds all overlapping events of section
                   if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) {
@@ -601,6 +614,8 @@ export default {
               (course) => course.courseId == arg.event.extendedProps.courseId
           );
           arg.event.setProp('borderColor', getBorderColor(course.deptCode));
+          arg.event.setProp('classNames', ['unselected']);
+
           this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != arg.event.groupId);
           calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
             if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":")) && event.extendedProps.lectureSectionGroup == arg.event.extendedProps.lectureSectionGroup && event.extendedProps.isLecture === 1) { //If the same course, same lectureSectionGroup, and it is a section, show it
@@ -640,6 +655,8 @@ export default {
 
         else { //If Custom Event
           arg.event.setProp( 'borderColor', 'transparent');
+          arg.event.setProp('classNames', ['unselected']);
+
           this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != arg.event.groupId);
           calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
             if(event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) {
@@ -890,12 +907,20 @@ export default {
 a:focus {
 
 }
-
 .tooltip > .tooltip-inner.course-tooltip {
   text-align: left;
   font-size: 9pt;
 }
-
+.unselected {
+  filter: opacity(50%);
+}
+.selected {
+  filter: opacity(100%);
+}
+.fc-timegrid-event-harness {
+  background-color: white;
+  border-radius: 3px;
+}
 </style>
 
 <!-- steven: to reduce top/bottom padding in schedule header -->
