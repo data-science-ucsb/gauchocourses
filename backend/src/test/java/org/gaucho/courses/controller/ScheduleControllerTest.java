@@ -6,6 +6,7 @@ import com.github.fge.jsonpatch.JsonPatch;
 import org.assertj.core.util.Lists;
 import org.gaucho.courses.DTO.ScheduleControllerRequest;
 import org.gaucho.courses.DTO.ScheduleControllerResponse;
+import org.gaucho.courses.DTO.ScheduleControllerSaveRequest;
 import org.gaucho.courses.TestObjects;
 import org.gaucho.courses.auth.UserController;
 import org.gaucho.courses.domain.scheduling.Schedule;
@@ -64,7 +65,12 @@ class ScheduleControllerTest {
         when(scheduleRepository.save(schedule)).thenReturn(savedScheduleMock);
         when(userController.getUserEmail()).thenReturn("dummy_email@email.com");
 
-        ResponseEntity response = controller.saveSchedule(schedule);
+        ScheduleControllerSaveRequest savableSchedule = new ScheduleControllerSaveRequest();
+        savableSchedule.setSchedule(schedule);
+        savableSchedule.setCustomEvents(null);
+        savableSchedule.setScheduledClassSections(null);
+        savableSchedule.setSelectedClassSections(null);
+        ResponseEntity response = controller.saveSchedule(savableSchedule);
 
         Assert.assertEquals(HttpStatus.CREATED, response.getStatusCode());
         Assert.assertEquals(id, response.getBody());
@@ -77,7 +83,13 @@ class ScheduleControllerTest {
         schedule.setUserEmail("dummy_email@email.com");
         schedule.setQuarter("20192");
 
-        ResponseEntity response = controller.saveSchedule(schedule);
+        ScheduleControllerSaveRequest savableSchedule = new ScheduleControllerSaveRequest();
+        savableSchedule.setSchedule(schedule);
+        savableSchedule.setCustomEvents(null);
+        savableSchedule.setScheduledClassSections(null);
+        savableSchedule.setSelectedClassSections(null);
+
+        ResponseEntity response = controller.saveSchedule(savableSchedule);
 
         Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -94,7 +106,13 @@ class ScheduleControllerTest {
         when(scheduleRepository.findById(any())).thenReturn(Optional.of(savedSchedule));
         when(scheduleRepository.save(any())).thenReturn(savedSchedule);
 
-        controller.saveSchedule(savedSchedule);
+        ScheduleControllerSaveRequest savableSchedule = new ScheduleControllerSaveRequest();
+        savableSchedule.setSchedule(savedSchedule);
+        savableSchedule.setCustomEvents(null);
+        savableSchedule.setScheduledClassSections(null);
+        savableSchedule.setSelectedClassSections(null);
+
+        controller.saveSchedule(savableSchedule);
 
         String json = "[{\"op\": \"replace\", \"path\": \"/name\", \"value\": \"Schedule New\"}]";
 
@@ -115,7 +133,13 @@ class ScheduleControllerTest {
 
         when(userController.getUserEmail()).thenReturn("different_email@email.com");
 
-        ResponseEntity response = controller.saveSchedule(schedule);
+        ScheduleControllerSaveRequest savableSchedule = new ScheduleControllerSaveRequest();
+        savableSchedule.setSchedule(schedule);
+        savableSchedule.setCustomEvents(null);
+        savableSchedule.setScheduledClassSections(null);
+        savableSchedule.setSelectedClassSections(null);
+
+        ResponseEntity response = controller.saveSchedule(savableSchedule);
 
         Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }

@@ -276,7 +276,7 @@ export default {
           schedule.totalUnits = this.calculateUnits(schedule, this.coursesComputed);
 
           api
-            .saveSchedule(schedule)
+            .saveSchedule(schedule, null, null, null)
             .then((response) => {
               schedule.id = response.data;
               this.scheduleSavedStatus = "successful";

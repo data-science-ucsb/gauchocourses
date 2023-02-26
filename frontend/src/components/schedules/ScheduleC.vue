@@ -9,7 +9,7 @@
       <div class="no-wrap d-flex flex-row align-items-center">
         <span class="d-inline-block" tabindex="0">
           <font-awesome-icon
-              v-if="schedule.favorited"
+              v-if="favorited"
               icon="heart"
               size="sm"
               :id="'favorite-icon'+_uid"
@@ -23,7 +23,7 @@
               size="sm"
               :id="'favorite-icon'+_uid"
               style="color: #FFC7C7;"
-              @click="saveSchedule(schedule)"
+              @click="saveSchedule()"
           />
         </span>
 
@@ -39,10 +39,9 @@
           All events must be selected to save a schedule!
         </b-tooltip>
 
-        <!--TODO: Can either save the schedule that was deleted for undo or get rid of this toast if schedule changes-->
         <b-toast :id="'deleted-toast-' + _uid" title="You deleted a schedule!" variant="warning">
           The schedule, "{{ schedule.name }}" was deleted. Click the button to undo.
-          <b-button @click="saveSchedule(schedule)" variant="warning">Undo</b-button>
+          <b-button @click="saveSchedule()" variant="warning">Undo</b-button>
         </b-toast>
 
         <b-button
@@ -77,7 +76,6 @@
             </b-col>
           </b-row>
         </b-popover>
-
       </div>
     </template>
     <div v-if="doneLoading" class="weekly-calendar">
@@ -98,13 +96,11 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import $ from "jquery";
 import api from "@/components/backend-api.js";
 
-// import api from "@/components/backend-api.js";
 import {
   getBackgroundColor,
   getBorderColor,
 } from "@/components/util/color-utils.js";
 import xss from "xss";
-// import xss from "xss";
 import { Tooltip } from "bootstrap";
 
 export default {
@@ -124,27 +120,27 @@ export default {
   data: function () {
     return {
       schedule: {
-        id: '',
+        id: null,
         classes: [],
         customEvents: [],
         sortingAttributes: {
           totalMinutesBetweenEvents: 0,
           totalMinutesFromMidnight: 0,
-          daysWithEvents: {},
-          earliestBeginTime: '00:00:00',
-          latestEndTime: '23:59:59',
+          daysWithEvents: [],
+          earliestBeginTime: '',
+          latestEndTime: '',
         },
         quarter: null,
         userEmail	:	null,
         name: "My Schedule",
         totalUnits	:	0,
         conflicting	:	false,
-        favorited: false,
       },
+      favorited: false,
+      selectedEvents: [],
       updatedScheduleName: "My Schedule",
       finishedSchedule: false,
       doneLoading: false,
-      savingScheduleInProgress: false,
       scheduleSavedStatus: null,
       popoverShow: false,
       errors: [],
@@ -243,10 +239,10 @@ export default {
             endTime: classSection.timeLocations[0].endTime,
             color: getBackgroundColor(classSection.name),
             isLecture: 0,
-            lectureSectionGroup: "",
+            lectureSectionGroup: '',
             overlaid: [],
-            sectionSelected: false, //For sections, Section Differentitation
-            relatedSelected: false, //FOR Lectures and Sections, Course Differentiation
+            sectionSelected: false,
+            relatedSelected: false,
           };
         } else {
           return classSection.selectedEnrollCodes.map((section) =>
@@ -265,8 +261,6 @@ export default {
         return schedule;
       }
       //PARSE ARRAY
-      // console.log(JSON.stringify(courses));
-
       let classes = courses
           .map(createScheduleObject)
           .flat();
@@ -282,16 +276,12 @@ export default {
       customevents.forEach((item) => {
         totalevents.push(item);
       })
-
-      // console.log(JSON.stringify(totalevents));
-      // this.eventsComputed = totalevents;
       return totalevents;
     },
     /* Uses an enroll code and the course object to return an event object
      * that is compatible with FullCalendar.
      */
     eventFromEnrollCode: function (enrollcode, course) {
-      // console.log(JSON.stringify(course));
       const section = course.classSections.find(
           (section) => section.enrollCode == enrollcode
       );
@@ -369,19 +359,25 @@ export default {
         return multipleevents;
       }
     },
-    eventClick: function (arg) { //TODO: optimize by calling the forEach as minimum and compact as possible, and can also add lazy loading (for concurrent and lectureSectionGroups), or sacrifice rendering time for fast computing time by storing each id and using calendar::getEventById
+    //TODO: Can optimize by adding lazy loading (for concurrent and lectureSectionGroups), and sacrifice rendering time for fast computing time by storing an id for each event and using calendar::getEventById
+    eventClick: function (arg) {
+      this.$bvToast.hide('deleted-toast-' + this._uid);
       let calendarApi = this.$refs.calendar.getApi();
       let concurrentLectureSectionGroups = [];
       if(arg.event.borderColor != "blue") { //If it is being selected
         if(arg.event.extendedProps.isLecture === 2) { //If Lecture
           arg.event.setProp( 'borderColor', 'blue' );
-          calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
-            if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":"))) { // Get rid of all lectures and sections that are not part of the section group for a course
+          this.selectedEvents.push(arg.event);
+          calendarApi.getEvents().forEach(event => { //Loop through each event in calendar
+            if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":"))) {
+              // Get rid of all lectures and sections that are not part of the section group for a course
               if(event.extendedProps.lectureSectionGroup != arg.event.extendedProps.lectureSectionGroup) {
                 event.setExtendedProp('relatedSelected', true);
                 event.setProp('display', 'none');
               }
-              else if(event.extendedProps.isLecture === 2 && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) { // Checks for the other lectures' events and hides their concurrent ones as well  && new Date(event.start).getTime() != new Date(arg.event.start).getTime()
+              // Checks for the other lectures' events and hides their concurrent events
+              else if(event.extendedProps.isLecture === 2 && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) {
+                this.selectedEvents.push(event);
                 calendarApi.getEvents().forEach(function (eventTwo) {
                   if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
                     eventTwo.setProp( 'display', 'none' );
@@ -395,7 +391,8 @@ export default {
                 });
               }
             }
-            if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
+            //Get rid of all overlapping events for this lecture
+            if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) {
               event.setProp( 'display', 'none' );
               if(!concurrentLectureSectionGroups.includes(event.extendedProps.lectureSectionGroup)) {
                 concurrentLectureSectionGroups.push(event.extendedProps.lectureSectionGroup);
@@ -410,14 +407,19 @@ export default {
 
         else if (arg.event.extendedProps.isLecture === 1) { //If Section
           arg.event.setProp( 'borderColor', 'blue' );
-          calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
+          this.selectedEvents.push(arg.event);
+          calendarApi.getEvents().forEach(event => { //Loop through each event in calendar
             if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":"))) { //If the same course
-              if(event.extendedProps.lectureSectionGroup != arg.event.extendedProps.lectureSectionGroup) { //Get rid of all similar courses
+              //Get rid of all similar courses
+              if(event.extendedProps.lectureSectionGroup != arg.event.extendedProps.lectureSectionGroup) {
                 event.setExtendedProp('relatedSelected', true);
                 event.setProp( 'display', 'none' );
               }
               else if(event.extendedProps.isLecture === 2) { //If it's part of the same course, lecturesection group, and it is this lecture, select it
-                event.setProp('borderColor', 'blue');
+                if(event.borderColor != 'blue') {
+                  event.setProp('borderColor', 'blue');
+                  this.selectedEvents.push(event);
+                }
                 calendarApi.getEvents().forEach(function (eventTwo) { //get rid of all overlapping events of the lectures
                   if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
                     eventTwo.setProp( 'display', 'none' );
@@ -435,7 +437,8 @@ export default {
                   event.setProp('display', 'none');
                   event.setExtendedProp('sectionSelected', true);
                 }
-                else { //check if it is a section we want (Math 8 Spring 2023 has two sections per class) then hide its concurrent classes
+                else if(new Date(event.start).getTime() != new Date(arg.event.start).getTime()) { //check if it is a section we want (Math 8 Spring 2023 has two sections per class) then hide its concurrent classes
+                  this.selectedEvents.push(event);
                   calendarApi.getEvents().forEach(function (eventTwo) { //get rid of all overlapping events of the lectures
                     if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
                       eventTwo.setProp( 'display', 'none' );
@@ -464,6 +467,7 @@ export default {
 
         else { //If CustomEvent
           arg.event.setProp( 'borderColor', 'blue' );
+          this.selectedEvents.push(arg.event);
           calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
             if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) { //Get rid of all overlapping events for this customevent
               event.setProp( 'display', 'none' );
@@ -474,8 +478,9 @@ export default {
                 event.setExtendedProp('overlaid', event.extendedProps.overlaid.concat(arg.event.groupId));
               }
             }
-            if(event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) { //Other custom events Concurrency Check
-              calendarApi.getEvents().forEach(function (eventTwo) { //get rid of all overlapping events of the lectures
+            if(event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) { //Hide the other custom event's concurrent events
+              this.selectedEvents.push(event);
+              calendarApi.getEvents().forEach(function (eventTwo) {
                 if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
                   eventTwo.setProp( 'display', 'none' );
                   if(!concurrentLectureSectionGroups.includes(eventTwo.extendedProps.lectureSectionGroup)) {
@@ -490,26 +495,30 @@ export default {
           });
         }
         for(let k = 0; k < concurrentLectureSectionGroups.length; k++) { //Checking if all sections or all lectures of a section group is gone because of concurrency checks
-          let numberLectures = 0;
-          let numberSections = 0;
-          calendarApi.getEvents().forEach(function (event) {
-            if(event.extendedProps.lectureSectionGroup == concurrentLectureSectionGroups[k]) { //All events that are part of the lectureSectionGroup
-              if(event.display != 'none') {
-                if(event.extendedProps.isLecture === 2) {
-                  ++numberLectures;
-                } else {
-                  ++numberSections;
+          if (concurrentLectureSectionGroups[k] != '') {
+            let numberLectures = 0;
+            let numberSections = 0;
+            calendarApi.getEvents().forEach(function (event) {
+              if (event.extendedProps.lectureSectionGroup == concurrentLectureSectionGroups[k]) { //All events that are part of the lectureSectionGroup
+                if (event.display != 'none') {
+                  if (event.extendedProps.isLecture === 2) {
+                    ++numberLectures;
+                  } else {
+                    ++numberSections;
+                  }
                 }
               }
-            }
-          });
-          if(!(numberLectures > 0 && numberSections > 0)) {
-            calendarApi.getEvents().forEach(function (event) {
-              if(event.extendedProps.lectureSectionGroup === concurrentLectureSectionGroups[k]) {
-                event.setProp( 'display', 'none' );
-                //Probably need a new member variable set here as well
-              }
             });
+            if (numberLectures == 0 || numberSections == 0) {
+              calendarApi.getEvents().forEach(event => {
+                if (event.extendedProps.lectureSectionGroup == concurrentLectureSectionGroups[k]) {
+                  event.setProp('display', 'none');
+                  if(event.borderColor == 'blue') {
+                    this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != event.groupId);
+                  }
+                }
+              });
+            }
           }
         }
       }
@@ -521,11 +530,12 @@ export default {
               (course) => course.courseId == arg.event.extendedProps.courseId
           );
           arg.event.setProp('borderColor', getBorderColor(course.deptCode));
-
-          calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
-            if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":"))) { //If its the same course
+          this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != arg.event.groupId);
+          calendarApi.getEvents().forEach(event => { //Loop through each event in calendar
+            if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":"))) { //If it's the same course
               if(event.extendedProps.isLecture === 1 && event.borderColor == "blue") { //deselect the selected sections for this lecture and then show all sections
                 event.setProp('borderColor', getBorderColor(course.deptCode));
+                this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != event.groupId);
                 calendarApi.getEvents().forEach(function (eventTwo) { //Adds all overlapping events of section
                   if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) {
                     eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.filter((item) => {
@@ -547,7 +557,7 @@ export default {
                 event.setProp('display', 'auto');
               }
             }
-            if(event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) { //For the other lectures events that become unselected, show their concurrent evens
+            if(event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) { //For the other lectures events that become unselected, show their concurrent events
               calendarApi.getEvents().forEach(function (eventTwo) {
                 if(eventTwo.groupId !== event.groupId && eventTwo.extendedProps.sectionSelected == false && eventTwo.extendedProps.relatedSelected == false && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Adds all overlapping events for other lectures
                   eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.filter((item) => {
@@ -582,7 +592,7 @@ export default {
               (course) => course.courseId == arg.event.extendedProps.courseId
           );
           arg.event.setProp('borderColor', getBorderColor(course.deptCode));
-
+          this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != arg.event.groupId);
           calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
             if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":")) && event.extendedProps.lectureSectionGroup == arg.event.extendedProps.lectureSectionGroup && event.extendedProps.isLecture === 1) { //If the same course, same lectureSectionGroup, and it is a section, show it
               event.setExtendedProp('sectionSelected', false);
@@ -590,12 +600,9 @@ export default {
                 event.setProp('display', 'auto');
               }
             }
-            // if(event.extendedProps.sectionSelected == false && event.extendedProps.relatedSelected == false && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) { //Add all overlapping events for this section
-            //   event.setProp( 'display', 'auto' );
-            // }
-            if(event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) { //Other custom events Concurrency Check
-              calendarApi.getEvents().forEach(function (eventTwo) { //Adds back all overlapping events of these sections
-                if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
+            if(event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) {
+              calendarApi.getEvents().forEach(function (eventTwo) {
+                if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) {
                   eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.filter((item)=>{
                     return item != event.groupId;
                   }));
@@ -608,7 +615,7 @@ export default {
                 }
               });
             }
-            if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) { //Adds all overlapping events for this lecture
+            if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) {
               event.setExtendedProp('overlaid', event.extendedProps.overlaid.filter((item)=>{
                 return item != arg.event.groupId;
               }));
@@ -622,12 +629,13 @@ export default {
           });
         }
 
-        else { //If Custom Event: First: Do CustomEvent Logic, Subtract Concurrencys, then show or hide things
+        else { //If Custom Event
           arg.event.setProp( 'borderColor', 'transparent');
+          this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != arg.event.groupId);
           calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
-            if(event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) { //Other custom events Concurrency Check
-              calendarApi.getEvents().forEach(function (eventTwo) { //Adds back all overlapping events of these sections
-                if (eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
+            if(event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) {
+              calendarApi.getEvents().forEach(function (eventTwo) {
+                if (eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) {
                   eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.filter((item) => {
                     return item != event.groupId;
                   }));
@@ -640,7 +648,7 @@ export default {
                 }
               });
             }
-            if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) { //Adds all overlapping events for this lecture
+            if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) {
               event.setExtendedProp('overlaid', event.extendedProps.overlaid.filter((item)=>{
                 return item != arg.event.groupId;
               }));
@@ -652,31 +660,39 @@ export default {
               }
             }
           });
-          for(let k = 0; k < concurrentLectureSectionGroups.length; k++) { //Checking if all sections or all lectures of a section group is gone because of concurrency checks
+        }
+        for(let k = 0; k < concurrentLectureSectionGroups.length; k++) {
+          if(concurrentLectureSectionGroups[k] != '') {
             let numberLectures = 0;
             let numberSections = 0;
+            let totalNumberSections = 0;
             calendarApi.getEvents().forEach(function (event) {
-              if(event.extendedProps.lectureSectionGroup == concurrentLectureSectionGroups[k]) { //All events that are part of the lectureSectionGroup
-                if(event.extendedProps.sectionSelected == false && event.extendedProps.relatedSelected == false && event.extendedProps.overlaid.length === 0) {
-                  if(event.extendedProps.isLecture === 2) {
+              if (event.extendedProps.lectureSectionGroup == concurrentLectureSectionGroups[k]) {
+                if (event.extendedProps.sectionSelected == false && event.extendedProps.relatedSelected == false && event.extendedProps.overlaid.length === 0) {
+                  if (event.extendedProps.isLecture === 2) {
                     ++numberLectures;
                   } else {
                     ++numberSections;
                   }
                 }
+                if(event.extendedProps.isLecture === 1) {
+                  ++totalNumberSections;
+                }
               }
             });
-            if(numberLectures > 0 && numberSections > 0) {
-              calendarApi.getEvents().forEach(function (event) {
-                if(event.extendedProps.lectureSectionGroup === concurrentLectureSectionGroups[k] && event.extendedProps.sectionSelected == false && event.extendedProps.relatedSelected == false && event.extendedProps.overlaid.length === 0) {
-                  event.setProp( 'display', 'auto' );
+            if (totalNumberSections == 0 || (numberLectures > 0 && numberSections > 0)) {
+              calendarApi.getEvents().forEach(event => {
+                if (event.extendedProps.lectureSectionGroup === concurrentLectureSectionGroups[k] && event.extendedProps.sectionSelected == false && event.extendedProps.relatedSelected == false && event.extendedProps.overlaid.length === 0) {
+                  event.setProp('display', 'auto');
+                  if(event.borderColor == 'blue') {
+                    this.selectedEvents.push(event);
+                  }
                 }
               });
-            }
-            else {
+            } else {
               calendarApi.getEvents().forEach(function (event) {
-                if(event.extendedProps.lectureSectionGroup === concurrentLectureSectionGroups[k]) {
-                  event.setProp( 'display', 'none' );
+                if (event.extendedProps.lectureSectionGroup === concurrentLectureSectionGroups[k]) {
+                  event.setProp('display', 'none');
                 }
               });
             }
@@ -686,82 +702,18 @@ export default {
       this.finishedSchedule = !calendarApi.getEvents().some(function(event) {
         return (event.display == "auto" && event.borderColor != "blue");
       });
-      // if(this.finishedSchedule) {
-      //   //TODO: Clear last schedule, or set it equal to savable schedule.
-      //   // let savableSchedule = {};
-      //   calendarApi.getEvents().forEach(function(event) {
-      //     if(event.display == "auto") {
-      //       if(event.extendedProps.isLecture === 0) {
-      //         if(!this.schedule.customEvents.find(customEvent => customEvent.name == event.title)) {
-      //           this.customEvents.push(this.customEvents );
-      //         }
-      //       }
-      //       else if(event.extendedProps.isLecture === 1) {
-      //         let foundIndex = this.schedule.classes.findIndex(course => course.courseId == event.extendedProps.courseId);
-      //         if(!foundIndex) { //If this course hasn't already been added to schedule.classes
-      //           this.schedule.classes.push({
-      //             courseId: event.extendedProps.courseId,
-      //             scheduledEnrollCodes: [
-      //               event.extendedProps.enrollCode,
-      //             ],
-      //             selectedEnrollCodes: [],
-      //           });
-      //         }
-      //         else {
-      //           this.schedule.classes[foundIndex].scheduledEnrollCodes.push(event.extendedProps.enrollCode);
-      //         }
-      //       }
-      //       else { //Lecture event
-      //         let foundIndex = this.schedule.classes.findIndex(course => course.courseId == event.extendedProps.courseId);
-      //         if(!foundIndex) { //If this course hasn't already been added to schedule.classes
-      //           this.schedule.classes.push({
-      //             courseId: event.extendedProps.courseId,
-      //             scheduledEnrollCodes: [
-      //               event.extendedProps.enrollCode,
-      //             ],
-      //             selectedEnrollCodes: [],
-      //           });
-      //         }
-      //         else {
-      //           this.schedule.classes[foundIndex].scheduledEnrollCodes.unshift(event.extendedProps.enrollCode);
-      //         }
-      //       }
-      //     }
-      //   });
-      // }
 
-      // id: '',
-      //     classes: [],
-      //     customEvents: this.customEvents, //have to check whether customEvents is blocked out still
-      //     sortingAttributes: {
-      //   totalMinutesBetweenEvents: 0,
-      //       totalMinutesFromMidnight: 0,
-      //       daysWithEvents: {},
-      //   earliestBeginTime: '00:00:00',
-      //       latestEndTime: '23:59:59',
-      // },
-      // quarter	:	this.exampleSchedule.quarter,
-      //     userEmail	:	null,
-      //     name: "My Schedule",
-      //     totalUnits	:	0,
-      //     conflicting	:	false,
-      //     favorited: false,
-
-      //DONE TODO: You can now edit schedule name on home page
-      //TODO ListView SaveName should be based on updatedScheduleName
-      //NOT TODO:  Remove extraneous Edit Schedule feature
-      //NOT TODO set "Favorite Schedules" to true if it is already saved, same with the name and everything else..
-      //NOT TODO hide edit courses for current view == 3
-      //NOT TODO npm install TRIVIAL
-      //NOT TODO reset filters in schedule paginator affects schedule builder? INSANE
-      //NOT TODO make schedule builder affected by sorting and filtering options? INSANE
-      //NOT TODO make schedule builder affected by edit class section Sections? INSANE
+      //Noah's TODO's for Application:
+      //TODO ListView's SaveName should be based on updatedScheduleName (the name should be updated on frontend when saved)
+      //NOT TODO:  Remove extraneous Edit Schedule feature?
+      //NOT TODO set "Favorite Schedules" to true if it is already saved, same with the name and everything else for the entire application
+      //NOT TODO reset filters in schedule paginator affects schedule builder?
+      //NOT TODO make ScheduleC affected by sorting and filtering options?
+      //NOT TODO make ScheduleC affected by edit class section Sections?
       //TODO: Merge features like Export to PDF
-      // TODO: Put Back all features like LikedINSANE
       this.handleRemoveTabIndexFromEvents();
     },
     eventDidMount: function(info) {
-      // alert(JSON.stringify(info.event.extendedProps));
       if (info.event.extendedProps.isLecture != 0) {
         return new Tooltip(info.el, {
           title: "<b>" + info.event.extendedProps.courseId + " — " + (info.event.extendedProps.isLecture == 1 ? "Section" : "Lecture") + "</b><br>" +
@@ -777,47 +729,66 @@ export default {
         });
       }
     },
-
-
-    calculateUnits: function (schedule, courses) {
-      var total = 0;
-      schedule.classes.forEach((item) => {
-        const course = courses.find(
-            (course) => course.courseId == item.courseId
-        );
-        total += course.unitsFixed;
-      });
-      return total;
-    },
     // /**
     //  * POSTS the given schedule to the backend for storage. Sets the quarter, name, units, and userEmail properties on the schedule.
     //  */
-    saveSchedule: function (schedule) {
+    saveSchedule: function () {
+      //if user isn't logged in or not all events are selected, nothing happens
       if(this.finishedSchedule && this.$store.getters.userIsAuthenticated) {
-        //if user isn't logged in or not all events are selected, nothing happens
-        this.savingScheduleInProgress = true;
+
+        let customEventsSchedule = [];
+        let selectedClassSections = [];
+        let scheduledClassSections = [];
+        let totalUnits = 0;
+
+        this.selectedEvents.forEach(event => {
+          if(event.extendedProps.isLecture === 0) { //Custom Event
+            const customEvent = this.customEvents.find(
+                (customEvent) => customEvent.name == event.title
+            );
+            if(!customEventsSchedule.find(customEventSchedule => customEventSchedule.name == customEvent.name)) {
+              customEventsSchedule.push(customEvent);
+            }
+          }
+          else { //Course
+            const course = this.courses.find( //Find the course it is a part of
+                (course) => course.courseId == event.extendedProps.courseId
+            );
+            totalUnits += course.unitsFixed; //Calculate Units
+
+            course.classSections.forEach(section => { //Add each section of the course to scheduledClassSections
+              if(!selectedClassSections.find(selectedClassSection => selectedClassSection.enrollCode == section.enrollCode)) {
+                selectedClassSections.push(section);
+              }
+            });
+
+            const section = course.classSections.find( //Find the section this event is
+                (classSection) => classSection.enrollCode == event.groupId
+            );
+            if(!scheduledClassSections.find(scheduledClassSection => scheduledClassSection.enrollCode == section.enrollCode)) {
+              scheduledClassSections.push(section);
+            }
+          }
+        });
+
         $("span").css("pointer-events", "none"); //anything in a span will be disabled
-        schedule.quarter = this.quarter;
-        schedule.userEmail = this.$store.getters.userInfo.email;
-        schedule.name = xss(this.updatedScheduleName);
-        schedule.totalUnits = this.calculateUnits(
-            schedule,
-            this.courses
-        ); //This will break
-          //This will break
+        this.schedule.quarter = this.quarter;
+        this.schedule.userEmail = this.$store.getters.userInfo.email;
+        this.schedule.name = xss(this.updatedScheduleName);
+        this.schedule.totalUnits = totalUnits;
+
         api
-            .saveSchedule(schedule)
+            .saveSchedule(this.schedule, customEventsSchedule, selectedClassSections, scheduledClassSections)
             .then((response) => {
-              schedule.id = response.data;
+              this.schedule = response.data; //TODO: test if this works, by seeing if you can delete the schedule after saving it
               this.scheduleSavedStatus = "successful";
             })
             .catch((error) => {
               console.error(error);
               this.scheduleSavedStatus = "failed";
             });
-        this.savingScheduleInProgress = false; // Either case, release the button
         $("span").css("pointer-events", "auto");
-        this.$set(schedule, 'favorited', true);
+        this.favorited = true;
         this.$forceUpdate();
       }
     },
@@ -826,13 +797,13 @@ export default {
     //  * delivers a toast showing that it has been deleted.
     //  */
     unFavoriteSchedule: async function (schedule) {
-      if (this.$store.getters.userIsAuthenticated) {
+      if(this.$store.getters.userIsAuthenticated) {
         const resp = await api.deleteSchedule(schedule);
         if (resp.status > 400) {
           return;
         } else {
           this.$bvToast.show('deleted-toast-' + this._uid);
-          this.$set(schedule, 'favorited', false);
+          this.favorited = false;
           this.$forceUpdate();
         }
       }

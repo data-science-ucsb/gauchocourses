@@ -309,7 +309,8 @@ export default {
         this.resetView();
         this.quarters = this.getQuarters();
 
-        // Use a setter to initialize selectedClassSectionsHaveUpdated to false?
+
+      // Use a setter to initialize selectedClassSectionsHaveUpdated to false?
     },
     data: function() {
         return {

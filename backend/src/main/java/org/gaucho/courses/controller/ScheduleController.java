@@ -5,6 +5,7 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.extern.slf4j.Slf4j;
 import org.gaucho.courses.DTO.ScheduleControllerRequest;
 import org.gaucho.courses.DTO.ScheduleControllerResponse;
+import org.gaucho.courses.DTO.ScheduleControllerSaveRequest;
 import org.gaucho.courses.auth.UserController;
 import org.gaucho.courses.controller.service.LazyCartesianProductScheduler;
 import org.gaucho.courses.domain.core.Event;
@@ -116,38 +117,74 @@ public class ScheduleController {
      */
     @PostMapping(value = "/")
     @Secured("ROLE_USER")
-    public ResponseEntity<?> saveSchedule(@RequestBody Schedule schedule) {
+    public ResponseEntity<?> saveSchedule(@RequestBody ScheduleControllerSaveRequest scheduleControllerSaveRequest) {
 
         String authenticatedUsersEmail = userController.getUserEmail();
+        boolean isCustom = scheduleControllerSaveRequest.getSelectedClassSections() != null;
+
+        // If this schedule is a custom schedule, we need to build it as a scheduleBuilder object to calculate
+        // sortable attributes and not create duplicate code in frontend ScheduleC.Vue
+        if (isCustom) {
+            Schedule customSchedule = new Schedule.ScheduleBuilder(scheduleControllerSaveRequest.getSchedule().getQuarter(), authenticatedUsersEmail)
+                    .setScheduledClasses(scheduleControllerSaveRequest.getScheduledClassSections())
+                    .setSelectedClasses(scheduleControllerSaveRequest.getSelectedClassSections())
+                    .setCustomEvents(scheduleControllerSaveRequest.getCustomEvents())
+                    .build();
+
+            String quarter = scheduleControllerSaveRequest.getSchedule().getQuarter();
+            String userEmail = scheduleControllerSaveRequest.getSchedule().getUserEmail();
+            String scheduleName = scheduleControllerSaveRequest.getSchedule().getName();
+            int totalUnits = scheduleControllerSaveRequest.getSchedule().getTotalUnits();
+
+            scheduleControllerSaveRequest.setSchedule(customSchedule);
+            scheduleControllerSaveRequest.getSchedule().setQuarter(quarter);
+            scheduleControllerSaveRequest.getSchedule().setUserEmail(userEmail);
+            scheduleControllerSaveRequest.getSchedule().setName(scheduleName);
+            scheduleControllerSaveRequest.getSchedule().setTotalUnits(totalUnits);
+        }
 
         List<Schedule> userSchedules = scheduleRepository.findByUserEmail(authenticatedUsersEmail);
 
         // Record exists, persist
-        // In order to use IDs to check if a schedule already exists,
-        // we can try hashing objects to IDs or something similar.
+        // In order to use IDs to check if a schedule already exists.
         for (Schedule userSchedule : userSchedules) {
-            if (userSchedule.getClasses().equals(schedule.getClasses()) && userSchedule.getQuarter().equals(schedule.getQuarter()) && userSchedule.getCustomEvents().equals(schedule.getCustomEvents())) {
-                return ResponseEntity
-                        .status(HttpStatus.ACCEPTED)
-                        .body(userSchedule.getId());
+            if (userSchedule.getClasses().equals(scheduleControllerSaveRequest.getSchedule().getClasses()) && userSchedule.getQuarter().equals(scheduleControllerSaveRequest.getSchedule().getQuarter()) && userSchedule.getCustomEvents().equals(scheduleControllerSaveRequest.getSchedule().getCustomEvents())) {
+                if (isCustom) {
+                    return ResponseEntity
+                            .status(HttpStatus.ACCEPTED)
+                            .body(userSchedule);
+                }
+                else {
+                    return ResponseEntity
+                            .status(HttpStatus.ACCEPTED)
+                            .body(userSchedule.getId());
+                }
             }
         }
-        // Record does not exist
-        if (schedule.getUserEmail() == null) {
+
+        // Record does not exist, continue
+        if (scheduleControllerSaveRequest.getSchedule().getUserEmail() == null) {
             return ResponseEntity
                 .status(HttpStatus.NOT_ACCEPTABLE)
                 .body("User email cannot be null");
         } else {
             String currentUserEmail = userController.getUserEmail();
-            if (!schedule.getUserEmail().equals(currentUserEmail)) {
+            if (!scheduleControllerSaveRequest.getSchedule().getUserEmail().equals(currentUserEmail)) {
                 return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Authenticated user's  email does not match the schedule's email property.");
             } else {
-                Schedule savedSchedule = scheduleRepository.save(schedule);
-                return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(savedSchedule.getId());
+                Schedule savedSchedule = scheduleRepository.save(scheduleControllerSaveRequest.getSchedule());
+                if (isCustom) {
+                    return ResponseEntity
+                            .status(HttpStatus.CREATED)
+                            .body(savedSchedule);
+                }
+                else {
+                    return ResponseEntity
+                            .status(HttpStatus.CREATED)
+                            .body(savedSchedule.getId());
+                }
             }
         }
     }
@@ -161,8 +198,10 @@ public class ScheduleController {
     @GetMapping(value = "/")
     @Secured("ROLE_USER")
     public ResponseEntity getAllSchedulesForEmail() {
-
+        System.out.println("Hello!");
         String authenticatedUsersEmail = userController.getUserEmail();
+
+        System.out.println(scheduleRepository.findByUserEmail(authenticatedUsersEmail));
 
         if (authenticatedUsersEmail == null) {
             return ResponseEntity

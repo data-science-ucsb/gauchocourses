@@ -62,7 +62,7 @@ public class ClassSection extends Event implements Serializable {
     @JsonProperty("instructors")            private List<Instructor> instructors = null;
 
     // Calculated by the frontend, not an API-native property.
-    @JsonProperty("lectureSectionGroup")    private String LectureSectionGroup;
+    @JsonProperty("lectureSectionGroup")    private String lectureSectionGroup;
 
     // Calculated by the frontend, not an API-native property.
     @JsonProperty("courseId")               private String courseId;

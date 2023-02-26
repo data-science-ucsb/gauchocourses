@@ -137,6 +137,7 @@ export default {
      */
     created: function() {
         api.getSchedulesForUser()
+
           .then(response =>  this.schedules = response.data)
           .catch(error => {
               this.errors.push(error);
@@ -210,7 +211,6 @@ export default {
          * Computes the earliest and latest times for the schedules.
          */
          schedulesForQuarter: function() {
-
            this.schedules.forEach(s => {
              s.days = this.getDaysFromList(s.sortingAttributes);
              s.sortingAttributes.cleanBegin = this.cleanTime(s.sortingAttributes.earliestBeginTime);
