@@ -13,8 +13,8 @@
       <div v-if="Object.getOwnPropertyNames(groupedRequirements).length != 0">
         <div v-for="[college, ges] in Object.entries(groupedRequirements)" v-bind:key="college">
           <span> <strong> {{ college }} GE's: </strong> </span>
-          <template v-for="ge in ges.sort()">
-            <span v-if="ge!=ges.sort().at(-1)" v-bind:key="ge.geCode">{{ ge['geCode'].trim() }}, </span>
+          <template v-for="ge in ges.sort((a, b) => {return a.geCode > b.geCode ? 1:-1})">
+            <span v-if="ge!=ges.sort((a, b) => {return a.geCode > b.geCode ? 1:-1}).at(-1)" v-bind:key="ge.geCode">{{ ge['geCode'].trim() }}, </span>
             <span v-else v-bind:key="ge.geCode">{{ ge['geCode'].trim() }}</span>
           </template>
         </div>

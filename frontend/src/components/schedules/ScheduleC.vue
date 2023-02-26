@@ -4,7 +4,13 @@
     https://fullcalendar.io/docs#toc
 -->
 <template>
-  <b-card no-body>
+  <div>
+    <b-button
+        variant="primary"
+        ref="button"
+        @click="exportPDF"
+    >Export to PDF</b-button>
+    <b-card no-body ref="schedule">
     <template v-slot:header>
       <div class="no-wrap d-flex flex-row align-items-center">
         <span class="d-inline-block" tabindex="0">
@@ -88,6 +94,7 @@
       <b-spinner class="m-2" variant="primary" label="Spinning"></b-spinner>
     </div>
   </b-card>
+  </div>
 </template>
 
 <script>
@@ -102,6 +109,8 @@ import {
 } from "@/components/util/color-utils.js";
 import xss from "xss";
 import { Tooltip } from "bootstrap";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 export default {
   components: {
@@ -830,6 +839,20 @@ export default {
       for (let i = 0; i < events.length; i++) {
         events[i].removeAttribute("tabIndex");
       }
+    },
+    exportPDF() {
+      var component = this.$refs.schedule
+      html2canvas(component, {imageQuality: 1}).then(function (canvas) {
+        let pdf = new jsPDF('l', 'mm', 'a4')
+        let imgData = canvas.toDataURL('image/jpeg');
+        let width = pdf.internal.pageSize.getWidth()
+        let height = pdf.internal.pageSize.getHeight()
+        let widthRatio = width / canvas.width
+        let heightRatio = height / canvas.height
+        let ratio = widthRatio > heightRatio ? heightRatio : widthRatio
+        pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width * ratio, canvas.height * ratio)
+        pdf.save("schedule.pdf")
+      })
     }
   },
 }

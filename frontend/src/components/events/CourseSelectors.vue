@@ -3,8 +3,8 @@
 -->
 <template>
   <b-card no-body>
-    <b-card-body class="pb-0" id="course-selectors"> <!-- Card body provides padding for the selectors -->
-      <b-form-group label-cols="3" label-cols-md="5" label="Quarter:" label-for="quarterselect" label-size="sm">
+    <b-card-body class="pb-1 pt-1" id="course-selectors"> <!-- Card body provides padding for the selectors -->
+      <b-form-group v-show="isOpen" label-cols="3" label-cols-md="5" label="Quarter:" label-for="quarterselect" label-size="sm">
           <b-form-select
               size="sm"
               :value="currentQuarter"
@@ -19,7 +19,8 @@
               </template>
           </b-form-select>
       </b-form-group>
-      <b-form-group
+      <b-form-group 
+        v-show="isOpen"
         v-if="currentQuarterIsSummer"
         label-cols="3"
         label="Session:"
@@ -34,7 +35,7 @@
         ></b-form-select>
       </b-form-group>
 
-      <b-form-group label-cols="3" label-cols-md="6" label-cols-lg="6" label="Department:" label-for="deptartmentselect" label-size="sm">
+      <b-form-group v-show="isOpen" label-cols="3" label-cols-md="6" label-cols-lg="6" label="Department:" label-for="deptartmentselect" label-size="sm">
         <b-form-select  
               size="sm"
               v-model="currentDepartment"
@@ -50,7 +51,7 @@
         </b-form-select>
       </b-form-group>
 
-      <b-form-group label-cols="3" label-cols-md="4" label-cols-lg="5" label="Units:" label-for="unitInputs" label-size="sm">
+      <b-form-group v-show="isOpen" label-cols="3" label-cols-md="4" label-cols-lg="5" label="Units:" label-for="unitInputs" label-size="sm">
         <b-form>
           <b-form-row>
             <b-col cols="6">
@@ -63,7 +64,7 @@
         </b-form>
       </b-form-group>
 
-      <b-form-group label-cols="3" label-cols-md="3" label-cols-lg="4" label="Requirements:" label-for="requirementSelectors" label-size="sm">
+      <b-form-group v-show="isOpen" label-cols="3" label-cols-md="3" label-cols-lg="4" label="Requirements:" label-for="requirementSelectors" label-size="sm">
          
         <b-form>
           <b-form-row>
@@ -96,7 +97,7 @@
         </b-form>
       </b-form-group>
 
-      <b-form-row >
+      <b-form-row v-show="isOpen">
         <b-col>
           <b-form-group label-cols="auto" label-cols-md="6" label="Grad classes" label-size="sm">
             <b-form-checkbox size="sm" v-model="searchFilters.graduateClass"></b-form-checkbox>
@@ -106,6 +107,22 @@
           <b-form-group label-cols="auto" label-cols-md="6" label="Full classes" label-size="sm">
             <b-form-checkbox size="sm" v-model="searchFilters.fullClasses"></b-form-checkbox>
           </b-form-group>
+        </b-col>
+      </b-form-row>
+<!-- create a up chevron button that allows user to press and minimize the course selector card, and creating more space for class list
+      the chevron button should be at the center of the box-->
+      <b-form-row>
+        <b-col cols="5">
+        </b-col>
+        <b-col>
+          <b-button v-if="isOpen" class="course-selector-button" variant="outline" size="sm" @click="toggleCourseSelector">
+            <font-awesome-icon icon="chevron-up" size="sm" />
+          </b-button>
+          <b-button v-if="!isOpen" class="course-selector-button" variant="outline" size="sm" @click="toggleCourseSelector">
+            <font-awesome-icon icon="chevron-down" size="sm" />
+          </b-button>
+        </b-col>
+        <b-col cols="5">
         </b-col>
       </b-form-row>
 
@@ -147,6 +164,7 @@ export default {
   },
   data: function() {
     return {
+      isOpen: true,
       currentSession: null,
       currentDepartment: null,
       currentCollege: null,
@@ -241,6 +259,9 @@ export default {
     }
   },
   methods: {
+    toggleCourseSelector: function() {
+      this.isOpen = !this.isOpen;
+    },
     getQuarters: function() {
       return getQuarters();
     },
@@ -351,10 +372,18 @@ export default {
 }
 
 #course-selectors {
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 auto;
+}
+
+#course-selectors {
   flex: 0 1 auto;
 }
 
 #addCourse:hover {
     cursor: pointer;
 }
+
+
 </style>

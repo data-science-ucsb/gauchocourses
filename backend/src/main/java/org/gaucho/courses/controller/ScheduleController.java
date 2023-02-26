@@ -198,10 +198,8 @@ public class ScheduleController {
     @GetMapping(value = "/")
     @Secured("ROLE_USER")
     public ResponseEntity getAllSchedulesForEmail() {
-        System.out.println("Hello!");
-        String authenticatedUsersEmail = userController.getUserEmail();
 
-        System.out.println(scheduleRepository.findByUserEmail(authenticatedUsersEmail));
+        String authenticatedUsersEmail = userController.getUserEmail();
 
         if (authenticatedUsersEmail == null) {
             return ResponseEntity
