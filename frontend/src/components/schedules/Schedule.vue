@@ -218,6 +218,7 @@ export default {
             startTime: classSection.timeLocations[0].beginTime,
             endTime: classSection.timeLocations[0].endTime,
             color: getBackgroundColor(classSection.name),
+            textColor: "black",
           };
         } else {
           return classSection.scheduledEnrollCodes.map((section) =>
@@ -263,6 +264,7 @@ export default {
           endTime: section.timeLocations[0].endTime,
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
+          textColor: "black",
         };
       } else {
         var multipleevents = [];
@@ -274,6 +276,7 @@ export default {
           endTime: "",
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
+          textColor: "black",
         };
         for (var k = 0; k < multipletimeandplace.length; k++) {
           classinfo.classSections.daysOfWeek = multipletimeandplace[
