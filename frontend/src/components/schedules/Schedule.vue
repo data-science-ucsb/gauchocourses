@@ -225,6 +225,7 @@ export default {
             endTime: classSection.timeLocations[0].endTime,
             color: getBackgroundColor(classSection.name),
             isLecture: 0,
+            textColor: "black",
           };
         } else {
           return classSection.scheduledEnrollCodes.map((section) =>
@@ -277,6 +278,7 @@ export default {
           enrollCode: section.enrollCode,
           location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
           instructor: (section.instructors[0]?.instructor ?? "TBA"),
+          textColor: "black",
         };
       } else {
         var multipleevents = [];
@@ -296,6 +298,7 @@ export default {
           enrollCode: section.enrollCode,
           location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
           instructor: (section.instructors[0]?.instructor ?? "TBA"),
+          textColor: "black",
         };
         for (var k = 0; k < multipletimeandplace.length; k++) {
           classinfo.daysOfWeek = multipletimeandplace[
