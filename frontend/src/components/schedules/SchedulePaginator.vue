@@ -604,7 +604,7 @@ export default {
 }
 .navTitle {
   font-weight: bold;
-  line-height: 28px;
+  line-height: 26px;
   height: 28px;
 }
 </style>
