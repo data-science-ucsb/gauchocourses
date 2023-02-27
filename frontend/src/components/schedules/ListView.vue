@@ -35,7 +35,7 @@
           </b-tooltip>
 
           <b-toast :id="'deleted-toast-' + index" title="You deleted a schedule!" variant="warning">
-            The schedule, "{{schedule.name}}" was deleted. Click the button to undo.
+            The schedule, "{{scheduleNames[index]}}" was deleted. Click the button to undo.
             <b-button @click="saveSchedule(schedule)" variant="warning">
             Undo
             </b-button>
@@ -47,7 +47,7 @@
             @click="popoverShow[index] = !popoverShow[index]"
             class="scheduleNamecls"
             variant="link"
-          >{{schedule.name}}</b-button>
+          >{{scheduleNames[index]}}</b-button>
 
           <b-popover
             :id="'popover-' + index"
@@ -147,6 +147,7 @@ export default {
     }
   },
   created: function () {
+    console.log("regened");
     //TODO ListView's SaveName should be based on updatedScheduleName (the name should be updated on frontend when saved)
 
     this.schedule.forEach((schedule, i) => {
@@ -185,7 +186,6 @@ export default {
           });
 
     });
-
     this.doneLoading = true;
   },
   computed: {
@@ -205,8 +205,11 @@ export default {
     //When the page is changed, new schedules are presented to the prop.
     //Calculate the totak units for each schedule when new ones are presented.
     schedule: function () {
+      let i = 0;
       this.schedule.forEach((schedule) => {
         schedule.totalUnits = this.calculateUnits(schedule, this.coursesComputed);
+        this.scheduleNames[i] = schedule.name;
+        i++;
       });
     },
   },
@@ -309,7 +312,8 @@ export default {
     saveName: function (index) {
       this.onClose(index);
       const cleanedName = xss(this.scheduleNames[index]);
-
+      // this.schedule[index].name = cleanedName;
+      // this.updatedScheduleNames[index] = cleanedName;
       api
         .updateScheduleName(this.schedule[index].id, cleanedName)
         .then(() => this.scheduleLocal[index].name = cleanedName) // steven: put schedule as a local variable in data (line 129) to avoid mutation error, not sure if right move
