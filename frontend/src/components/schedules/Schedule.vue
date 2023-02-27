@@ -112,7 +112,6 @@ import xss from "xss";
 import { Tooltip } from "bootstrap";
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
-import {update} from "immutable";
 
 export default {
   components: {
@@ -197,7 +196,6 @@ export default {
     },
   },
   methods: {
-    update,
     /**
      * Parses a schedule and maps the enroll codes to the data format for WeeklySchedule from courses.
      */
