@@ -35,7 +35,7 @@
           </b-tooltip>
 
           <b-toast :id="'deleted-toast-' + index" title="You deleted a schedule!" variant="warning">
-            The schedule, "{{scheduleNames[index]}}" was deleted. Click the button to undo.
+            The schedule, "{{scheduleLocal[index].name}}" was deleted. Click the button to undo.
             <b-button @click="saveSchedule(schedule)" variant="warning">
             Undo
             </b-button>
@@ -47,7 +47,7 @@
             @click="popoverShow[index] = !popoverShow[index]"
             class="scheduleNamecls"
             variant="link"
-          >{{scheduleNames[index]}}</b-button>
+          >{{scheduleLocal[index].name}}</b-button>
 
           <b-popover
             :id="'popover-' + index"
@@ -61,7 +61,7 @@
             </template>
             <b-row>
               <b-col cols="10" class="px-2">
-                <b-form-input v-model="scheduleNames[index]"></b-form-input>
+                <b-form-input v-model="scheduleLocal[index].name"></b-form-input>
               </b-col>
               <b-col class="p-2">
                 <font-awesome-icon
@@ -127,7 +127,6 @@ export default {
       errors: [],
       coursesComputed: [],
       doneLoading: false,
-      scheduleNames: [],
       scheduleLocal: this.schedule,
     };
   },
@@ -147,7 +146,6 @@ export default {
     }
   },
   created: function () {
-    console.log("regened");
     //TODO ListView's SaveName should be based on updatedScheduleName (the name should be updated on frontend when saved)
 
     this.schedule.forEach((schedule, i) => {
@@ -182,7 +180,6 @@ export default {
           .finally(() => {
             this.popoverShow[i] = false;
             schedule.totalUnits = this.calculateUnits(schedule, this.coursesComputed);
-            this.scheduleNames[i] = schedule.name;
           });
 
     });
@@ -205,12 +202,10 @@ export default {
     //When the page is changed, new schedules are presented to the prop.
     //Calculate the totak units for each schedule when new ones are presented.
     schedule: function () {
-      let i = 0;
       this.schedule.forEach((schedule) => {
         schedule.totalUnits = this.calculateUnits(schedule, this.coursesComputed);
-        this.scheduleNames[i] = schedule.name;
-        i++;
       });
+      this.scheduleLocal = this.schedule;
     },
   },
   methods: {
@@ -311,13 +306,10 @@ export default {
     },
     saveName: function (index) {
       this.onClose(index);
-      const cleanedName = xss(this.scheduleNames[index]);
-      // this.schedule[index].name = cleanedName;
-      // this.updatedScheduleNames[index] = cleanedName;
+      const cleanedName = xss(this.scheduleLocal[index].name);
+      this.scheduleLocal[index].name = cleanedName;
       api
         .updateScheduleName(this.schedule[index].id, cleanedName)
-        .then(() => this.scheduleLocal[index].name = cleanedName) // steven: put schedule as a local variable in data (line 129) to avoid mutation error, not sure if right move
-        // .then(() => this.schedule[index].name = cleanedName)
         .catch(resp => resp) // TODO: Better error handling
     },
     editSchedule: async function(schedule) {
