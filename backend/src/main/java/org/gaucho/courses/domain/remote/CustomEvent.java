@@ -20,8 +20,6 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 public class CustomEvent extends Event implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     @JsonProperty("name") private String name;
     @JsonProperty("backgroundColor")             private String backgroundColor;
     @JsonProperty("borderColor")                private String borderColor;

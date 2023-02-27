@@ -7,15 +7,14 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faInfoCircle, faEdit, faUndo,
   faFilter, faCalendarPlus, faTrashAlt, faPlusSquare,
-  faExclamationCircle, faStar, faHeart, faThumbtack, faBorderAll, faColumns, faCalendar, faList, faChevronRight, faChevronDown, faChevronUp, faCheck } from '@fortawesome/free-solid-svg-icons'
+  faExclamationCircle, faStar, faHeart, faThumbtack, faBorderAll, faColumns, faCalendar, faList, faChevronRight, faChevronDown, faCheck, faPencilAlt, faChevronUp} from '@fortawesome/free-solid-svg-icons'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import '@/plugins/Dayjs';
 import VueDayjs from 'vue-dayjs-plugin'
 
 // Configure font awesome
-library.add(faInfoCircle, faUndo, faFilter, faCalendarPlus, faPlusSquare,
-  faTrashAlt, faEdit, faExclamationCircle, faStar, faHeart, faThumbtack, faBorderAll, faColumns, faCalendar, faList, faChevronRight, faChevronDown, faChevronUp, faCheck);
+library.add(faInfoCircle, faUndo, faFilter, faCalendarPlus, faPlusSquare, faTrashAlt, faEdit, faExclamationCircle, faStar, faHeart, faThumbtack, faBorderAll, faColumns, faCalendar, faList, faChevronRight, faChevronDown, faCheck, faPencilAlt, faChevronUp);
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
