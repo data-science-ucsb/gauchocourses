@@ -254,6 +254,8 @@ export default {
             overlaid: [],
             sectionSelected: false,
             relatedSelected: false,
+            textColor: "black",
+
           };
         } else {
           return classSection.selectedEnrollCodes.map((section) =>
@@ -334,6 +336,7 @@ export default {
           enrollCode: section.enrollCode,
           location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
           instructor: (section.instructors[0]?.instructor ?? "TBA"),
+          textColor: "black",
         };
       } else {
         let multipleevents = [];
@@ -348,9 +351,8 @@ export default {
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
           className: 'unselected',
-
           isLecture: section.isLecture ? 2 : 1,
-
+          textColor: "black",
           sectionSelected: false,
           overlaid: [],
           lectureSectionGroup: section.lectureSectionGroup,
