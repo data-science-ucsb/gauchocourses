@@ -194,9 +194,9 @@ export default {
     let latestEvent;
     calendarApi.getEvents().forEach(function (event) {
       let eventDate = new Date(event.start);
-      var minutes = eventDate.getMinutes();
-      var hours = eventDate.getHours();
-      var eventTime = (60 * hours) + minutes;
+      let minutes = eventDate.getMinutes();
+      let hours = eventDate.getHours();
+      let eventTime = (60 * hours) + minutes;
       if(eventTime < earliestTime) {
         earliestTime = eventTime;
         earliestEvent = event;
@@ -224,7 +224,6 @@ export default {
       const _this = this;
       let incrementalCustomEventId = 0;
       function classSectionToFullCalendarEvent(classSection) {
-
         const course = courses.find(
             (course) => course.courseId == classSection.courseId
         );
@@ -278,10 +277,9 @@ export default {
           .map(createScheduleObject)
           .flat();
 
-
       let totalevents = classes
           .map(classSectionToFullCalendarEvent)
-          .flat(); //do this function to all of the classes
+          .flat(2); //do this function to all of the classes
       let customevents = customEvents.map(
           classSectionToFullCalendarEvent
       );
@@ -298,14 +296,7 @@ export default {
       const section = course.classSections.find(
           (section) => section.enrollCode == enrollcode
       );
-
-      let titletodisplay;
-      if(section.isLecture === true) {
-        titletodisplay = course.fullCourseNumber + ": " + enrollcode;
-      }
-      else {
-        titletodisplay = course.fullCourseNumber + ": " + enrollcode;
-      }
+      let titletodisplay = course.courseId.trim() + ": " + enrollcode;
       const dayInt = {
         MONDAY: 1,
         TUESDAY: 2,
@@ -316,7 +307,7 @@ export default {
       };
       if (section.timeLocations.length == 1) {
         return {
-          title: titletodisplay, //course.fullCourseNumber,
+          title: titletodisplay,
           courseId: course.courseId,
           groupId: enrollcode,
           daysOfWeek: section.timeLocations[0].fullDays.map((a) => dayInt[a]),
@@ -342,7 +333,7 @@ export default {
         let multipleevents = [];
         let multipletimeandplace = section.timeLocations;
         let classinfo = {
-          title: titletodisplay, //course.fullCourseNumber,
+          title: titletodisplay,
           courseId: course.courseId,
           groupId: enrollcode,
           daysOfWeek: "",
@@ -361,17 +352,15 @@ export default {
           enrolledTotal: (section.enrolledTotal ?? section.maxEnroll),
           maxEnroll: section.maxEnroll,
           enrollCode: section.enrollCode,
-          location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
+          location: "",
           instructor: (section.instructors[0]?.instructor ?? "TBA"),
         };
         for (let k = 0; k < multipletimeandplace.length; k++) {
-          classinfo.daysOfWeek = multipletimeandplace[
-              k
-              ].daysOfWeek.map((a) => dayInt[a]);
+          classinfo.daysOfWeek = multipletimeandplace[k].fullDays.map((a) => dayInt[a]);
           classinfo.startTime = multipletimeandplace[k].beginTime;
           classinfo.endTime = multipletimeandplace[k].endTime;
-
-          multipleevents.push(classinfo);
+          classinfo.location = multipletimeandplace[k].building + " " + multipletimeandplace[k].room;
+          multipleevents.push(JSON.parse(JSON.stringify(classinfo)));
         }
         return multipleevents;
       }
@@ -854,7 +843,7 @@ export default {
       }
     },
     exportPDF() {
-      var component = this.$refs.schedule
+      const component = this.$refs.schedule
       html2canvas(component, {imageQuality: 1}).then(function (canvas) {
         let pdf = new jsPDF('l', 'mm', 'a4')
         let imgData = canvas.toDataURL('image/jpeg');

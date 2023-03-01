@@ -105,7 +105,6 @@ public class ScheduleController {
         ScheduleControllerResponse response = new ScheduleControllerResponse();
         response.setSchedules(schedules);
         response.setLastScheduleIndex(scheduler.getLastIndex());
-
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 

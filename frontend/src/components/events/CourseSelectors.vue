@@ -99,13 +99,13 @@
 
       <b-form-row v-show="isOpen">
         <b-col>
-          <b-form-group label-cols="auto" label-cols-md="6" label="Grad classes" label-size="sm">
-            <b-form-checkbox size="sm" v-model="searchFilters.graduateClass"></b-form-checkbox>
+          <b-form-group label-cols="auto" label="Grad classes" label-size="sm">
+            <b-form-checkbox style="padding-top:4px;" size="sm" v-model="searchFilters.graduateClass"></b-form-checkbox>
           </b-form-group>
         </b-col>
         <b-col>
-          <b-form-group label-cols="auto" label-cols-md="6" label="Full classes" label-size="sm">
-            <b-form-checkbox size="sm" v-model="searchFilters.fullClasses"></b-form-checkbox>
+          <b-form-group label-cols="auto" label="Full classes" label-size="sm">
+            <b-form-checkbox style="padding-top:4px;" size="sm" v-model="searchFilters.fullClasses"></b-form-checkbox>
           </b-form-group>
         </b-col>
       </b-form-row>
@@ -137,7 +137,7 @@
             <template v-slot:buttons>
               <font-awesome-icon
                   v-b-tooltip.hover
-                  :title="'Add '+course.fullCourseNumber"
+                  :title="'Add '+course.courseId"
                   icon="plus-square"
                   size="lg"
                   id="addCourse"
@@ -172,8 +172,8 @@ export default {
         pageSize: 10,
         minUnits: '0',
         maxUnits: '5',
-        fullClasses: false,
-        graduateClass: false,
+        fullClasses: true,
+        graduateClass: true,
         selectedRequirement: '',
       },
       currentPage: 1,
@@ -306,7 +306,7 @@ export default {
         minUnits: filters.minUnits,
         maxUnits: filters.maxUnits,
         objLevelCode: filters.graduateClass ? "" : "U",
-        // openSections: !filters.fullClasses,
+        openSections: !filters.fullClasses,
         deptCode: this.currentDepartment,
         areas: this.currentCollege ? filters.selectedRequirement : "",
       }
