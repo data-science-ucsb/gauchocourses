@@ -48,6 +48,14 @@
 		</dependency>
 		<!-- End oauth dependencies -->
 
+		<!-- Begin Google Calendar dependencies -->
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-calendar</artifactId>
+			<version>v3-rev224-1.22.0</version>
+		</dependency>
+		<!-- End Google Calendar dependencies -->
+
 		<!-- Begin caching dependencies -->
 		<dependency>
 			<groupId>org.springframework.session</groupId>
