@@ -80,7 +80,7 @@ export default {
      */
     isValid: function() {
       for (let i = 0; i < this.course.classSections.length; i++) {
-        if (this.course.classSections[i].timeLocations.length != 0 && this.course.classSections[i].classClosed?.trim() != "Y" && this.course.classSections[i].courseCancelled?.trim() != "C") {
+        if (this.course.classSections[i].timeLocations?.length != 0 && this.course.classSections[i].classClosed?.trim() != "Y" && this.course.classSections[i].courseCancelled?.trim() != "C") {
           return true;
         }
       }
