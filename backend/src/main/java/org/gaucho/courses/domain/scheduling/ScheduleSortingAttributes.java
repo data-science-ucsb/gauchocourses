@@ -38,12 +38,13 @@ public class ScheduleSortingAttributes {
     @ElementCollection
     private Set<DayOfWeek> daysWithEvents = new HashSet<>();
 
+    // for code refactoring
+    @ElementCollection
+    Map<DayOfWeek, List<TimeLocation>> groupedTimes = new HashMap<>();
+
     private LocalTime earliestBeginTime = LocalTime.MAX;
 
     private LocalTime latestEndTime = LocalTime.MIN;
-
-    // for code refactoring
-    Map<DayOfWeek, List<TimeLocation>> groupedTimes = new HashMap<>();
 
     /**
      * Calculates metrics about the schedule which can be used to sort or otherwise compare schedules.
@@ -83,6 +84,7 @@ public class ScheduleSortingAttributes {
     }
 
     private void calculateTotalMinutesBetweenEvents(List<TimeLocation> allTimesAndPlaces) {
+        groupedTimes.clear();
         groupTimeLocationByDay(allTimesAndPlaces);
 
         // Sort the values. TODO: Replace List<TimeLocation> with SortedSet<TimeLocation>
@@ -99,6 +101,7 @@ public class ScheduleSortingAttributes {
     }
 
     private void calculateTotalMinutesFromMidnight(List<TimeLocation> allTimesAndPlaces) {
+        groupedTimes.clear();
         groupTimeLocationByDay(allTimesAndPlaces);
 
         this.totalMinutesFromMidnight = groupedTimes
@@ -125,8 +128,6 @@ public class ScheduleSortingAttributes {
 
     private void groupTimeLocationByDay(List<TimeLocation> allTimesAndPlaces)
     {
-        groupedTimes.clear();
-        
         // Group timeLocations by day in groupedTimes
         allTimesAndPlaces.forEach((TimeLocation timeLocation) ->
             timeLocation.getFullDays().forEach((DayOfWeek dayOfWeek) -> {
