@@ -38,10 +38,6 @@ public class ScheduleSortingAttributes {
     @ElementCollection
     private Set<DayOfWeek> daysWithEvents = new HashSet<>();
 
-    // for code refactoring
-    @ElementCollection
-    private Map<DayOfWeek, List<TimeLocation>> groupedTimes = new HashMap<DayOfWeek, List<TimeLocation>>();
-
     private LocalTime earliestBeginTime = LocalTime.MAX;
 
     private LocalTime latestEndTime = LocalTime.MIN;
@@ -84,9 +80,9 @@ public class ScheduleSortingAttributes {
     }
 
     private void calculateTotalMinutesBetweenEvents(List<TimeLocation> allTimesAndPlaces) {
-        groupedTimes.clear();
-        groupTimeLocationByDay(allTimesAndPlaces);
-
+        Map<DayOfWeek, List<TimeLocation>> groupedTimes = new HashMap<>();
+        groupTimeLocationByDay(groupedTimes, allTimesAndPlaces);
+        
         // Sort the values. TODO: Replace List<TimeLocation> with SortedSet<TimeLocation>
         groupedTimes
             .values()
@@ -101,8 +97,9 @@ public class ScheduleSortingAttributes {
     }
 
     private void calculateTotalMinutesFromMidnight(List<TimeLocation> allTimesAndPlaces) {
-        groupedTimes.clear();
-        groupTimeLocationByDay(allTimesAndPlaces);
+        // clearing an preexisting map doesn't work; a new pointer reference is needed
+        Map<DayOfWeek, List<TimeLocation>> groupedTimes = new HashMap<>();
+        groupTimeLocationByDay(groupedTimes, allTimesAndPlaces);
 
         this.totalMinutesFromMidnight = groupedTimes
             .values()
@@ -126,7 +123,7 @@ public class ScheduleSortingAttributes {
             .collect(Collectors.toSet());
     }
 
-    private void groupTimeLocationByDay(List<TimeLocation> allTimesAndPlaces)
+    private void groupTimeLocationByDay(Map<DayOfWeek, List<TimeLocation>> groupedTimes, List<TimeLocation> allTimesAndPlaces)
     {
         // Group timeLocations by day in groupedTimes
         allTimesAndPlaces.forEach((TimeLocation timeLocation) ->
