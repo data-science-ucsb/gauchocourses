@@ -40,7 +40,7 @@ public class ScheduleSortingAttributes {
 
     // for code refactoring
     @ElementCollection
-    Map<DayOfWeek, List<TimeLocation>> groupedTimes = new HashMap<>();
+    private Map<DayOfWeek, List<TimeLocation>> groupedTimes = new HashMap<DayOfWeek, List<TimeLocation>>();
 
     private LocalTime earliestBeginTime = LocalTime.MAX;
 
