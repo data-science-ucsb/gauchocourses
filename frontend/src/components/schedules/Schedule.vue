@@ -5,11 +5,10 @@
 -->
 <template>
 <div>
-  <b-button
-          variant="primary"
-          ref="button"
-          @click="exportPDF"
-        >Export to PDF</b-button>
+  <div style="display: flex;">
+    <b-button variant="primary" ref="button" @click="exportPDF">Export to PDF</b-button>
+    <b-button variant="info" ref="button" @click="createEvent">Google Calendar</b-button>
+  </div>
   <b-card no-body ref="schedule">
     <template v-slot:header>
       <div class="no-wrap d-flex flex-row align-items-center">
@@ -85,9 +84,6 @@
             </router-link>
         </div>
         
-        <div>
-          <b-col md="4" offset-md="4"><b-button @click="createEvent" size="sm">Google Calendar</b-button></b-col>
-        </div>
       </div>
     </template>
 
