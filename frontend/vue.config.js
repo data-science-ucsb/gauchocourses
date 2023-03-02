@@ -1,5 +1,5 @@
-//const proxy_url = 'https://gauchocourses-app-prod.happybay-98f6635d.westus.azurecontainerapps.io';
-const proxy_url = 'http://localhost:8080';
+const proxy_url = 'https://gauchocourses-app-prod.happybay-98f6635d.westus.azurecontainerapps.io';
+//const proxy_url = 'http://localhost:8080';
 
 // vue.config.js
 module.exports = {

@@ -7,7 +7,7 @@
 <div>
   <div style="display: flex;">
     <b-button variant="primary" ref="button" @click="exportPDF">Export to PDF</b-button>
-    <b-button variant="info" ref="button" @click="createEvent">Google Calendar</b-button>
+    <b-button variant="info" ref="button" @click="insertEvent">Google Calendar</b-button>
   </div>
   <b-card no-body ref="schedule">
     <template v-slot:header>
@@ -110,12 +110,11 @@ import {
 } from "@/components/util/color-utils.js";
 import xss from "xss";
 import axios from 'axios';
-// const API_KEY = 'AIzaSyAy36_Hv2ZYPbVAnEApYakkRcJej67Ko6M';
-// const ACCESS_TOKEN = 'ya29.a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc-geyMOkTsxwqOVYnA29wMRslYcHJhgaCgYKATgSARESFQGbdwaIJT5a7TEyaOSlDYb4KQ9yEw0163';
-
 import { Tooltip } from "bootstrap";
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
+const API_KEY = 'AIzaSyAy36_Hv2ZYPbVAnEApYakkRcJej67Ko6M';
+const ACCESS_TOKEN = 'ya29.a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc-geyMOkTsxwqOVYnA29wMRslYcHJhgaCgYKATgSARESFQGbdwaIJT5a7TEyaOSlDYb4KQ9yEw0163';
 
 export default {
   components: {
@@ -252,11 +251,11 @@ export default {
       console.log(totalevents)
       return totalevents;
     },
-    async insertEvent(schedule, courses) {
+    async insertEvent() {
       //const API_KEY = 'AIzaSyAy36_Hv2ZYPbVAnEApYakkRcJej67Ko6M';
-      const accessToken = 'a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc';
-
-      var eventList = this.parseScheduleToEventList(schedule, courses);
+      //const accessToken = 'a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc';
+      
+      var eventList = this.parseScheduleToEventList(this.schedule, this.courses);
 
       for (var i = 0; i < eventList.length; i++){
         var title = eventList[i].title;
@@ -282,13 +281,18 @@ export default {
         };
 
         try {
-          const response = await axios.post('/api/calendar/create-event',
-            event,
+          const response = await axios.post('https://www.googleapis.com/calendar/v3/calendars/primary/events',
+            JSON.stringify(event),
             {
               headers: {
-                Authorization: `Bearer ${accessToken}`,
+                'Authorization': 'Bearer ' + ACCESS_TOKEN,
+                'Key': API_KEY,
                 'Content-Type': 'application/json',
               },
+              // headers: {
+              //   Authorization: `Bearer ${accessToken}`,
+              //   'Content-Type': 'application/json',
+              // },
             }
           );
           console.log(response.data);
@@ -328,29 +332,13 @@ export default {
       //     timeZone: 'UTC',
       //   },
       // };
-
-      // try {
-      //   const response = await axios.post(
-      //     `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?key=${API_KEY}`,
-      //     event,
-      //     {
-      //       headers: {
-      //         Authorization: `Bearer ${accessToken}`,
-      //         'Content-Type': 'application/json',
-      //       },
-      //     }
-      //   );
-      //   console.log(response.data);
-      // } catch (error) {
-      //   console.error(error);
-      // }
     },
     /**
      * Parses a schedule and map each event to a Google Calendar invite.
      */
-    createEvent: function (schedule, courses) {
-      //const _this = this;
-      var eventList = this.parseScheduleToEventList(schedule, courses);
+    createEvent: function () {
+
+      var eventList = this.parseScheduleToEventList(this.schedule, this.courses);
 
       for (var i = 0; i < eventList.length; i++){
         var title = eventList[i].title;
@@ -376,10 +364,10 @@ export default {
         };
 
         axios.post('/api/calendar/create-event', {
-          // headers: {
-          //   'Authorization': 'Bearer ' + ACCESS_TOKEN,
-          //   'Key': API_KEY
-          // },
+          headers: {
+            'Authorization': 'Bearer ' + ACCESS_TOKEN,
+            'Key': API_KEY
+          },
           data: {
             event
           },
