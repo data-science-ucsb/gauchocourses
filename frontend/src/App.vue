@@ -50,7 +50,7 @@
             </b-col>
             <b-col class="text-center">
               <p>
-                <a class="footer-text" href="https://github.com/crunch-time">GitHub</a>
+                <a class="footer-text" href="https://github.com/data-science-ucsb/gauchocourses">GitHub</a>
               </p>
             </b-col>
             <b-col class="text-center">

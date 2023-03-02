@@ -2,9 +2,8 @@ package org.gaucho.courses.domain.remote;
 
 import com.fasterxml.jackson.annotation.*;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
+import org.springframework.data.annotation.Transient;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +18,6 @@ import java.io.Serializable;
  * TODO: Assert that a begintime cannot be after the end time and visa versa. It's fine to add one of the times if the other has not yet been set.
  */
 @Data
-@Entity
 @EqualsAndHashCode
 @JsonPropertyOrder({
         "days",
@@ -31,12 +29,7 @@ import java.io.Serializable;
 })
 public class TimeLocation implements Comparable<TimeLocation>, Serializable {
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
-
     @JsonProperty("fullDays")
-    @ElementCollection(fetch = FetchType.EAGER)
     private List<DayOfWeek> fullDays = new ArrayList<>();
 
     @JsonProperty
@@ -62,10 +55,6 @@ public class TimeLocation implements Comparable<TimeLocation>, Serializable {
 
     @JsonProperty("roomCapacity")
     private Integer roomCapacity;
-
-    @JsonIgnore
-    @Transient
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     // UCSB's class time format
     @Setter(AccessLevel.NONE)

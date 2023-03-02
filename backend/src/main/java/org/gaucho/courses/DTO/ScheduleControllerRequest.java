@@ -2,8 +2,7 @@ package org.gaucho.courses.DTO;
 
 import lombok.Data;
 import org.gaucho.courses.domain.remote.ClassSection;
-import org.gaucho.courses.domain.scheduling.CustomEvent;
-import org.gaucho.courses.domain.scheduling.ScheduleSortingAttributes;
+import org.gaucho.courses.domain.remote.CustomEvent;
 
 import java.util.ArrayList;
 import java.util.List;

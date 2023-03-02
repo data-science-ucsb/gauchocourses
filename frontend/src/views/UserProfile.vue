@@ -44,7 +44,8 @@
                                 <img :src="$store.getters.userInfo.photoURL"
                                     :alt="$store.getters.userInfo.fullName"
                                     height="42"
-                                    width="42">
+                                    width="42"
+                                    referrerpolicy="no-referrer">
                             </b-col>
                             <b-col cols=9>
                                 <b-table stacked
@@ -135,7 +136,8 @@ export default {
      * 3. Get & set the quarters.
      */
     created: function() {
-        api.getSchedulesForUser(this.$store.getters.userInfo.email)
+        api.getSchedulesForUser()
+
           .then(response =>  this.schedules = response.data)
           .catch(error => {
               this.errors.push(error);
@@ -209,7 +211,6 @@ export default {
          * Computes the earliest and latest times for the schedules.
          */
          schedulesForQuarter: function() {
-
            this.schedules.forEach(s => {
              s.days = this.getDaysFromList(s.sortingAttributes);
              s.sortingAttributes.cleanBegin = this.cleanTime(s.sortingAttributes.earliestBeginTime);

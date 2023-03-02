@@ -3,6 +3,7 @@
     :title="course.fullCourseNumber"
     :borderColor="borderColor"
     :backgroundColor="backgroundColor"
+    :full="full"
   >
     <template v-slot:subtext>
       <strong>{{ displayUnits }}</strong>
@@ -12,8 +13,8 @@
       <div v-if="Object.getOwnPropertyNames(groupedRequirements).length != 0">
         <div v-for="[college, ges] in Object.entries(groupedRequirements)" v-bind:key="college">
           <span> <strong> {{ college }} GE's: </strong> </span>
-          <template v-for="ge in ges.sort()">
-            <span v-if="ge!=ges.sort().at(-1)" v-bind:key="ge.geCode">{{ ge['geCode'].trim() }}, </span>
+          <template v-for="ge in ges.sort((a, b) => {return a.geCode > b.geCode ? 1:-1})">
+            <span v-if="ge!=ges.sort((a, b) => {return a.geCode > b.geCode ? 1:-1}).at(-1)" v-bind:key="ge.geCode">{{ ge['geCode'].trim() }}, </span>
             <span v-else v-bind:key="ge.geCode">{{ ge['geCode'].trim() }}</span>
           </template>
         </div>
@@ -61,6 +62,16 @@ export default {
     backgroundColor: function() {
       // TODO: Once we have class definitions on the frontend, consolidate any usages of "getColor" stuff to the class definitions.
       return getBackgroundColor(this.course.courseId.slice(7, 14));
+    },
+    full: function() {
+      let full = true;
+      this.course.classSections.forEach((classSection) => {
+        if (classSection.enrolledTotal < classSection.maxEnroll) {
+          full = false;
+        }
+        // console.log(classSection.enrolledTotal - classSection.maxEnroll);
+      });
+      return full;
     },
     /**
      * Returns the requirements fulfilled by the course, grouped by the college.

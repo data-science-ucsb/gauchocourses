@@ -2,6 +2,7 @@
     <b-card style="">
         <template v-slot:header>
             <b-pagination
+                v-if="currentView != 3"
                 id="schedule-paginator"
                 class="mb-1"
                 align="fill"
@@ -13,15 +14,49 @@
                 :per-page="currentView"
                 aria-controls="calendar">
             </b-pagination>
-            <b-nav>
+          <b-pagination
+              v-else
+              id="schedule-paginator"
+              class="mb-1"
+              align="fill"
+              size="sm"
+              first-number
+              last-number
+              v-model="currentPage"
+              :total-rows="1"
+              :per-page="1"
+              aria-controls="calendar">
+          </b-pagination>
+            <b-nav class="header-template">
                 <b-nav-item
                     v-b-tooltip.hover title="Change view"
-                    @click="changeView">
+                    @click="changeView(showFavoritesButton)">
                     <font-awesome-icon
                         size="sm"
                         :icon="viewIcons[currentView]"
                     />
                 </b-nav-item>
+
+
+              <b-nav-text
+                  v-if="currentView==3"
+                  class="navTitle"
+              >
+                Schedule Builder
+              </b-nav-text>
+              <b-nav-text
+                  v-else-if="currentView==4"
+                  class="navTitle"
+
+              >
+                Schedule View
+              </b-nav-text>
+              <b-nav-text
+                  v-else-if="currentView==10"
+                  class="navTitle"
+              >
+                List View
+              </b-nav-text>
 
                 <!-- Optional quarter selector -->
                 <b-nav-item-dropdown
@@ -42,6 +77,7 @@
                 </b-nav-item-dropdown>
 
                 <b-nav-item-dropdown
+                    v-if="currentView != 3"
                     class="filter-drop-down"
                     text="Days">
                     <b-dropdown-header id="dropdown-header-label">
@@ -69,6 +105,7 @@
                 </b-nav-item-dropdown>
 
                 <b-nav-item-dropdown
+                    v-if="currentView != 3"
                     class="filter-drop-down"
                     text="Time">
                         <b-dropdown-header id="dropdown-header-label">
@@ -88,6 +125,7 @@
                 </b-nav-item-dropdown>
 
                 <b-nav-item-dropdown
+                    v-if="currentView != 3"
                     class="filter-drop-down"
                     text="Sort">
                     <b-dropdown-header id="dropdown-header-label">
@@ -106,9 +144,8 @@
 
                 <!-- Button that links to /user -->
                 <b-nav-item
-                    v-b-tooltip.hover title="Show favorite schedules">
-                    <router-link
-                    v-if="showFavoritesButton"
+                    v-if="showFavoritesButton" v-b-tooltip.hover title="Show favorite schedules">
+                  <router-link
                     :to="{name:'user'}">
                       <font-awesome-icon
                           id="showFavoritedSchedules"
@@ -117,22 +154,24 @@
                           style="color: #ED0303;">
                         </font-awesome-icon>
                     </router-link>
-
-                    <router-link
-                    v-else
-                    :to="{name:'home'}">
-                      <font-awesome-icon
-                        icon="heart"
-                        size="sm"
-                        :id="'favorite-icon'+_uid"
-                        style="color: #FFC7C7;">
-                      </font-awesome-icon>
-                      </router-link>
                 </b-nav-item>
 
 
-
-                <b-nav-item class="ml-auto"
+              <b-nav-item
+                  v-else v-b-tooltip.hover title="Show all schedules">
+                <router-link
+                    :to="{name:'home'}">
+                  <font-awesome-icon
+                      icon="heart"
+                      size="sm"
+                      :id="'favorite-icon'+_uid"
+                      style="color: #FFC7C7;">
+                  </font-awesome-icon>
+                </router-link>
+              </b-nav-item>
+                <b-nav-item
+                    class="ml-auto"
+                    v-if="currentView != 3"
                     v-b-tooltip.hover title="Reset filters">
                     <font-awesome-icon
                         id="resetFiltersAndSorters"
@@ -141,7 +180,10 @@
                         @click="resetFiltersAndSorters"/>
                 </b-nav-item>
 
+
                 <b-nav-item
+                    v-if="currentView == 3"
+                    class="ml-auto"
                     v-b-tooltip.hover title="Help">
                     <font-awesome-icon
                         v-b-modal.filteringHelpModal
@@ -149,12 +191,21 @@
                         icon='info-circle'
                         size="sm"/>
                 </b-nav-item>
-
+              <b-nav-item
+                  v-else
+                  v-b-tooltip.hover title="Help">
+                <font-awesome-icon
+                    v-b-modal.filteringHelpModal
+                    id="help-circle"
+                    icon='info-circle'
+                    size="sm"/>
+              </b-nav-item>
                 <b-modal
                    id="filteringHelpModal"
                    title="Filtering and sorting schedules"
                    scrollable>
-                   <p class="my-4">Once you have selected your classes, you can use this toolbar to find your favorite schedules.</p>
+                  <template v-if="currentView != 3">
+                   <p class="my-4">Once you have selected your classes, you can use this toolbar to find schedules that you like.</p>
                    <p class="my-4">
                        Click the <strong>Days</strong> dropdown to hide schedules that have classes on Fridays (or any other day). Use the <strong>Time</strong> dropdown to hide schedules that have early or late classes.
                        Finally, you can <strong>Sort</strong> your schedules to see which have the least gaps between classes, or by the start time.
@@ -162,6 +213,12 @@
                    <p class="my-4">
                        When you find a schedule that you like, press <strong>Save</strong>. You can see all your saved schedules in your dashboard (top right corner).
                    </p>
+                  </template>
+                  <template v-else>
+                    <p class="my-4">Once you have selected your classes, you can use this toolbar to find schedules that you like.</p>
+                    <p class="my-4">
+                      Click the <strong>Change View</strong> pencil icon to visit randomly generated example schedules from your selected courses. Click the <strong>Show Favorite Schedules</strong> heart icon to look at all your favorite schedules.</p>
+                  </template>
                </b-modal>
 
             </b-nav>
@@ -176,22 +233,22 @@
             Schedule saved! Click My Schedules in the top right to view it.
         </b-alert>
         <b-alert
-            v-if="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0) ? true : false"
-            :show="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0) ? true : false"
+            v-if="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0 && currentView != 3) ? true : false"
+            :show="(filteredAndSortedSchedules.length == 0 && lastUsedClassSections.length != 0 && schedules.length != 0 && currentView != 3) ? true : false"
             variant="danger">
             No schedules match your selections. Try selecting more days or more times.
         </b-alert>
         <b-alert
-          v-if="(schedules.length == 0 && showFavoritesButton == true) ? true : false"
-          :show="(schedules.length == 0 && showFavoritesButton == true) ? true : false"
+          v-if="(schedules.length == 0 && showFavoritesButton) ? true : false"
+          :show="(schedules.length == 0 && showFavoritesButton) ? true : false"
           variant="info"
           class="text-center">
           Your schedules will appear here. <br>
           Use the course selectors to add courses that you want to include in your schedules.
         </b-alert>
         <b-alert
-          v-if="(schedules.length == 0 && showFavoritesButton == false) ? true : false"
-          :show="(schedules.length == 0 && showFavoritesButton == false) ? true : false"
+          v-if="(schedules.length == 0 && !showFavoritesButton) ? true : false"
+          :show="(schedules.length == 0 && !showFavoritesButton) ? true : false"
           variant="info"
           class="text-center">
           You haven't saved any schedules yet! Try generating some on the Home page
@@ -207,14 +264,18 @@
             There was a problem saving your schedule.
         </b-alert>
         <b-alert
-            v-if="selectedClassSectionsHaveUpdated"
+            v-if="selectedClassSectionsHaveUpdated && currentView != 3"
             variant="warning"
-            :show="selectedClassSectionsHaveUpdated">
+            :show="selectedClassSectionsHaveUpdated && currentView != 3">
             Your class selections have changed. Refreshing your schedules...
         </b-alert>
+        <BuilderView
+          v-if="currentView == 3"
+          :schedules="schedules.length">
+        </BuilderView>
         <ListView
           :schedule="this.filteredAndSortedSchedules.slice((this.currentPage-1)*this.currentView, this.currentPage*this.currentView)"
-          v-if="currentView == 10"
+          v-else-if="currentView == 10"
           :showEditButton="showEditButton"
           :courses="$store.state.selectedCourses">
         </ListView>
@@ -232,6 +293,7 @@ import VueSlider from 'vue-slider-component';
 import 'vue-slider-component/theme/default.css';
 import ListView from './ListView.vue';
 import ScheduleView from './ScheduleView.vue';
+import BuilderView from './BuilderView.vue';
 import { getQuarters } from '@/components/util/util-methods.js';
 
 export default {
@@ -239,7 +301,8 @@ export default {
     components: {
         VueSlider,
         ListView,
-        ScheduleView
+        ScheduleView,
+        BuilderView
     },
     props: {
         schedules: {
@@ -265,16 +328,18 @@ export default {
     created: function() {
         // Register event hooks
         this.$eventHub.$on('generate-schedules', this.resetView); //Component is more reliable when set to initial view on this event
-
+        this.resetView();
         this.quarters = this.getQuarters();
 
-        // Use a setter to initialize selectedClassSectionsHaveUpdated to false?
+
+      // Use a setter to initialize selectedClassSectionsHaveUpdated to false?
     },
     data: function() {
         return {
             currentPage: 1,
-            currentView: "4",
+            currentView: "3",
             lastUsedClassSections: [],
+            lastUsedCustomEvents: [],
             errors: [],
             quarters: [],
             savingScheduleInProgress: false,
@@ -296,7 +361,7 @@ export default {
                 },
             },
             filtering: {
-                selectedTimes: ['06:00', '19:00'],
+                selectedTimes: ['00:00', '23:30'],
                 selected: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY'],
                 allSelected: true,
                 options: [
@@ -308,7 +373,8 @@ export default {
                 ]
             },
             sortingInProgress: false,
-            viewIcons: {1: "calendar", 2: "columns", 4:"border-all", 10: "list"},
+            // viewIcons: {1: "calendar", 2: "columns", 3: "pencil-alt", 4:"border-all", 10: "list", },
+            viewIcons: {3: "pencil-alt", 4:"border-all", 10: "list", },
         }
     },
     computed: {
@@ -334,37 +400,36 @@ export default {
             let maxTime = '23:00';
 
             let intervals = [];
+             if (this.schedules.length != 0) {
+               this.schedules.forEach(schedule => {
+                 minTime = (schedule.minTime < minTime) ? schedule.minTime : minTime;
+                 maxTime = (schedule.maxTime > maxTime) ? schedule.maxTime : maxTime;
+               });
+             }
 
-            if (this.schedules.length != 0) {
-                this.schedules.forEach(schedule => {
-                    minTime = (schedule.minTime < minTime) ? schedule.minTime : minTime;
-                    maxTime = (schedule.maxTime > maxTime) ? schedule.maxTime : maxTime;
-                });
-            }
+             maxTime = this.$date(maxTime, 'HH:mm').add(1, 'hour').startOf('hour');
+             minTime = this.$date(minTime, 'HH:mm').subtract(1, 'hour').startOf('hour');
 
-            maxTime = this.$date(maxTime, 'HH:mm').add(1, 'hour').startOf('hour');
-            minTime = this.$date(minTime, 'HH:mm').subtract(1, 'hour').startOf('hour');
-
-            while (minTime < maxTime) {
-                intervals.push(minTime.format('HH:mm'));
-                minTime = minTime.add(30, 'minute');
-            }
+             while (minTime < maxTime) {
+               intervals.push(minTime.format('HH:mm'));
+               minTime = minTime.add(30, 'minute');
+             }
 
             return intervals;
         },
         filteredAndSortedSchedules: function() {
             const sortBy = this.sorting.attributes.selected;
-            this.schedules.map((x, index) => x.name = x.name ?  x.name : "Schedule "+index);
+            this.schedules.map((x, index) => x.name = x.name ? x.name : "Schedule " + index);
             return this.schedules
                 .filter(sched => {
-                    const withinDays = this.checkIfSubset(this.filtering.selected, sched.sortingAttributes.daysWithEvents);
-                    const withinTime = (
-                        sched.sortingAttributes.earliestBeginTime > this.filtering.selectedTimes[0] &&
-                        sched.sortingAttributes.latestEndTime < this.filtering.selectedTimes[1]
-                        )
-                    return withinDays && withinTime;
+                  const withinDays = this.checkIfSubset(this.filtering.selected, sched.sortingAttributes.daysWithEvents);
+                  const withinTime = (
+                      sched.sortingAttributes.earliestBeginTime > this.filtering.selectedTimes[0] &&
+                      sched.sortingAttributes.latestEndTime < this.filtering.selectedTimes[1]
+                  )
+                  return withinDays && withinTime;
                 })
-                .sort((a,b) => (a.sortingAttributes[sortBy] > b.sortingAttributes[sortBy]) ? 1 : -1 )
+                .sort((a, b) => (a.sortingAttributes[sortBy] > b.sortingAttributes[sortBy]) ? 1 : -1)
         },
         numSchedules: function() {
             let dayCount = {
@@ -398,8 +463,10 @@ export default {
             if (this.lastUsedClassSections.length == 0) { // For when the component is first created
                 return false;
             } else {
-                // (big) TODO: This should also check the contents
-                return this.lastUsedClassSections.length != this.classSections.length;
+                //checks contents of classSection and customEvents 
+                return this.lastUsedClassSections != this.$store.getters.selectedClassSections || this.lastUsedCustomEvents != this.$store.state.selectedCustomEvents;
+                
+
             }
         },
         customEvents: function(){
@@ -414,13 +481,23 @@ export default {
         return getQuarters();
       },
         //simple method for resetting view to default
-        resetView: function(){
-          this.currentView = "4";
+        resetView: function() {
+          if(this.$route.name == 'user') {
+            this.currentView = "4";
+          }
+          else {
+            this.currentView = "3";
+          }
         },
         //Method for changing shown view
-        changeView: function() {
-            let arr = Object.keys(this.viewIcons);
+        changeView: function(onAll) {
+          let arr = Object.keys(this.viewIcons);
+          if(!onAll && this.currentView == 2) {
+            this.currentView = arr[(arr.indexOf(this.currentView) + 2) % arr.length];
+          }
+          else {
             this.currentView = arr[(arr.indexOf(this.currentView) + 1) % arr.length];
+          }
         },
         /**
          * Resets the selected days (in the filter). If any days selected, this method deselects all options. If none
@@ -434,7 +511,7 @@ export default {
          */
         resetFiltersAndSorters() {
             this.filtering.selected = this.filtering.options.map(a => a.value);
-            this.filtering.selectedTimes =  ['07:00', '19:00'];
+            this.filtering.selectedTimes =  ['00:00', '23:30'];
             this.sorting.attributes.selected = this.sorting.attributes.options[0].value;
         },
         /**
@@ -474,7 +551,7 @@ export default {
             this[selection] = newVal;
           }
 
-          this.currentView = "1";
+          this.currentView = "4";
 
         },
     },
@@ -486,7 +563,9 @@ export default {
             this.currentPage = 1;
         },
         schedules: function() {
-          this.lastUsedClassSections = this.classSections;  // Set this as the last used set of events. This is used to check for changes later
+          this.lastUsedClassSections = this.classSections; 
+          this.lastUsedCustomEvents = this.customEvents;
+          // Set this as the last used set of events. This is used to check for changes later
         }
     },
 }
@@ -494,7 +573,7 @@ export default {
 
 <style scoped>
 
-/deep/ .nav-link.dropdown-toggle {
+.nav-link.dropdown-toggle {
     padding: 0.5rem;
 }
 
@@ -519,9 +598,13 @@ export default {
 .timeslider .b-dropdown-form:focus {
     outline: none !important;
 }
-
 /* removes padding of schedule cards in all views; */
 .card-body {
     padding: 0;
+}
+.navTitle {
+  font-weight: bold;
+  line-height: 26px;
+  height: 28px;
 }
 </style>
