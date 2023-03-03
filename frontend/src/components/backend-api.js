@@ -108,6 +108,19 @@ export default {
      */
     getConfiguration() {
       return axios_instance.get('/api/configuration/');
+    },
+    /**
+     * Sends a POST request to create a Google Calendar event.
+     * @param {object} event The event to create
+     */
+    createCalEvent(event){
+        var config = {  // TODO: move this config into the axios_instance so all requests use it
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }
+        return axios_instance.post('/api/calendar/events/', event, config);
     }
 }
 

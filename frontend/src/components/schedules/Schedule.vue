@@ -256,13 +256,15 @@ export default {
       //const accessToken = 'a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc';
       
       var eventList = this.parseScheduleToEventList(this.schedule, this.courses);
-
+      
       for (var i = 0; i < eventList.length; i++){
         var title = eventList[i].title;
         var startTime = eventList[i].startTime;
         var endTime = eventList[i].endTime;
         var daysOfWeek = eventList[i].daysOfWeek;
         /* eslint-disable */ //testing purposes
+
+        // object -> function -> string -> url -> /api/calendar/events?start=2021-01-01T00:00:00-08:00&end=2021-01-01T23:59:59-08:00 -> string -> object
         console.log(title);
         console.log(startTime);
         console.log(endTime);
@@ -270,31 +272,12 @@ export default {
         // Create Google Calendar event
         const event = {
           summary: title,
-          start: {
-            dateTime: startTime,
-            timeZone: 'America/Los_Angeles',
-          },
-          end: {
-            dateTime: endTime,
-            timeZone: 'America/Los_Angeles',
-          },
+          start: '2021-01-01T00:00:00-08:00',
+          end: '2021-01-01T23:59:59-08:00',
         };
 
         try {
-          const response = await axios.post('https://www.googleapis.com/calendar/v3/calendars/primary/events',
-            JSON.stringify(event),
-            {
-              headers: {
-                'Authorization': 'Bearer ' + ACCESS_TOKEN,
-                'Key': API_KEY,
-                'Content-Type': 'application/json',
-              },
-              // headers: {
-              //   Authorization: `Bearer ${accessToken}`,
-              //   'Content-Type': 'application/json',
-              // },
-            }
-          );
+          const response = await api.createCalEvent(event);
           console.log(response.data);
         } catch (error) {
           console.error(error);
