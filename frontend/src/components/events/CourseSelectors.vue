@@ -55,10 +55,10 @@
         <b-form>
           <b-form-row>
             <b-col cols="6">
-              <b-input size="sm" placeholder="min" v-model="searchFilters.minUnits"></b-input>
+              <b-input size="sm" placeholder="min" v-on:blur="blurSetMin" v-on:keyup.enter="blurSetMin" v-model="checkMinUnits"></b-input>
             </b-col>
             <b-col cols="6">
-              <b-input size="sm" placeholder="max" v-model="searchFilters.maxUnits"></b-input>
+              <b-input size="sm" placeholder="max" v-on:blur="blurSetMax" v-on:keyup.enter="blurSetMax" v-model="checkMaxUnits"></b-input>
             </b-col>
           </b-form-row>
         </b-form>
@@ -191,6 +191,8 @@ export default {
       requirements: [],
       courses: [],
       isLoading: false,
+      checkMaxUnits: '5',
+      checkMinUnits: '0',
     };
   },
   created: function() {
@@ -259,6 +261,46 @@ export default {
     }
   },
   methods: {
+    isNumeric: function(str) {
+      if (typeof str != "string") return false // we only process strings!  
+      return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+            !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+    },
+    blurSetMin: function() {
+      // checkMinUnits is a string
+      // check if string checkMinUnits can be converted into a number
+      if (!this.isNumeric(this.checkMinUnits)) {
+        this.checkMinUnits = this.searchFilters.minUnits;
+      }
+      // check if checkMinUnits is a integer
+      let intMinUnits = parseInt(this.checkMinUnits);
+      let intMaxUnits = parseInt(this.checkMaxUnits);
+      this.checkMinUnits = intMinUnits.toString();
+      // check if checkMinUnits is a positive integer
+      if (intMinUnits < 0) {
+        this.checkMinUnits = "0";
+      }
+      // check if checkMinUnits is greater than checkMaxUnits
+      if (intMinUnits > intMaxUnits) {
+        this.checkMinUnits = this.checkMaxUnits;
+      }
+      this.searchFilters.minUnits = this.checkMinUnits;
+    },
+    blurSetMax: function() {
+      // check if checkMaxUnits is a number
+      if (!this.isNumeric(this.checkMaxUnits)) {
+        this.checkMaxUnits = this.searchFilters.maxUnits;
+      }
+      // check if checkMaxUnits is a integer
+      let intMinUnits = parseInt(this.checkMinUnits);
+      let intMaxUnits = parseInt(this.checkMaxUnits);
+      this.checkMaxUnits = intMaxUnits.toString();
+      // check if checkMaxUnits is smaller than checkMinUnits
+      if (intMaxUnits < intMinUnits) {
+        this.checkMaxUnits = this.checkMinUnits;
+      }
+      this.searchFilters.maxUnits = this.checkMaxUnits;
+    },
     toggleCourseSelector: function() {
       this.isOpen = !this.isOpen;
     },
