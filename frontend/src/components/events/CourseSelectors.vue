@@ -295,6 +295,10 @@ export default {
       let intMinUnits = parseInt(this.checkMinUnits);
       let intMaxUnits = parseInt(this.checkMaxUnits);
       this.checkMaxUnits = intMaxUnits.toString();
+      // check if checkMaxUnits is less than 20
+      if (intMaxUnits > 20) {
+        this.checkMaxUnits = "20";
+      }
       // check if checkMaxUnits is smaller than checkMinUnits
       if (intMaxUnits < intMinUnits) {
         this.checkMaxUnits = this.checkMinUnits;
