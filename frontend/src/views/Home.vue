@@ -2,13 +2,14 @@
   <div>
     <b-container fluid>
       <b-row>
-        <b-col sm="12" md="12" lg="3">
-          <b-row>
-            <b-col sm="12" md="6" lg="12" class="p-1 home-course-selectors"><CourseSelectors class="h-100" /></b-col>
-            <b-col sm="12" md="6" lg="12" class="p-1 home-selected-events"><SelectedEvents class="h-100" /></b-col>
-          </b-row>
-        </b-col>
-        <b-col sm="12" md="12" lg="9" class="p-1"><SchedulePaginator :schedules="schedules" class="h-100"/></b-col>
+          <div class="sidebar" :style="{ width: sidebarWidth + 'px', minWidth: minSidebarWidth + 'px' }">
+            <b-row>
+              <b-col sm="12" md="6" lg="12" class="p-1 home-course-selectors"><CourseSelectors class="h-100" /></b-col>
+              <b-col sm="12" md="6" lg="12" class="p-1 home-selected-events"><SelectedEvents class="h-100" /></b-col>
+            </b-row>
+            <div class="resize-handle" v-on:mousedown="startResize" v-on:mouseup="stopResize"></div>
+          </div>
+        <b-col xs="6" class="p-1"><SchedulePaginator :schedules="schedules" class="h-100"/></b-col>
       </b-row>
     </b-container>
   </div>
@@ -32,6 +33,9 @@ export default {
   data: function() {
       return {
         schedules: [],
+        sidebarWidth: 350,
+        minSidebarWidth: 250,
+        isResizing: false
       }
     },
   created: function() {
@@ -39,6 +43,30 @@ export default {
       this.$eventHub.$on('generate-schedules', this.retrieveSchedules); //Generates schedules on this event
   },
   methods: {
+    // Sidebar resizing methods
+    startResize(event) {
+      this.isResizing = true
+
+      const startX = event.clientX
+      const initialWidth = this.sidebarWidth
+
+      const handleMouseMove = (event) => {
+        const width = initialWidth + (event.clientX - startX)
+        this.sidebarWidth = Math.max(this.minSidebarWidth, width)
+      }
+
+      const handleMouseUp = () => {
+        this.isResizing = false
+        document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', handleMouseUp)
+      }
+
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
+    },
+    stopResize() {
+      this.isResizing = false
+    },
     /**
     * Retrieves all schedules for the classSections and custom events properties.
     */
@@ -71,6 +99,12 @@ export default {
         }
     },
   },
+  mounted() {
+    document.addEventListener('mousemove', this.handleResize)
+  },
+  beforeUnmount() {
+    document.removeEventListener('mousemove', this.handleResize)
+  },
   computed: {
     customEvents: function(){
       return this.$store.state.selectedCustomEvents;
@@ -86,6 +120,24 @@ export default {
 </script>
 
 <style>
+.sidebar {
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  max-width: 750px;
+}
+
+.resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 3px;
+  height: 100%;
+  cursor: col-resize;
+  background-color: #dddcdc;
+  z-index: 1;
+}
+
 .home-course-selectors {
   height: 465px;
 }
