@@ -49,9 +49,17 @@ public class Gateway {
 
     @RequestMapping("academics/curriculums/v1/classes/**")
     public ResponseEntity<PaginatedClasses> getClassSections(@RequestParam Map<String, String> allQueryParams, HttpServletRequest request) {
-        final PaginatedClasses classes = service.getClassSections(allQueryParams, request);
 
-        if (classes != null) {
+        PaginatedClasses classes = service.getClassSections(allQueryParams, request);
+
+        // Search by title if courseId returned null
+        if (classes == null && allQueryParams.containsKey("courseId")) {
+            allQueryParams.put("title", allQueryParams.get("courseId"));
+            allQueryParams.remove("courseId");
+            classes = service.getClassSections(allQueryParams, request);
+        }
+
+         if (classes != null) {
             return ResponseEntity
                 .ok()
                 .cacheControl(cacheControl)

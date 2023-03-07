@@ -4,7 +4,12 @@
 <template>
   <b-card no-body>
     <b-card-body class="pb-1 pt-1" id="course-selectors"> <!-- Card body provides padding for the selectors -->
-      <b-form-group v-show="isOpen" label-cols="3" label-cols-md="5" label="Quarter:" label-for="quarterselect" label-size="sm">
+
+      <b-form-group class="course-selector">
+        <b-input size="sm" placeholder='Search...' v-model="searchFilters.search"></b-input>
+      </b-form-group>
+
+      <b-form-group class="course-selector" v-show="isOpen" label-cols="3" label-cols-md="4" label-cols-lg="5" label="Quarter:" label-for="quarterselect" label-size="sm">
           <b-form-select
               size="sm"
               :value="currentQuarter"
@@ -20,6 +25,7 @@
           </b-form-select>
       </b-form-group>
       <b-form-group 
+        class="course-selector"
         v-show="isOpen"
         v-if="currentQuarterIsSummer"
         label-cols="3"
@@ -35,7 +41,7 @@
         ></b-form-select>
       </b-form-group>
 
-      <b-form-group v-show="isOpen" label-cols="3" label-cols-md="6" label-cols-lg="6" label="Department:" label-for="deptartmentselect" label-size="sm">
+      <b-form-group class="course-selector" v-show="isOpen" label-cols="3" label-cols-md="4" label-cols-lg="5" label="Department:" label-for="deptartmentselect" label-size="sm">
         <b-form-select  
               size="sm"
               v-model="currentDepartment"
@@ -51,7 +57,7 @@
         </b-form-select>
       </b-form-group>
 
-      <b-form-group v-show="isOpen" label-cols="3" label-cols-md="4" label-cols-lg="5" label="Units:" label-for="unitInputs" label-size="sm">
+      <b-form-group class="course-selector" v-show="isOpen" label-cols="3" label-cols-md="4" label-cols-lg="5" label="Units:" label-for="unitInputs" label-size="sm">
         <b-form>
           <b-form-row>
             <b-col cols="6">
@@ -64,11 +70,10 @@
         </b-form>
       </b-form-group>
 
-      <b-form-group v-show="isOpen" label-cols="3" label-cols-md="3" label-cols-lg="4" label="Requirements:" label-for="requirementSelectors" label-size="sm">
-         
+      <b-form-group class="course-selector" v-show="isOpen" label-cols="3" label-cols-md="4" label-cols-lg="5" label="Requirements:" label-for="requirementSelectors" label-size="sm">
         <b-form>
           <b-form-row>
-            <b-col cols="4">
+            <b-col cols="6">
               <b-form-select  
                     size="sm"
                     v-model="currentCollege"
@@ -82,7 +87,7 @@
                 </template>
               </b-form-select>
             </b-col>
-            <b-col cols="8">
+            <b-col cols="6">
               <b-form-select  
                     size="sm"
                     v-model="searchFilters.selectedRequirement"
@@ -169,6 +174,7 @@ export default {
       currentDepartment: null,
       currentCollege: null,
       searchFilters: {
+        search: '',
         pageSize: 10,
         minUnits: '0',
         maxUnits: '5',
@@ -301,6 +307,7 @@ export default {
       let filters = this.searchFilters;
       //format the filters with proper query names and values
       let filterQuery = {
+        courseId: filters.search,
         pageNumber: this.currentPage,
         pageSize: filters.pageSize,
         minUnits: filters.minUnits,
@@ -310,15 +317,17 @@ export default {
         deptCode: this.currentDepartment,
         areas: this.currentCollege ? filters.selectedRequirement : "",
       }
+
       let resp;
-      try{
+      try {
         resp = await api.coursesWithFilters(this.currentQuarter, filterQuery);
       } catch(error) {
         alert("Error occured while fetching search results. Please refresh the page and try again.");
         console.error(error);
       }
+
       this.isLoading = false;
-      if(resp.data){
+      if (resp.data){
         this.maxPages = Math.ceil(resp.data.total / this.searchFilters.pageSize);
         return resp.data.classes;
       }
@@ -372,13 +381,16 @@ export default {
 }
 
 #course-selectors {
+  margin-top: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
   display: flex;
   flex-direction: column;
   flex: 0 1 auto;
 }
 
-#course-selectors {
-  flex: 0 1 auto;
+.form-group.course-selector {
+  margin-bottom: 8px;
 }
 
 #addCourse:hover {
