@@ -40,7 +40,7 @@
         </b-tooltip>
 
         <b-toast :id="'deleted-toast-' + _uid" title="You deleted a schedule!" variant="warning">
-          The schedule, "{{schedule.name}}" was deleted. Click the button to undo.
+          The schedule, "{{updatedScheduleName}}" was deleted. Click the button to undo.
           <b-button @click="saveSchedule(schedule)" variant="warning">Undo</b-button>
         </b-toast>
 
@@ -371,6 +371,7 @@ export default {
     },
     saveName: function () {
       this.scheduleName = xss(this.scheduleName);
+      this.updatedScheduleName = this.scheduleName;
       this.popoverShow = false;
       //TODO: Stop errors from occurring by checking if we are on liked schedules page or all page (known in SchedulePaginator)
       api

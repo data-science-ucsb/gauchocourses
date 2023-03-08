@@ -35,7 +35,7 @@
           </b-tooltip>
 
           <b-toast :id="'deleted-toast-' + index" title="You deleted a schedule!" variant="warning">
-            The schedule, "{{schedule.name}}" was deleted. Click the button to undo.
+            The schedule, "{{scheduleLocal[index].name}}" was deleted. Click the button to undo.
             <b-button @click="saveSchedule(schedule)" variant="warning">
             Undo
             </b-button>
@@ -47,7 +47,7 @@
             @click="popoverShow[index] = !popoverShow[index]"
             class="scheduleNamecls"
             variant="link"
-          >{{schedule.name}}</b-button>
+          >{{scheduleLocal[index].name}}</b-button>
 
           <b-popover
             :id="'popover-' + index"
@@ -61,7 +61,7 @@
             </template>
             <b-row>
               <b-col cols="10" class="px-2">
-                <b-form-input v-model="scheduleNames[index]"></b-form-input>
+                <b-form-input v-model="scheduleLocal[index].name"></b-form-input>
               </b-col>
               <b-col class="p-2">
                 <font-awesome-icon
@@ -127,7 +127,6 @@ export default {
       errors: [],
       coursesComputed: [],
       doneLoading: false,
-      scheduleNames: [],
       scheduleLocal: this.schedule,
     };
   },
@@ -181,11 +180,9 @@ export default {
           .finally(() => {
             this.popoverShow[i] = false;
             schedule.totalUnits = this.calculateUnits(schedule, this.coursesComputed);
-            this.scheduleNames[i] = schedule.name;
           });
 
     });
-
     this.doneLoading = true;
   },
   computed: {
@@ -208,6 +205,7 @@ export default {
       this.schedule.forEach((schedule) => {
         schedule.totalUnits = this.calculateUnits(schedule, this.coursesComputed);
       });
+      this.scheduleLocal = this.schedule;
     },
   },
   methods: {
@@ -308,12 +306,10 @@ export default {
     },
     saveName: function (index) {
       this.onClose(index);
-      const cleanedName = xss(this.scheduleNames[index]);
-
+      const cleanedName = xss(this.scheduleLocal[index].name);
+      this.scheduleLocal[index].name = cleanedName;
       api
         .updateScheduleName(this.schedule[index].id, cleanedName)
-        .then(() => this.scheduleLocal[index].name = cleanedName) // steven: put schedule as a local variable in data (line 129) to avoid mutation error, not sure if right move
-        // .then(() => this.schedule[index].name = cleanedName)
         .catch(resp => resp) // TODO: Better error handling
     },
     editSchedule: async function(schedule) {
