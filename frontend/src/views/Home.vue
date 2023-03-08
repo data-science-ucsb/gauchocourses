@@ -33,8 +33,8 @@ export default {
   data: function() {
       return {
         schedules: [],
-        sidebarWidth: 350,
-        minSidebarWidth: 250,
+        sidebarWidth: 320,
+        minSidebarWidth: 320,
         isResizing: false
       }
     },
@@ -124,7 +124,7 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
-  max-width: 750px;
+  max-width: 35%;
 }
 
 .resize-handle {
