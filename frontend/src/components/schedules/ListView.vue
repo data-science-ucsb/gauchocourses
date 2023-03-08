@@ -183,6 +183,7 @@ export default {
           });
 
     });
+
     this.doneLoading = true;
   },
   computed: {
