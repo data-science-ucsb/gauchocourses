@@ -60,5 +60,11 @@ export default {
 </script>
 
 <style>
-
+/* To fix non-responsive size of fullcalendar going from 1 column to 2 columns */
+.fc-col-header, .fc-timegrid-body { 
+  width: 100% !important;
+}
+.fc-timegrid-body table { 
+  width: 100% !important; 
+  }
 </style>

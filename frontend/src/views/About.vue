@@ -12,7 +12,7 @@
         <b-col class="text-left">
         <h5>What is this?</h5>
         <p>
-          GauchoCourses is a free and open source application to help UCSB students plan their class schedules before their pass time.
+          GauchoCourses is a free and open source application to help UCSB students plan their class schedules before their pass time. GauchoCourses is run by UCSB students and is not an official UCSB application.
         </p>
         </b-col>
       </b-row>

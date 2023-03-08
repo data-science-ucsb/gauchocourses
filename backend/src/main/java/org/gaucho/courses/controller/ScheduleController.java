@@ -1,9 +1,11 @@
 package org.gaucho.courses.controller;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.extern.slf4j.Slf4j;
 import org.gaucho.courses.DTO.ScheduleControllerRequest;
 import org.gaucho.courses.DTO.ScheduleControllerResponse;
+import org.gaucho.courses.DTO.ScheduleControllerSaveRequest;
 import org.gaucho.courses.auth.UserController;
 import org.gaucho.courses.controller.service.LazyCartesianProductScheduler;
 import org.gaucho.courses.domain.core.Event;
@@ -103,7 +105,6 @@ public class ScheduleController {
         ScheduleControllerResponse response = new ScheduleControllerResponse();
         response.setSchedules(schedules);
         response.setLastScheduleIndex(scheduler.getLastIndex());
-
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
@@ -115,36 +116,73 @@ public class ScheduleController {
      */
     @PostMapping(value = "/")
     @Secured("ROLE_USER")
-    public ResponseEntity<?> saveSchedule(@RequestBody Schedule schedule) {
-        Optional<Schedule> optional;
-        Long id = schedule.getId();
-        if (id != null) {
-            optional = scheduleRepository.findById(id);
-        } else {
-            optional = Optional.empty();
+    public ResponseEntity<?> saveSchedule(@RequestBody ScheduleControllerSaveRequest scheduleControllerSaveRequest) {
+
+        String authenticatedUsersEmail = userController.getUserEmail();
+        boolean isCustom = scheduleControllerSaveRequest.getSelectedClassSections() != null;
+
+        // If this schedule is a custom schedule, we need to build it as a scheduleBuilder object to calculate
+        // sortable attributes and not create duplicate code in frontend ScheduleC.Vue
+        if (isCustom) {
+            Schedule customSchedule = new Schedule.ScheduleBuilder(scheduleControllerSaveRequest.getSchedule().getQuarter(), authenticatedUsersEmail)
+                    .setScheduledClasses(scheduleControllerSaveRequest.getScheduledClassSections())
+                    .setSelectedClasses(scheduleControllerSaveRequest.getSelectedClassSections())
+                    .setCustomEvents(scheduleControllerSaveRequest.getCustomEvents())
+                    .build();
+
+            String quarter = scheduleControllerSaveRequest.getSchedule().getQuarter();
+            String userEmail = scheduleControllerSaveRequest.getSchedule().getUserEmail();
+            String scheduleName = scheduleControllerSaveRequest.getSchedule().getName();
+            int totalUnits = scheduleControllerSaveRequest.getSchedule().getTotalUnits();
+
+            scheduleControllerSaveRequest.setSchedule(customSchedule);
+            scheduleControllerSaveRequest.getSchedule().setQuarter(quarter);
+            scheduleControllerSaveRequest.getSchedule().setUserEmail(userEmail);
+            scheduleControllerSaveRequest.getSchedule().setName(scheduleName);
+            scheduleControllerSaveRequest.getSchedule().setTotalUnits(totalUnits);
         }
-        if (optional.isPresent()) { // Record exists, set the ID and persist
-            schedule.setId(optional.get().getId());
-            Schedule savedSchedule = scheduleRepository.save(schedule);
+
+        List<Schedule> userSchedules = scheduleRepository.findByUserEmail(authenticatedUsersEmail);
+
+        // Record exists, persist
+        // In order to use IDs to check if a schedule already exists.
+        for (Schedule userSchedule : userSchedules) {
+            if (userSchedule.getClasses().equals(scheduleControllerSaveRequest.getSchedule().getClasses()) && userSchedule.getQuarter().equals(scheduleControllerSaveRequest.getSchedule().getQuarter()) && userSchedule.getCustomEvents().equals(scheduleControllerSaveRequest.getSchedule().getCustomEvents())) {
+                if (isCustom) {
+                    return ResponseEntity
+                            .status(HttpStatus.ACCEPTED)
+                            .body(userSchedule);
+                }
+                else {
+                    return ResponseEntity
+                            .status(HttpStatus.ACCEPTED)
+                            .body(userSchedule.getId());
+                }
+            }
+        }
+
+        // Record does not exist, continue
+        if (scheduleControllerSaveRequest.getSchedule().getUserEmail() == null) {
             return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
-                .body(savedSchedule.getId());
-        } else { // Record does not exist
-            if (schedule.getUserEmail() == null) {
+                .status(HttpStatus.NOT_ACCEPTABLE)
+                .body("User email cannot be null");
+        } else {
+            String currentUserEmail = userController.getUserEmail();
+            if (!scheduleControllerSaveRequest.getSchedule().getUserEmail().equals(currentUserEmail)) {
                 return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("User email cannot be null");
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Authenticated user's  email does not match the schedule's email property.");
             } else {
-                String currentUserEmail = userController.getUserEmail();
-                if (!schedule.getUserEmail().equals(currentUserEmail)) {
+                Schedule savedSchedule = scheduleRepository.save(scheduleControllerSaveRequest.getSchedule());
+                if (isCustom) {
                     return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body("Authenticated user's  email does not match the schedule's email property.");
-                } else {
-                    Schedule savedSchedule = scheduleRepository.save(schedule);
+                            .status(HttpStatus.CREATED)
+                            .body(savedSchedule);
+                }
+                else {
                     return ResponseEntity
-                        .status(HttpStatus.CREATED)
-                        .body(savedSchedule.getId());
+                            .status(HttpStatus.CREATED)
+                            .body(savedSchedule.getId());
                 }
             }
         }
@@ -158,28 +196,28 @@ public class ScheduleController {
      */
     @GetMapping(value = "/")
     @Secured("ROLE_USER")
-    public ResponseEntity getAllSchedulesForEmail(@RequestParam("userEmail") String userEmail) {
+    public ResponseEntity getAllSchedulesForEmail() {
+
         String authenticatedUsersEmail = userController.getUserEmail();
+
         if (authenticatedUsersEmail == null) {
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body("");
-        } else if (!authenticatedUsersEmail.equals(userEmail)) {
-            return ResponseEntity
-                .status( HttpStatus.UNAUTHORIZED)
-                .body("Authenticated user's email does not match the queried userEmail");
         } else {
             return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(scheduleRepository.findByUserEmail(userEmail));
+                .body(scheduleRepository.findByUserEmail(authenticatedUsersEmail));
         }
     }
 
     @PostMapping(value = "/delete")
     @Secured("ROLE_USER")
     public ResponseEntity deleteSchedule(@RequestBody Schedule schedule) {
-        String email = userController.getUserEmail();
-        if (!email.equals(schedule.getUserEmail())) {
+
+        String authenticatedUsersEmail = userController.getUserEmail();
+
+        if (!authenticatedUsersEmail.equals(schedule.getUserEmail())) {
             return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body("Authenticated user's email does not match schedule's email");
@@ -205,7 +243,7 @@ public class ScheduleController {
      */
         @PatchMapping(value = "/{id}", consumes = "application/json")
         @Secured("ROLE_USER")
-        public ResponseEntity updateSchedule(@PathVariable Long id, @RequestBody JsonPatch patch){
+        public ResponseEntity updateSchedule(@PathVariable String id, @RequestBody JsonPatch patch){
           Optional<Schedule> optional = scheduleRepository.findById(id);
           String email = userController.getUserEmail();
           Schedule schedulePatched;
@@ -241,6 +279,8 @@ public class ScheduleController {
     }
 
     private Schedule applyPatchToSchedule(JsonPatch patch, Schedule targetSchedule) throws JsonPatchException, JsonProcessingException {
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         JsonNode patched = patch.apply(objectMapper.convertValue(targetSchedule, JsonNode.class));
         return objectMapper.treeToValue(patched, Schedule.class);
     }

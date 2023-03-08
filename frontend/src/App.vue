@@ -17,9 +17,10 @@
           <!-- Right aligned nav items -->
           <b-navbar-nav class="ml-auto">
             <!-- If user is signed in, this navbar tab says My Schedules, else Sign In-->
-            <div v-if="$store.getters.userIsAuthenticated">
+            <template v-if="$store.getters.userIsAuthenticated">
               <b-nav-item right to="/user">My Schedules</b-nav-item>
-            </div>
+              <b-nav-item href="/logout">Log Out</b-nav-item>
+            </template>
             <div v-else>
               <b-nav-item right to="/user">Sign In</b-nav-item>
             </div>
@@ -49,7 +50,7 @@
             </b-col>
             <b-col class="text-center">
               <p>
-                <a class="footer-text" href="https://github.com/crunch-time">GitHub</a>
+                <a class="footer-text" href="https://github.com/data-science-ucsb/gauchocourses">GitHub</a>
               </p>
             </b-col>
             <b-col class="text-center">

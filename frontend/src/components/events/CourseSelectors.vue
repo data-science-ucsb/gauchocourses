@@ -3,8 +3,8 @@
 -->
 <template>
   <b-card no-body>
-    <b-card-body class="pb-0"> <!-- Card body provides padding for the selectors -->
-      <b-form-group label-cols="3" label-cols-md="5" label="Quarter:" label-for="quarterselect" label-size="sm">
+    <b-card-body class="pb-1 pt-1" id="course-selectors"> <!-- Card body provides padding for the selectors -->
+      <b-form-group v-show="isOpen" label-cols="3" label-cols-md="5" label="Quarter:" label-for="quarterselect" label-size="sm">
           <b-form-select
               size="sm"
               :value="currentQuarter"
@@ -19,7 +19,8 @@
               </template>
           </b-form-select>
       </b-form-group>
-      <b-form-group
+      <b-form-group 
+        v-show="isOpen"
         v-if="currentQuarterIsSummer"
         label-cols="3"
         label="Session:"
@@ -34,7 +35,7 @@
         ></b-form-select>
       </b-form-group>
 
-      <b-form-group label-cols="3" label-cols-md="6" label-cols-lg="6" label="Department:" label-for="deptartmentselect" label-size="sm">
+      <b-form-group v-show="isOpen" label-cols="3" label-cols-md="6" label-cols-lg="6" label="Department:" label-for="deptartmentselect" label-size="sm">
         <b-form-select  
               size="sm"
               v-model="currentDepartment"
@@ -50,20 +51,20 @@
         </b-form-select>
       </b-form-group>
 
-      <b-form-group label-cols="3" label-cols-md="4" label-cols-lg="5" label="Units:" label-for="unitInputs" label-size="sm">
+      <b-form-group v-show="isOpen" label-cols="3" label-cols-md="4" label-cols-lg="5" label="Units:" label-for="unitInputs" label-size="sm">
         <b-form>
           <b-form-row>
             <b-col cols="6">
-              <b-input size="sm" placeholder="min" v-model="searchFilters.minUnits"></b-input>
+              <b-input size="sm" placeholder="min" v-on:blur="blurSetMin" v-on:keyup.enter="blurSetMin" v-model="checkMinUnits"></b-input>
             </b-col>
             <b-col cols="6">
-              <b-input size="sm" placeholder="max" v-model="searchFilters.maxUnits"></b-input>
+              <b-input size="sm" placeholder="max" v-on:blur="blurSetMax" v-on:keyup.enter="blurSetMax" v-model="checkMaxUnits"></b-input>
             </b-col>
           </b-form-row>
         </b-form>
       </b-form-group>
 
-      <b-form-group label-cols="3" label-cols-md="3" label-cols-lg="4" label="Requirements:" label-for="requirementSelectors" label-size="sm">
+      <b-form-group v-show="isOpen" label-cols="3" label-cols-md="3" label-cols-lg="4" label="Requirements:" label-for="requirementSelectors" label-size="sm">
          
         <b-form>
           <b-form-row>
@@ -96,16 +97,32 @@
         </b-form>
       </b-form-group>
 
-      <b-form-row >
+      <b-form-row v-show="isOpen">
         <b-col>
-          <b-form-group label-cols="auto" label-cols-md="6" label="Grad classes" label-size="sm">
-            <b-form-checkbox size="sm" v-model="searchFilters.graduateClass"></b-form-checkbox>
+          <b-form-group label-cols="auto" label="Grad classes" label-size="sm">
+            <b-form-checkbox style="padding-top:4px;" size="sm" v-model="searchFilters.graduateClass"></b-form-checkbox>
           </b-form-group>
         </b-col>
         <b-col>
-          <b-form-group label-cols="auto" label-cols-md="6" label="Full classes" label-size="sm">
-            <b-form-checkbox size="sm" v-model="searchFilters.fullClasses"></b-form-checkbox>
+          <b-form-group label-cols="auto" label="Full classes" label-size="sm">
+            <b-form-checkbox style="padding-top:4px;" size="sm" v-model="searchFilters.fullClasses"></b-form-checkbox>
           </b-form-group>
+        </b-col>
+      </b-form-row>
+<!-- create a up chevron button that allows user to press and minimize the course selector card, and creating more space for class list
+      the chevron button should be at the center of the box-->
+      <b-form-row>
+        <b-col cols="5">
+        </b-col>
+        <b-col>
+          <b-button v-if="isOpen" class="course-selector-button" variant="outline" size="sm" @click="toggleCourseSelector">
+            <font-awesome-icon icon="chevron-up" size="sm" />
+          </b-button>
+          <b-button v-if="!isOpen" class="course-selector-button" variant="outline" size="sm" @click="toggleCourseSelector">
+            <font-awesome-icon icon="chevron-down" size="sm" />
+          </b-button>
+        </b-col>
+        <b-col cols="5">
         </b-col>
       </b-form-row>
 
@@ -120,7 +137,7 @@
             <template v-slot:buttons>
               <font-awesome-icon
                   v-b-tooltip.hover
-                  :title="'Add '+course.fullCourseNumber"
+                  :title="'Add '+course.courseId"
                   icon="plus-square"
                   size="lg"
                   id="addCourse"
@@ -147,6 +164,7 @@ export default {
   },
   data: function() {
     return {
+      isOpen: true,
       currentSession: null,
       currentDepartment: null,
       currentCollege: null,
@@ -154,8 +172,8 @@ export default {
         pageSize: 10,
         minUnits: '0',
         maxUnits: '5',
-        fullClasses: false,
-        graduateClass: false,
+        fullClasses: true,
+        graduateClass: true,
         selectedRequirement: '',
       },
       currentPage: 1,
@@ -173,6 +191,8 @@ export default {
       requirements: [],
       courses: [],
       isLoading: false,
+      checkMaxUnits: '5',
+      checkMinUnits: '0',
     };
   },
   created: function() {
@@ -241,6 +261,53 @@ export default {
     }
   },
   methods: {
+    isNumeric: function(str) {
+      if (typeof str != "string") return false // we only process strings!  
+      return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+            !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+    },
+    blurSetMin: function() {
+      // checkMinUnits is a string
+      // check if string checkMinUnits can be converted into a number
+      if (!this.isNumeric(this.checkMinUnits)) {
+        this.checkMinUnits = this.searchFilters.minUnits;
+      }
+      // check if checkMinUnits is a integer
+      let intMinUnits = parseInt(this.checkMinUnits);
+      let intMaxUnits = parseInt(this.checkMaxUnits);
+      this.checkMinUnits = intMinUnits.toString();
+      // check if checkMinUnits is a positive integer
+      if (intMinUnits < 0) {
+        this.checkMinUnits = "0";
+      }
+      // check if checkMinUnits is greater than checkMaxUnits
+      if (intMinUnits > intMaxUnits) {
+        this.checkMinUnits = this.checkMaxUnits;
+      }
+      this.searchFilters.minUnits = this.checkMinUnits;
+    },
+    blurSetMax: function() {
+      // check if checkMaxUnits is a number
+      if (!this.isNumeric(this.checkMaxUnits)) {
+        this.checkMaxUnits = this.searchFilters.maxUnits;
+      }
+      // check if checkMaxUnits is a integer
+      let intMinUnits = parseInt(this.checkMinUnits);
+      let intMaxUnits = parseInt(this.checkMaxUnits);
+      this.checkMaxUnits = intMaxUnits.toString();
+      // check if checkMaxUnits is less than 20
+      if (intMaxUnits > 20) {
+        this.checkMaxUnits = "20";
+      }
+      // check if checkMaxUnits is smaller than checkMinUnits
+      if (intMaxUnits < intMinUnits) {
+        this.checkMaxUnits = this.checkMinUnits;
+      }
+      this.searchFilters.maxUnits = this.checkMaxUnits;
+    },
+    toggleCourseSelector: function() {
+      this.isOpen = !this.isOpen;
+    },
     getQuarters: function() {
       return getQuarters();
     },
@@ -347,9 +414,22 @@ export default {
 <style>
 .course-search-results {
   overflow-y: scroll;
+  flex: 1 1 0%;
+}
+
+#course-selectors {
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 auto;
+}
+
+#course-selectors {
+  flex: 0 1 auto;
 }
 
 #addCourse:hover {
     cursor: pointer;
 }
+
+
 </style>

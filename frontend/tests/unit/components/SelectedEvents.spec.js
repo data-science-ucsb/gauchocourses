@@ -61,7 +61,7 @@ describe('SelectedEvents.vue', () => {
         it('the events are rendered with their names', () => {
             const courses = wrapper.findAll('.selected-course');
             expect(courses.length).toBe(2);
-            expect(courses.at(0).find('.event-name').text()).toBe('DUM 200')
+            expect(courses.at(0).find('.event-name').text().substring(0,7)).toBe('DUM 200')
         });
 
         it('the courses are rendered with their titles', () => {

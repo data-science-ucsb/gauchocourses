@@ -1,8 +1,10 @@
 <template>
-  <EventListItem
-    :title="course.fullCourseNumber"
+  <EventListItem v-if="isValid"
+    :title="course.courseId"
     :borderColor="borderColor"
     :backgroundColor="backgroundColor"
+    :full="full"
+    :randomId="randomId"
   >
     <template v-slot:subtext>
       <strong>{{ displayUnits }}</strong>
@@ -11,7 +13,11 @@
     <template v-slot:popoverContent>
       <div v-if="Object.getOwnPropertyNames(groupedRequirements).length != 0">
         <div v-for="[college, ges] in Object.entries(groupedRequirements)" v-bind:key="college">
-          <strong>{{ college }} GEs: </strong><span v-for="ge in ges.sort()" v-bind:key="ge.geCode">{{ ge['geCode'].trim() }}, </span>
+          <span> <strong> {{ college }} GE's: </strong> </span>
+          <template v-for="ge in ges.sort((a, b) => {return a.geCode > b.geCode ? 1:-1})">
+            <span v-if="ge!=ges.sort((a, b) => {return a.geCode > b.geCode ? 1:-1}).at(-1)" v-bind:key="ge.geCode">{{ ge['geCode'].trim() }}, </span>
+            <span v-else v-bind:key="ge.geCode">{{ ge['geCode'].trim() }}</span>
+          </template>
         </div>
       </div>
       <div v-else>
@@ -59,6 +65,28 @@ export default {
       return getBackgroundColor(this.course.courseId.slice(7, 14));
     },
     /**
+     * Returns whether or not a course is completely full
+     */
+    full: function() {
+      for (let i = 0; i < this.course.classSections.length; i++) {
+        if (this.course.classSections[i].enrolledTotal < this.course.classSections[i].maxEnroll) {
+          return false;
+        }
+      }
+      return true;
+    },
+    /**
+     * Returns whether or not a course is cancelled or still TBA
+     */
+    isValid: function() {
+      for (let i = 0; i < this.course.classSections.length; i++) {
+        if (this.course.classSections[i].timeLocations?.length != 0 && this.course.classSections[i].classClosed?.trim() != "Y" && this.course.classSections[i].courseCancelled?.trim() != "C") {
+          return true;
+        }
+      }
+      return false;
+    },
+    /**
      * Returns the requirements fulfilled by the course, grouped by the college.
      */
     groupedRequirements: function() {
@@ -82,7 +110,13 @@ export default {
           " units"
         );
       }
-    }
+    },
+    /**
+     * Returns short id used by popovers so that they are only binded to one course.
+     */
+    randomId: function() {
+      return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    },
   }
 };
 </script>

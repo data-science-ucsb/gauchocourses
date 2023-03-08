@@ -3,9 +3,14 @@
     https://fullcalendar.io/docs/vue
     https://fullcalendar.io/docs#toc
 -->
-
 <template>
-  <b-card no-body>
+<div>
+  <b-button
+          variant="primary"
+          ref="button"
+          @click="exportPDF"
+        >Export to PDF</b-button>
+  <b-card no-body ref="schedule">
     <template v-slot:header>
       <div class="no-wrap d-flex flex-row align-items-center">
         <span class="d-inline-block" tabindex="0">
@@ -44,7 +49,7 @@
           variant="link"
           ref="button"
           @click="popoverShow = !popoverShow"
-        >{{ schedule.name }}</b-button>
+        >{{ updatedScheduleName }}</b-button>
 
         <b-popover
           :id="'popover'+ _uid"
@@ -84,24 +89,14 @@
     </template>
     <div v-if="doneLoading" class="weekly-calendar">
       <FullCalendar
-        height="auto"
-        @hook:mounted="manuallyFixCSS"
-        :events="events"
-        :plugins="calendarPlugins"
-        :weekends="false"
-        :columnHeaderText="columnHeaderText"
-        allDaySlot="false"
-        defaultView="timeGridWeek"
-        header="false"
-        editable="false"
-        :minTime="schedule.sortingAttributes.earliestBeginTime"
-        :maxTime="schedule.sortingAttributes.latestEndTime"
+          :options="calendarOptions"
       />
     </div>
     <div v-else class="text-center">
       <b-spinner class="m-2" variant="primary" label="Spinning"></b-spinner>
     </div>
   </b-card>
+</div>
 </template>
 
 <script>
@@ -114,6 +109,9 @@ import {
   getBorderColor,
 } from "@/components/util/color-utils.js";
 import xss from "xss";
+import { Tooltip } from "bootstrap";
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
 
 export default {
   components: {
@@ -135,19 +133,18 @@ export default {
   },
   data: function () {
     return {
-      calendarPlugins: [timeGridPlugin],
       coursesComputed: [],
       doneLoading: false,
-      savingScheduleInProgress: false,
       scheduleSavedStatus: null,
+      updatedScheduleName: this.schedule.name,
       scheduleName: this.schedule.name,
       popoverShow: false,
       errors: [],
       scheduleLocal: this.schedule,
+
     };
   },
   created: function () {
-    //if this.courses has courses that are in the schedule, add them to the coursesComputed
     this.schedule.classes.forEach((course) => {
       const match = this.courses.find(item => item.courseId == course.courseId);
       if (match != undefined) {
@@ -156,17 +153,14 @@ export default {
     });
     const codesNeeded = [];
     const courseNames = this.coursesComputed.map((course) => course.courseId);
-    //check if schedule has courses that aren't yet in coursesComputed
     this.schedule.classes.forEach((course) => {
-      if(courseNames.includes(course.courseId) == false) { //if course isnt in there yet
-        //add the enroll code to codesNeeded
+      if(courseNames.includes(course.courseId) == false) {
         codesNeeded.push(course.scheduledEnrollCodes[0]);
       }
     });
 
-    Promise.all(
-      codesNeeded.map(code => api.coursefromEnrollCode(this.schedule.quarter, code)))
-    .then((responses) => {
+    //Try to find all courses that are in the schedule but wasn't in this.courses
+    Promise.all(codesNeeded.map(code => api.coursefromEnrollCode(this.schedule.quarter, code))).then((responses) => {
       responses
         .map(r => r.data.classes[0])
         .forEach(course => this.coursesComputed.push(course));
@@ -174,16 +168,28 @@ export default {
     .catch(err => console.error(err))
     .finally(() => this.doneLoading = true);
   },
-  mounted: function () {
-    this.manuallyFixCSS();
-  },
   computed: {
     /**
      * The schedules array is mapped to a format that can be passed to the WeeklySchedule component.
      * This array has the same length as the schedules array.
      */
-    events: function () {
-      return this.parseScheduleToEventList(this.schedule, this.coursesComputed);
+    calendarOptions: function() {
+      return {
+        eventDidMount: this.eventDidMount,
+        height: 'auto',
+        events: this.parseScheduleToEventList(this.schedule, this.coursesComputed),
+        headerToolbar: "",
+        dayHeaders: true,
+        dayHeaderFormat: {weekday: 'short'},
+        plugins: [timeGridPlugin],
+        weekends: false,
+        stickyHeaderDates: false,
+        allDaySlot: false,
+        initialView: 'timeGridWeek',
+        editable: false,
+        slotMinTime: this.schedule.sortingAttributes.earliestBeginTime,
+        slotMaxTime: this.schedule.sortingAttributes.latestEndTime,
+      }
     },
     quarter: function () {
       return this.$store.state.selectedQuarter;
@@ -218,6 +224,8 @@ export default {
             startTime: classSection.timeLocations[0].beginTime,
             endTime: classSection.timeLocations[0].endTime,
             color: getBackgroundColor(classSection.name),
+            isLecture: 0,
+            textColor: "black",
           };
         } else {
           return classSection.scheduledEnrollCodes.map((section) =>
@@ -225,10 +233,10 @@ export default {
           );
         }
       }
-      var totalevents = schedule.classes
+      const totalevents = schedule.classes
         .map(classSectionToFullCalendarEvent)
-        .flat(); //do this function to all of the classes
-      var customevents = schedule.customEvents.map(
+        .flat(2); //do this function to all of the classes
+      const customevents = schedule.customEvents.map(
         classSectionToFullCalendarEvent
       );
 
@@ -243,9 +251,8 @@ export default {
     eventFromEnrollCode: function (enrollcode, course) {
       const section = course.classSections.find(
         (section) => section.enrollCode == enrollcode
-      );
-
-      var titletodisplay = course.fullCourseNumber + ": " + enrollcode;
+      );      
+      const titletodisplay = course.courseId.trim() + ": " + enrollcode;
       const dayInt = {
         MONDAY: 1,
         TUESDAY: 2,
@@ -254,67 +261,56 @@ export default {
         FRIDAY: 5,
         SATURDAY: 6,
       };
-
       if (section.timeLocations.length == 1) {
         return {
-          title: titletodisplay, //course.fullCourseNumber,
+          title: titletodisplay,
+          courseId: course.courseId,
           daysOfWeek: section.timeLocations[0].fullDays.map((a) => dayInt[a]),
           startTime: section.timeLocations[0].beginTime,
           endTime: section.timeLocations[0].endTime,
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
+          isLecture: section.isLecture ? 2 : 1,
+          //enrolledTotal is null if none enrolled
+          enrolledTotal: (section.enrolledTotal ?? section.maxEnroll),
+          maxEnroll: section.maxEnroll,
+          enrollCode: section.enrollCode,
+          location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
+          instructor: (section.instructors[0]?.instructor ?? "TBA"),
+          textColor: "black",
         };
       } else {
-        var multipleevents = [];
-        var multipletimeandplace = section.timeLocations;
-        var classinfo = {
-          title: titletodisplay, //course.fullCourseNumber,
+        let multipleevents = [];
+        const multipletimeandplace = section.timeLocations;
+        let classinfo = {
+          title: titletodisplay, //course.courseId,
+          courseId: course.courseId,
           daysOfWeek: "",
           startTime: "",
           endTime: "",
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
+          isLecture: section.isLecture ? 2 : 1,
+          //enrolledTotal is null if none enrolled
+          enrolledTotal: (section.enrolledTotal ?? section.maxEnroll),
+          maxEnroll: section.maxEnroll,
+          enrollCode: section.enrollCode,
+          location: "",
+          instructor: (section.instructors[0]?.instructor ?? "TBA"),
+          textColor: "black",
         };
-        for (var k = 0; k < multipletimeandplace.length; k++) {
-          classinfo.classSections.daysOfWeek = multipletimeandplace[
-            k
-          ].daysOfWeek.map((a) => dayInt[a]);
-          classinfo.classSections.startTime = multipletimeandplace[k].beginTime;
-          classinfo.classSections.endTime = multipletimeandplace[k].endTime;
-          multipleevents.push(classinfo);
+        for (let k = 0; k < multipletimeandplace.length; k++) {
+          classinfo.daysOfWeek = multipletimeandplace[k].fullDays.map((a) => dayInt[a]),
+          classinfo.startTime = multipletimeandplace[k].beginTime;
+          classinfo.endTime = multipletimeandplace[k].endTime;
+          classinfo.location = multipletimeandplace[k].building + " " + multipletimeandplace[k].room;
+          multipleevents.push(JSON.parse(JSON.stringify(classinfo)));
         }
         return multipleevents;
       }
     },
-    manuallyFixCSS: function () {
-      // This removes the "allDaySlot". The Vue plugin for FullCalendar does not remove it
-      // even though it is configured to remove it
-      $(".fc-day-grid").remove();
-      $(".fc-divider.fc-widget-header").remove();
-
-      // Remove empty toolbar
-      $(".fc-toolbar").remove();
-    },
-    columnHeaderText: function (date) {
-      switch (date.getDay()) {
-        case 1:
-          return "Mon";
-        case 2:
-          return "Tue";
-        case 3:
-          return "Wed";
-        case 4:
-          return "Thu";
-        case 5:
-          return "Fri";
-        case 6:
-          return "Sat";
-        default:
-          return " ";
-      }
-    },
     calculateUnits: function (schedule, courses) {
-      var total = 0;
+      let total = 0;
       schedule.classes.forEach((item) => {
         const course = courses.find(
           (course) => course.courseId == item.courseId
@@ -326,21 +322,21 @@ export default {
     /**
      * POSTS the given schedule to the backend for storage. Sets the quarter, name, units, and userEmail properties on the schedule.
      */
+
     saveSchedule: function (schedule) {
       if (this.$store.getters.userIsAuthenticated) {
         //if user isn't logged in, nothing happens
-        this.savingScheduleInProgress = true;
         $("span").css("pointer-events", "none"); //anything in a span will be disabled
           schedule.quarter = this.quarter;
           schedule.userEmail = this.$store.getters.userInfo.email;
-          schedule.name = xss(schedule.name);
+          schedule.name = xss(this.updatedScheduleName);
           schedule.totalUnits = this.calculateUnits(
             schedule,
             this.coursesComputed
           );
 
           api
-            .saveSchedule(schedule)
+            .saveSchedule(schedule, null, null, null)
             .then((response) => {
               schedule.id = response.data;
               this.scheduleSavedStatus = "successful";
@@ -349,7 +345,6 @@ export default {
               console.error(error);
               this.scheduleSavedStatus = "failed";
             });
-        this.savingScheduleInProgress = false; // Either case, release the button
         $("span").css("pointer-events", "auto");
         this.$set(schedule, 'favorited', true);
         this.$forceUpdate();
@@ -377,6 +372,7 @@ export default {
     saveName: function () {
       this.scheduleName = xss(this.scheduleName);
       this.popoverShow = false;
+      //TODO: Stop errors from occurring by checking if we are on liked schedules page or all page (known in SchedulePaginator)
       api
         .updateScheduleName(this.schedule.id, this.scheduleName)
         .then(() =>{
@@ -390,21 +386,60 @@ export default {
     editSchedule: async function(schedule) {
       await this.$store.dispatch('initializeStoreAsync',schedule);
       this.$eventHub.$emit('generate-schedules', null);
+    },
+    eventDidMount: function(info) {
+      if (info.event.extendedProps.isLecture != 0) {
+        return new Tooltip(info.el, {
+          title: "<b>" + info.event.extendedProps.courseId + " — " + (info.event.extendedProps.isLecture == 1 ? "Section" : "Lecture") + "</b><br>" +
+                 "Instructor: " + info.event.extendedProps.instructor + "<br>" +
+                 "Seats: " + info.event.extendedProps.enrolledTotal + "/" + info.event.extendedProps.maxEnroll + "<br>" +
+                 "Location: " + info.event.extendedProps.location + "<br>" +
+                 "Enroll Code: " + info.event.extendedProps.enrollCode + "<br>",
+          html: true,
+          template: '<div class="tooltip course-tooltip" role="tooltip"><div class="arrow"></div><div class="tooltip-inner course-tooltip"></div></div>',
+          placement: "top",
+          trigger: "hover",
+          container: "body",
+        });
+      }
+    },
+    exportPDF() {
+      const component = this.$refs.schedule
+
+      html2canvas(component, {imageQuality: 1}).then(function(canvas) {
+        let pdf = new jsPDF('l', 'mm', 'a4')
+        let imgData = canvas.toDataURL('image/jpeg');
+        let width = pdf.internal.pageSize.getWidth()
+        let height = pdf.internal.pageSize.getHeight()
+        let widthRatio = width / canvas.width
+        let heightRatio = height / canvas.height
+        let ratio = widthRatio > heightRatio ? heightRatio : widthRatio
+
+        pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width * ratio, canvas.height * ratio)
+        pdf.save("schedule.pdf")
+  })
     }
-  },
+  }
 };
 </script>
 
 <style>
-@import "~@fullcalendar/core/main.css";
-@import "~@fullcalendar/timegrid/main.css";
-@import "~@fullcalendar/daygrid/main.css";
+/*@import "~@fullcalendar/core/main.css";*/
+/*@import "~@fullcalendar/timegrid/main.css";*/
+/*@import "~@fullcalendar/daygrid/main.css";*/
 
-/* Transparent background. Fix for issue #78 */
-.fc-unthemed td.fc-today {
-  background: #dee2e600;
+.fc-col-header-cell-cushion {
+  color: #2c3e50;
+}
+.fc-col-header-cell-cushion:hover {
+  text-decoration: none;
+  color: #2c3e50;
 }
 
+/* Transparent background. Fix for issue #78 */
+.fc .fc-timegrid-col.fc-day-today {
+  background-color: #dee2e600;
+}
 #inner-box > * {
   position: absolute;
   top: 50%;
@@ -423,6 +458,10 @@ export default {
   font-size: 11px;
 }
 
+.tooltip > .tooltip-inner.course-tooltip {
+  text-align: left;
+  font-size: 9pt;
+}
 </style>
 
 <!-- steven: to reduce top/bottom padding in schedule header -->
@@ -430,10 +469,9 @@ export default {
 .card-header {
   padding: 0;
 }
-
 .no-wrap.d-flex.flex-row.align-items-center {
   position: relative;
-  padding-left: 5%;
+  padding-left: 10px;
 }
 
 </style>

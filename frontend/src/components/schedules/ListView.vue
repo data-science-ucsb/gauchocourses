@@ -4,40 +4,43 @@
       class="scheduleListItem"
       v-for="(schedule, index) in schedule"
       :key="index"
-    >
+      >
+
       <div class="d-flex flex-row align-items-center">
-        <span class="d-inline-block" tabindex="0">
-          <font-awesome-icon
-            v-if="schedule.favorited"
-            icon="heart"
-            size="sm"
-            :id="'heart-favorited-' + index"
-            style="color: #ED0303;"
-            @click="unFavoriteSchedule(schedule, index)"
-          />
-
-          <font-awesome-icon
-            v-else
-            icon="heart"
-            size="sm"
-            :id="'heart-icon-' + index"
-            style="color: #FFC7C7;"
-            @click="saveSchedule(schedule)"
-          />
-        </span>
-
-        <b-tooltip v-if="!$store.getters.userIsAuthenticated" :target="'heart-icon-' + index">
-          You must sign in to save schedules.
-        </b-tooltip>
-
-        <b-toast :id="'deleted-toast-' + index" title="You deleted a schedule!" variant="warning">
-          The schedule, "{{schedule.name}}" was deleted. Click the button to undo.
-          <b-button @click="saveSchedule(schedule)" variant="warning">
-          Undo
-          </b-button>
-        </b-toast>
 
         <div class="flex-grow-1">
+
+          <span class="d-inline-block" tabindex="0">
+            <font-awesome-icon
+              v-if="schedule.favorited"
+              icon="heart"
+              size="sm"
+              :id="'heart-favorited-' + index"
+              style="color: #ED0303;"
+              @click="unFavoriteSchedule(schedule, index)"
+            />
+
+            <font-awesome-icon
+              v-else
+              icon="heart"
+              size="sm"
+              :id="'heart-icon-' + index"
+              style="color: #FFC7C7;"
+              @click="saveSchedule(schedule)"
+            />
+          </span>
+
+          <b-tooltip v-if="!$store.getters.userIsAuthenticated" :target="'heart-icon-' + index">
+            You must sign in to save schedules.
+          </b-tooltip>
+
+          <b-toast :id="'deleted-toast-' + index" title="You deleted a schedule!" variant="warning">
+            The schedule, "{{schedule.name}}" was deleted. Click the button to undo.
+            <b-button @click="saveSchedule(schedule)" variant="warning">
+            Undo
+            </b-button>
+          </b-toast>
+
           <b-button
             :id="'popover-button-sync-' + index"
             ref="button"
@@ -74,7 +77,7 @@
           <div>
             Start: {{formatTime(schedule.sortingAttributes.earliestBeginTime)}} - End: {{formatTime(schedule.sortingAttributes.latestEndTime)}}
             <br />
-            Classes on {{getAbbreviatedDays(schedule.sortingAttributes.daysWithEvents).join(', ')}} -- {{schedule.totalUnits}} units
+            Classes on {{getAbbreviatedDays(schedule.sortingAttributes.daysWithEvents).join(', ')}} — {{schedule.totalUnits}} units
           </div>
         </div>
 
@@ -105,7 +108,6 @@
   <div v-else class="text-center">
     <b-spinner class="m-2" variant="primary" label="Spinning"></b-spinner>
   </div>
-
 </template>
 
 <script>
@@ -117,7 +119,7 @@ import api from "@/components/backend-api.js";
 import xss from "xss";
 
 export default {
-  data: () => {
+  data: function() {
     return {
       popoverShow: [],
       savingScheduleInProgress: false,
@@ -145,6 +147,8 @@ export default {
     }
   },
   created: function () {
+    //TODO ListView's SaveName should be based on updatedScheduleName (the name should be updated on frontend when saved)
+
     this.schedule.forEach((schedule, i) => {
       //if this.courses has courses that are in the schedule, add them to the coursesComputed
       schedule.classes.forEach((course) => {
@@ -158,29 +162,30 @@ export default {
       const courseNames = this.coursesComputed.map((course) => course.courseId);
       //check if schedule has courses that aren't yet in coursesComputed
       schedule.classes.forEach((course) => {
-        if(courseNames.includes(course.courseId) == false) { //if course isnt in there yet
+        if (courseNames.includes(course.courseId) == false) { //if course isnt in there yet
           //add the enroll code to codesNeeded
           codesNeeded.push(course.scheduledEnrollCodes[0]);
         }
       });
 
       Promise.all(
-        codesNeeded.map((code) => api.coursefromEnrollCode(schedule.quarter, code)))
-        .then((responses) => {
-          responses
-          .map((r) => r.data.classes[0])
-          .forEach((course) => {
-            this.coursesComputed.push(course);
+          codesNeeded.map((code) => api.coursefromEnrollCode(schedule.quarter, code)))
+          .then((responses) => {
+            responses
+                .map((r) => r.data.classes[0])
+                .forEach((course) => {
+                  this.coursesComputed.push(course);
+                });
+          })
+          .catch(err => console.error(err))
+          .finally(() => {
+            this.popoverShow[i] = false;
+            schedule.totalUnits = this.calculateUnits(schedule, this.coursesComputed);
+            this.scheduleNames[i] = schedule.name;
           });
-        })
-        .catch(err => console.error(err))
-        .finally(() => {
-          this.popoverShow[i] = false;
-          schedule.totalUnits = this.calculateUnits(schedule, this.coursesComputed);
-          this.scheduleNames[i] = schedule.name;
-        });
 
     });
+
     this.doneLoading = true;
   },
   computed: {
@@ -270,7 +275,7 @@ export default {
           schedule.totalUnits = this.calculateUnits(schedule, this.coursesComputed);
 
           api
-            .saveSchedule(schedule)
+            .saveSchedule(schedule, null, null, null)
             .then((response) => {
               schedule.id = response.data;
               this.scheduleSavedStatus = "successful";
@@ -338,5 +343,10 @@ export default {
 }
 .schedule-table-container {
   overflow-x: auto;
+}
+</style>
+<style scoped>
+.d-flex.flex-row.align-items-center {
+  margin-bottom: 10px;
 }
 </style>
