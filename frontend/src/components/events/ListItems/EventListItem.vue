@@ -9,7 +9,7 @@
           <strong class="event-name" v-if="full === false">{{ this.title }}</strong>
           <strong class="event-name" v-else>{{ this.title }} (Full)</strong>
         </p>
-        <span class="subtext" :id="'popover'+title">
+        <span class="subtext" :id="'popover'+randomId">
           <small>
               <slot name="subtext">
               </slot>
@@ -21,7 +21,7 @@
           </slot>
       </div>
     </b-list-group-item>
-    <b-popover :target="'popover'+title" triggers="hover" placement="right" boundary="window">
+    <b-popover :target="'popover'+randomId" triggers="hover" placement="right" boundary="window">
       <slot name="popoverContent">
       </slot>
     </b-popover>
@@ -42,6 +42,9 @@ export default {
         },
         full: {
             type: Boolean
+        },
+        randomId: {
+            type: String
         }
     }
 }

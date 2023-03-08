@@ -233,10 +233,10 @@ export default {
           );
         }
       }
-      var totalevents = schedule.classes
+      const totalevents = schedule.classes
         .map(classSectionToFullCalendarEvent)
-        .flat(); //do this function to all of the classes
-      var customevents = schedule.customEvents.map(
+        .flat(2); //do this function to all of the classes
+      const customevents = schedule.customEvents.map(
         classSectionToFullCalendarEvent
       );
 
@@ -251,9 +251,8 @@ export default {
     eventFromEnrollCode: function (enrollcode, course) {
       const section = course.classSections.find(
         (section) => section.enrollCode == enrollcode
-      );
-
-      var titletodisplay = course.fullCourseNumber + ": " + enrollcode;
+      );      
+      const titletodisplay = course.courseId.trim() + ": " + enrollcode;
       const dayInt = {
         MONDAY: 1,
         TUESDAY: 2,
@@ -264,7 +263,7 @@ export default {
       };
       if (section.timeLocations.length == 1) {
         return {
-          title: titletodisplay, //course.fullCourseNumber,
+          title: titletodisplay,
           courseId: course.courseId,
           daysOfWeek: section.timeLocations[0].fullDays.map((a) => dayInt[a]),
           startTime: section.timeLocations[0].beginTime,
@@ -281,10 +280,10 @@ export default {
           textColor: "black",
         };
       } else {
-        var multipleevents = [];
-        var multipletimeandplace = section.timeLocations;
-        var classinfo = {
-          title: titletodisplay, //course.fullCourseNumber,
+        let multipleevents = [];
+        const multipletimeandplace = section.timeLocations;
+        let classinfo = {
+          title: titletodisplay, //course.courseId,
           courseId: course.courseId,
           daysOfWeek: "",
           startTime: "",
@@ -296,23 +295,22 @@ export default {
           enrolledTotal: (section.enrolledTotal ?? section.maxEnroll),
           maxEnroll: section.maxEnroll,
           enrollCode: section.enrollCode,
-          location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
+          location: "",
           instructor: (section.instructors[0]?.instructor ?? "TBA"),
           textColor: "black",
         };
-        for (var k = 0; k < multipletimeandplace.length; k++) {
-          classinfo.daysOfWeek = multipletimeandplace[
-            k
-          ].daysOfWeek.map((a) => dayInt[a]);
+        for (let k = 0; k < multipletimeandplace.length; k++) {
+          classinfo.daysOfWeek = multipletimeandplace[k].fullDays.map((a) => dayInt[a]),
           classinfo.startTime = multipletimeandplace[k].beginTime;
           classinfo.endTime = multipletimeandplace[k].endTime;
-          multipleevents.push(classinfo);
+          classinfo.location = multipletimeandplace[k].building + " " + multipletimeandplace[k].room;
+          multipleevents.push(JSON.parse(JSON.stringify(classinfo)));
         }
         return multipleevents;
       }
     },
     calculateUnits: function (schedule, courses) {
-      var total = 0;
+      let total = 0;
       schedule.classes.forEach((item) => {
         const course = courses.find(
           (course) => course.courseId == item.courseId
@@ -406,7 +404,7 @@ export default {
       }
     },
     exportPDF() {
-      var component = this.$refs.schedule
+      const component = this.$refs.schedule
 
       html2canvas(component, {imageQuality: 1}).then(function(canvas) {
         let pdf = new jsPDF('l', 'mm', 'a4')
