@@ -36,6 +36,7 @@
     "jspdf": "^2.5.1",
     "sass": "^1.56.1",
     "sass-loader": "^8.0.0",
+    "verte": "^0.0.12",
     "vue": "^2.6.10",
     "vue-application-insights": "^1.0.7",
     "vue-dayjs-plugin": "^1.0.0",

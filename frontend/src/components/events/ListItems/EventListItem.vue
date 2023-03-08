@@ -1,9 +1,18 @@
 <template>
   <div>
     <b-list-group-item class="d-flex p-0 w-100">
-      <div class="event-color-block"
+      <!-- <div class="event-color-block"
         :style="{'background-color': backgroundColor, 'border-right-color': borderColor }"
-      ></div>
+      ></div> -->
+      <div class="event-color-block" :style="{'border-right-color': borderColor}">
+        <template>
+          <verte :value="backgroundColor" picker="square" menuPosition="center" model="rgb" draggable="false" enableAlpha=true>
+            <svg viewBox="0 0 1 1" preserveAspectRatio="none">
+              <rect width="100%" height="100%"/>
+            </svg>
+          </verte>
+        </template>
+      </div>
       <div class="my-1 ml-2">
         <p class="mb-0">
           <strong class="event-name" v-if="full === false">{{ this.title }}</strong>
@@ -55,7 +64,14 @@ export default {
   color: gray;
   text-decoration: underline;
 }
-
+.verte {
+  width: 100%;
+  height: 100%;
+}
+.verte > .verte__guide {
+  width: 100%;
+  height: 100%;
+}
 .event-color-block {
     width: 5%;
     border-right-width: 2px; 
