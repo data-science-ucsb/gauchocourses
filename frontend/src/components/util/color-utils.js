@@ -1,6 +1,8 @@
 
 // A list of colors that will be used for the event background and border colors. These are
 // chosen such that they show well with black text on top.
+let userBackgroundColors = {}
+
 const backgroundColors = [
     "Aquamarine",
     "Azure",
@@ -90,6 +92,10 @@ function getColor(string, colors) {
  * @param {string} string 
  */
 export function getBackgroundColor(string) {
+    string = string.replace(/\s/g, "");
+    if (string in userBackgroundColors) {
+        return userBackgroundColors[string];
+    }
     return getColor(string, backgroundColors);
 }
 
@@ -99,4 +105,13 @@ export function getBackgroundColor(string) {
  */
 export function getBorderColor(string) {
     return getColor(string, borderColors);
+}
+
+/**
+ * Stores a background color identified by the given string.
+ * @param {string} string 
+ * @param {string} color
+ */
+export function setBackgroundColor(string, color) {
+    userBackgroundColors[string] = color;
 }

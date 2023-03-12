@@ -283,6 +283,7 @@
           :schedules="schedulesToRender"
           :numShow="currentView"
           :showEditButton="showEditButton"
+          :onUserProfile="onUserProfile"
           v-else>
         </ScheduleView>
     </b-card>
@@ -323,7 +324,11 @@ export default {
         showEditButton: {
             type: Boolean,
             default: false
-        }
+        },
+        onUserProfile: {
+            type: Boolean,
+            default: false,
+        },
     },
     created: function() {
         // Register event hooks

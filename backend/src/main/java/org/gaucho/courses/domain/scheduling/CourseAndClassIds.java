@@ -1,5 +1,6 @@
 package org.gaucho.courses.domain.scheduling;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -20,4 +21,8 @@ public class CourseAndClassIds implements Serializable {
     List<String> scheduledEnrollCodes = new ArrayList<>();  // ToDo: this should be a set
 
     List<String> selectedEnrollCodes = new ArrayList<>();  // ToDo: this should be a set
+
+    String backgroundColor;
+
+    String borderColor;
 }

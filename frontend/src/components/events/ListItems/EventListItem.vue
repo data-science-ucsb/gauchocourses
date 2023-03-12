@@ -1,13 +1,10 @@
 <template>
   <div>
     <b-list-group-item class="d-flex p-0 w-100">
-      <!-- <div class="event-color-block"
-        :style="{'background-color': backgroundColor, 'border-right-color': borderColor }"
-      ></div> -->
       <div class="event-color-block" :style="{'border-right-color': borderColor}">
         <template>
-          <verte :value="backgroundColor" picker="square" menuPosition="center" model="rgb" draggable="false" enableAlpha=true>
-            <svg viewBox="0 0 1 1" preserveAspectRatio="none">
+          <verte v-model="colorVal" :value="backgroundColor" picker="square" menuPosition="center" model="rgb" :enableAlpha="false">
+            <svg :class="'course-id-' + title.replace(/\s/g,'')" viewBox="0 0 1 1" preserveAspectRatio="none">
               <rect width="100%" height="100%"/>
             </svg>
           </verte>
@@ -38,24 +35,50 @@
 </template>
 
 <script>
+import { setBackgroundColor } from "@/components/util/color-utils.js";
+import $ from "jquery";
+
 export default {
-    props: {
-        title: {
-            type: String
-        },
-        backgroundColor: {
-            type: String
-        },
-        borderColor: {
-            type: String
-        },
-        full: {
-            type: Boolean
-        },
-        randomId: {
-            type: String
-        }
+  props: {
+      title: {
+          type: String
+      },
+      backgroundColor: {
+          type: String
+      },
+      borderColor: {
+          type: String
+      },
+      full: {
+          type: Boolean
+      },
+      randomId: {
+          type: String
+      },
+      custom: {
+          type: Boolean
+      }
+  },
+  data: function() {
+    return {
+      colorVal: this.backgroundColor,
+    };
+  },
+  watch: {
+    colorVal(color) {
+      setBackgroundColor(this.title.replace(/\s/g, ""), color);
+
+      // const addStyle = (() => {
+      //   const style = document.createElement('style');
+      //   document.head.append(style);
+      //   return (styleString) => style.textContent = styleString;
+      // })();
+
+      // addStyle('.course-id-' + this.title.replace(/\s/g,'') + '{background-color:' + color + '; fill:' + color + '}');
+
+      $(".course-id-" + this.title.replace(/\s/g,'')).css({'background-color': color, 'fill': color});
     }
+  },
 }
 </script>
 

@@ -33,6 +33,7 @@
                                 :showQuarterSelector="true"
                                 :showFavoritesButton="false"
                                 :showEditButton="true"
+                                :onUserProfile="true"
                                 class="h-100"/>
                               </keep-alive>
                             </b-col>
