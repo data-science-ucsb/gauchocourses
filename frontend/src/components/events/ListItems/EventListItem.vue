@@ -10,7 +10,7 @@
           </verte>
         </template>
       </div>
-      <div class="my-1 ml-2">
+      <div class="event-description-block my-1 ml-2">
         <p class="mb-0">
           <strong class="event-name" v-if="full === false">{{ this.title }}</strong>
           <strong class="event-name" v-else>{{ this.title }} (Full)</strong>
@@ -22,7 +22,7 @@
           </small>
         </span>
       </div>
-      <div class="ml-auto mr-4 align-self-center">
+      <div class="event-button-block align-self-center">
           <slot name="buttons">
           </slot>
       </div>
@@ -67,15 +67,6 @@ export default {
   watch: {
     colorVal(color) {
       setBackgroundColor(this.title.replace(/\s/g, ""), color);
-
-      // const addStyle = (() => {
-      //   const style = document.createElement('style');
-      //   document.head.append(style);
-      //   return (styleString) => style.textContent = styleString;
-      // })();
-
-      // addStyle('.course-id-' + this.title.replace(/\s/g,'') + '{background-color:' + color + '; fill:' + color + '}');
-
       $(".course-id-" + this.title.replace(/\s/g,'')).css({'background-color': color, 'fill': color});
     }
   },
@@ -96,8 +87,18 @@ export default {
   height: 100%;
 }
 .event-color-block {
-    width: 5%;
-    border-right-width: 2px; 
-    border-right-style: solid;
+  flex-basis: 5%;
+  min-width: 0;
+  border-right-width: 2px; 
+  border-right-style: solid;
+}
+.event-description-block {
+  min-width: 0;
+  flex-basis: 80%;
+}
+.event-button-block {
+  min-width: 0;
+  text-align: center;
+  flex-basis: 15%;
 }
 </style>

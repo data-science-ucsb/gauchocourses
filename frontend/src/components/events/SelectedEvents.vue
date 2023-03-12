@@ -150,10 +150,8 @@ export default {
     height: 100%;
 }
 
-.event-color-block {
-    width: 5%;
-    border-right-width: 2px;
-    border-right-style: solid;
+.edit-event {
+    margin-right: 0.2rem;
 }
 
 #addCustomEventIcon:hover {
