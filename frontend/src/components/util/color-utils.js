@@ -64,7 +64,8 @@ const borderColors = [
     '#0E5C00',
 ]
 
-function getHash (str) {
+export function getHash (str) {
+    str = str.replace(/\s/g, "");
     var hash = 0;
     if (str == null || str.length == 0) return hash;
     else {
@@ -113,5 +114,6 @@ export function getBorderColor(string) {
  * @param {string} color
  */
 export function setBackgroundColor(string, color) {
+    string = string.replace(/\s/g, "");
     userBackgroundColors[string] = color;
 }

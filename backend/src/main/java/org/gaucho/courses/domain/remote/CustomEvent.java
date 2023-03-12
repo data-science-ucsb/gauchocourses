@@ -12,8 +12,7 @@ import java.io.Serializable;
 @JsonPropertyOrder({
         "name",
         "timeLocations",
-        "backgroundColor",
-        "borderColor"
+        "backgroundColor"
 })
 @Slf4j
 @Data
@@ -22,7 +21,6 @@ public class CustomEvent extends Event implements Serializable {
 
     @JsonProperty("name") private String name;
     @JsonProperty("backgroundColor")             private String backgroundColor;
-    @JsonProperty("borderColor")                private String borderColor;
 
     public CustomEvent() { }
 }

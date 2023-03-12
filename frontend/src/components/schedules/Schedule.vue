@@ -107,6 +107,7 @@ import api from "@/components/backend-api.js";
 import {
   getBackgroundColor,
   getBorderColor,
+  getHash
 } from "@/components/util/color-utils.js";
 import xss from "xss";
 import { Tooltip } from "bootstrap";
@@ -233,10 +234,11 @@ export default {
             ),
             startTime: classSection.timeLocations[0].beginTime,
             endTime: classSection.timeLocations[0].endTime,
-            color: backgroundColor,
+            borderColor: "black",
+            backgroundColor: backgroundColor,
             isLecture: 0,
             textColor: "black",
-            className: "selected-event" + (!_this.onUserProfile ? (" course-id-" + classSection.name.replace(/\s/g,'')) : '')
+            className: "selected-event" + (!_this.onUserProfile ? (" course-id-" + getHash(classSection.name)) : '')
           };
         } else {
           return classSection.scheduledEnrollCodes.map((section) =>
@@ -289,7 +291,7 @@ export default {
           location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
           instructor: (section.instructors[0]?.instructor ?? "TBA"),
           textColor: "black",
-          className: "selected-event" + (!this.onUserProfile ? (" course-id-" + course.courseId.replace(/\s/g,'')) : '')
+          className: "selected-event" + (!this.onUserProfile ? (" course-id-" + getHash(course.courseId)) : '')
         };
       } else {
         let multipleevents = [];
@@ -310,7 +312,7 @@ export default {
           location: "",
           instructor: (section.instructors[0]?.instructor ?? "TBA"),
           textColor: "black",
-          className: "selected-event" + !this.onUserProfile ? " course-id-" + course.courseId.replace(/\s/g,'') : ''
+          className: "selected-event" + !this.onUserProfile ? " course-id-" + getHash(course.courseId) : ''
         };
         for (let k = 0; k < multipletimeandplace.length; k++) {
           classinfo.daysOfWeek = multipletimeandplace[k].fullDays.map((a) => dayInt[a]),

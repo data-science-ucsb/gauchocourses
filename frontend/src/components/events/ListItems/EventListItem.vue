@@ -4,7 +4,7 @@
       <div class="event-color-block" :style="{'border-right-color': borderColor}">
         <template>
           <verte v-model="colorVal" :value="backgroundColor" picker="square" menuPosition="center" model="rgb" :enableAlpha="false">
-            <svg :class="'course-id-' + title.replace(/\s/g,'')" viewBox="0 0 1 1" preserveAspectRatio="none">
+            <svg :class="'course-id-' + titleHash" viewBox="0 0 1 1" preserveAspectRatio="none">
               <rect width="100%" height="100%"/>
             </svg>
           </verte>
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { setBackgroundColor } from "@/components/util/color-utils.js";
+import { setBackgroundColor, getHash } from "@/components/util/color-utils.js";
 import $ from "jquery";
 
 export default {
@@ -59,6 +59,11 @@ export default {
           type: Boolean
       }
   },
+  computed: {
+    titleHash() {
+      return getHash(this.title)
+    }
+  },
   data: function() {
     return {
       colorVal: this.backgroundColor,
@@ -66,8 +71,8 @@ export default {
   },
   watch: {
     colorVal(color) {
-      setBackgroundColor(this.title.replace(/\s/g, ""), color);
-      $(".course-id-" + this.title.replace(/\s/g,'')).css({'background-color': color, 'fill': color});
+      setBackgroundColor(this.title, color);
+      $(".course-id-" + this.titleHash).css({'background-color': color, 'fill': color});
     }
   },
 }

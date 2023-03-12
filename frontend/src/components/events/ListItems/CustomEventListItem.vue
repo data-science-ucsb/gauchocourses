@@ -48,7 +48,7 @@ export default {
     backgroundColor: function() {
       // TODO: Once we have class definitions on the frontend, consolidate any usages of "getColor" stuff to the class definitions.
       let ctx = document.createElement('canvas').getContext('2d');
-      ctx.fillStyle = getBackgroundColor(this.customEvent.name.replace(/\s/g, ""));
+      ctx.fillStyle = getBackgroundColor(this.customEvent.name);
       return ctx.fillStyle;
     },
       /**

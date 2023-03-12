@@ -106,6 +106,7 @@ import api from "@/components/backend-api.js";
 import {
   getBackgroundColor,
   getBorderColor,
+  getHash
 } from "@/components/util/color-utils.js";
 import xss from "xss";
 import { Tooltip } from "bootstrap";
@@ -246,8 +247,9 @@ export default {
             ),
             startTime: classSection.timeLocations[0].beginTime,
             endTime: classSection.timeLocations[0].endTime,
-            color: getBackgroundColor(classSection.name),
-            className: 'unselected course-id-' + classSection.name.replace(/\s/g,''),
+            borderColor: "black",
+            backgroundColor: getBackgroundColor(classSection.name),
+            className: 'unselected course-id-' + getHash(classSection.name),
             isLecture: 0,
             lectureSectionGroup: '',
             overlaid: [],
@@ -314,7 +316,7 @@ export default {
           endTime: section.timeLocations[0].endTime,
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId),
-          className: 'unselected course-id-' + course.courseId.replace(/\s/g,''),
+          className: 'unselected course-id-' + getHash(course.courseId),
           isLecture: section.isLecture ? 2 : 1,
           sectionSelected: false,
           overlaid: [],
@@ -340,7 +342,7 @@ export default {
           endTime: "",
           borderColor: getBorderColor(course.deptCode),
           backgroundColor: getBackgroundColor(course.courseId),
-          className: 'unselected course-id-' + course.courseId.replace(/\s/g,''),
+          className: 'unselected course-id-' + getHash(course.courseId),
           isLecture: section.isLecture ? 2 : 1,
           textColor: "black",
           sectionSelected: false,
@@ -369,10 +371,10 @@ export default {
       this.$bvToast.hide('deleted-toast-' + this._uid);
       let calendarApi = this.$refs.calendar.getApi();
       let concurrentLectureSectionGroups = [];
-      if(arg.event.borderColor != "blue") { //If it is being selected
+      if(!arg.event.classNames.includes('selected')) { //If it is being selected
         if(arg.event.extendedProps.isLecture === 2) { //If Lecture
-          arg.event.setProp( 'borderColor', 'blue' );
-          arg.event.setProp('classNames', ['selected', 'course-id-' + arg.event.title.substring(0, arg.event.title.indexOf(":")).replace(/\s/g,'')]);
+          // arg.event.setProp( 'borderColor', 'blue' );
+          arg.event.setProp('classNames', ['selected', 'course-id-' + getHash(arg.event.title.substring(0, arg.event.title.indexOf(":")))]);
           this.selectedEvents.push(arg.event);
           calendarApi.getEvents().forEach(event => { //Loop through each event in calendar
             if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":"))) {
@@ -412,8 +414,8 @@ export default {
         }
 
         else if (arg.event.extendedProps.isLecture === 1) { //If Section
-          arg.event.setProp( 'borderColor', 'blue' );
-          arg.event.setProp('classNames', ['selected', 'course-id-' + arg.event.title.substring(0, arg.event.title.indexOf(":")).replace(/\s/g,'')]);
+          // arg.event.setProp( 'borderColor', 'blue' );
+          arg.event.setProp('classNames', ['selected', 'course-id-' + getHash(arg.event.title.substring(0, arg.event.title.indexOf(":")))]);
           this.selectedEvents.push(arg.event);
           calendarApi.getEvents().forEach(event => { //Loop through each event in calendar
             if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":"))) { //If the same course
@@ -423,9 +425,9 @@ export default {
                 event.setProp('display', 'none');
               }
               else if(event.extendedProps.isLecture === 2) { //If it's part of the same course, lecturesection group, and it is this lecture, select it
-                if(event.borderColor != 'blue') {
-                  event.setProp('borderColor', 'blue');
-                  event.setProp('classNames', ['selected', 'course-id-' + arg.event.title.substring(0, arg.event.title.indexOf(":")).replace(/\s/g,'')]);
+                if(!event.classNames.includes('selected')) {
+                  // event.setProp('borderColor', 'blue');
+                  event.setProp('classNames', ['selected', 'course-id-' + getHash(arg.event.title.substring(0, arg.event.title.indexOf(":")))]);
                   this.selectedEvents.push(event);
                 }
                 calendarApi.getEvents().forEach(function (eventTwo) { //get rid of all overlapping events of the lectures
@@ -474,8 +476,8 @@ export default {
         }
 
         else { //If CustomEvent
-          arg.event.setProp( 'borderColor', 'blue' );
-          arg.event.setProp('classNames', ['selected', 'course-id-' + arg.event.title.replace(/\s/g,'')]);
+          // arg.event.setProp( 'borderColor', 'blue' );
+          arg.event.setProp('classNames', ['selected', 'course-id-' + getHash(arg.event.title)]);
           this.selectedEvents.push(arg.event);
           calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
             if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) { //Get rid of all overlapping events for this customevent
@@ -522,7 +524,7 @@ export default {
               calendarApi.getEvents().forEach(event => {
                 if (event.extendedProps.lectureSectionGroup == concurrentLectureSectionGroups[k]) {
                   event.setProp('display', 'none');
-                  if(event.borderColor == 'blue') {
+                  if(event.classNames.includes('selected')) {
                     this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != event.groupId);
                   }
                 }
@@ -535,17 +537,17 @@ export default {
       else { //If it is being unselected
 
         if(arg.event.extendedProps.isLecture === 2) { //If Lecture
-          const course = this.courses.find(
-              (course) => course.courseId == arg.event.extendedProps.courseId
-          );
-          arg.event.setProp('borderColor', getBorderColor(course.deptCode));
-          arg.event.setProp('classNames', ['unselected', 'course-id-' + arg.event.title.substring(0, arg.event.title.indexOf(":")).replace(/\s/g,'')]);
+          // const course = this.courses.find(
+          //     (course) => course.courseId == arg.event.extendedProps.courseId
+          // );
+          // arg.event.setProp('borderColor', getBorderColor(course.deptCode));
+          arg.event.setProp('classNames', ['unselected', 'course-id-' + getHash(arg.event.title.substring(0, arg.event.title.indexOf(":")))]);
           this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != arg.event.groupId);
           calendarApi.getEvents().forEach(event => { //Loop through each event in calendar
             if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":"))) { //If it's the same course
-              if(event.extendedProps.isLecture === 1 && event.borderColor == "blue") { //deselect the selected sections for this lecture and then show all sections
-                event.setProp('borderColor', getBorderColor(course.deptCode));
-                event.setProp('classNames', ['unselected', 'course-id-' + arg.event.title.substring(0, arg.event.title.indexOf(":")).replace(/\s/g,'')]);
+              if(event.extendedProps.isLecture === 1 && event.classNames.includes('selected')) { //deselect the selected sections for this lecture and then show all sections
+                // event.setProp('borderColor', getBorderColor(course.deptCode));
+                event.setProp('classNames', ['unselected', 'course-id-' + getHash(arg.event.title.substring(0, arg.event.title.indexOf(":")))]);
                 this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != event.groupId);
                 calendarApi.getEvents().forEach(function (eventTwo) { //Adds all overlapping events of section
                   if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) {
@@ -603,11 +605,11 @@ export default {
 
         else if (arg.event.extendedProps.isLecture === 1) { //If Section
 
-          const course = this.courses.find(
-              (course) => course.courseId == arg.event.extendedProps.courseId
-          );
-          arg.event.setProp('borderColor', getBorderColor(course.deptCode));
-          arg.event.setProp('classNames', ['unselected', 'course-id-' + arg.event.title.substring(0, arg.event.title.indexOf(":")).replace(/\s/g,'')]);
+          // const course = this.courses.find(
+          //     (course) => course.courseId == arg.event.extendedProps.courseId
+          // );
+          // arg.event.setProp('borderColor', getBorderColor(course.deptCode));
+          arg.event.setProp('classNames', ['unselected', 'course-id-' + getHash(arg.event.title.substring(0, arg.event.title.indexOf(":")))]);
           this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != arg.event.groupId);
           calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
             if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":")) && event.extendedProps.lectureSectionGroup == arg.event.extendedProps.lectureSectionGroup && event.extendedProps.isLecture === 1) { //If the same course, same lectureSectionGroup, and it is a section, show it
@@ -625,7 +627,7 @@ export default {
                   }));
                   if(eventTwo.extendedProps.sectionSelected == false && eventTwo.extendedProps.relatedSelected == false && eventTwo.extendedProps.overlaid.length === 0) {
                     eventTwo.setProp('display', 'auto');
-                    eventTwo.setProp('backgroundColor', eventTwo.extendedProps.courseId != "none" ? getBackgroundColor(eventTwo.title.slice(0, eventTwo.title.indexOf(":"))) : eventTwo.title);
+                    eventTwo.setProp('backgroundColor', eventTwo.extendedProps.courseId != "none" ? getBackgroundColor(eventTwo.title.slice(0, eventTwo.title.indexOf(":"))) : getBackgroundColor(eventTwo.title));
                     if(!concurrentLectureSectionGroups.includes(eventTwo.extendedProps.lectureSectionGroup)) {
                       concurrentLectureSectionGroups.push(eventTwo.extendedProps.lectureSectionGroup);
                     }
@@ -649,8 +651,8 @@ export default {
         }
 
         else { //If Custom Event
-          arg.event.setProp( 'borderColor', 'transparent');
-          arg.event.setProp('classNames', ['unselected', 'course-id-' + arg.event.title.replace(/\s/g,'')]);
+          // arg.event.setProp( 'borderColor', ' black');
+          arg.event.setProp('classNames', ['unselected', 'course-id-' + getHash(arg.event.title)]);
 
           this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != arg.event.groupId);
           calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
@@ -676,7 +678,7 @@ export default {
               }));
               if(event.extendedProps.sectionSelected == false && event.extendedProps.relatedSelected == false && event.extendedProps.overlaid.length === 0) {
                 event.setProp('display', 'auto');
-                event.setProp('backgroundColor', event.extendedProps.courseId != "none" ? getBackgroundColor(event.title.slice(0, event.title.indexOf(":"))) : event.title);
+                event.setProp('backgroundColor', event.extendedProps.courseId != "none" ? getBackgroundColor(event.title.slice(0, event.title.indexOf(":"))) : getBackgroundColor(event.title));
                 if(!concurrentLectureSectionGroups.includes(event.extendedProps.lectureSectionGroup)) {
                   concurrentLectureSectionGroups.push(event.extendedProps.lectureSectionGroup);
                 }
@@ -708,7 +710,7 @@ export default {
                 if (event.extendedProps.lectureSectionGroup === concurrentLectureSectionGroups[k] && event.extendedProps.sectionSelected == false && event.extendedProps.relatedSelected == false && event.extendedProps.overlaid.length === 0) {
                   event.setProp('display', 'auto');
                   event.setProp('backgroundColor', event.extendedProps.courseId != "none" ? getBackgroundColor(event.title.slice(0, event.title.indexOf(":"))) : getBackgroundColor(event.title));
-                  if(event.borderColor == 'blue') {
+                  if(event.classNames.includes('selected')) {
                     this.selectedEvents.push(event);
                   }
                 }
@@ -724,7 +726,7 @@ export default {
         }
       }
       this.finishedSchedule = !calendarApi.getEvents().some(function(event) {
-        return (event.display == "auto" && event.borderColor != "blue");
+        return (event.display == "auto" && !event.classNames.includes('selected'));
       });
       //TODO reset filters in schedule paginator affects schedule builder?
       //TODO make ScheduleC affected by sorting and filtering options?
