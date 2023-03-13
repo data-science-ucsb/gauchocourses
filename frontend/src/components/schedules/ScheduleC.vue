@@ -126,6 +126,10 @@ export default {
       type: Array,
       required: false
     },
+    conflicting : {
+      type: Boolean,
+      required: false
+    }
   },
   data: function () {
     return {
@@ -384,21 +388,24 @@ export default {
               // Checks for the other lectures' events and hides their concurrent events
               else if(event.extendedProps.isLecture === 2 && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) {
                 this.selectedEvents.push(event);
-                calendarApi.getEvents().forEach(function (eventTwo) {
-                  if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
-                    eventTwo.setProp('display', 'none');
-                    if(!concurrentLectureSectionGroups.includes(eventTwo.extendedProps.lectureSectionGroup)) {
-                      concurrentLectureSectionGroups.push(eventTwo.extendedProps.lectureSectionGroup);
+                if(!this.conflicting) {
+                  calendarApi.getEvents().forEach(function (eventTwo) {
+                    if (eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
+                      eventTwo.setProp('display', 'none');
+                      // eventTwo.setProp('borderColor', 'red');
+                      if (!concurrentLectureSectionGroups.includes(eventTwo.extendedProps.lectureSectionGroup)) {
+                        concurrentLectureSectionGroups.push(eventTwo.extendedProps.lectureSectionGroup);
+                      }
+                      if (!eventTwo.extendedProps.overlaid.includes(event.groupId)) {
+                        eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.concat(event.groupId));
+                      }
                     }
-                    if(!eventTwo.extendedProps.overlaid.includes(event.groupId)) {
-                      eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.concat(event.groupId));
-                    }
-                  }
-                });
+                  });
+                }
               }
             }
             //Get rid of all overlapping events for this lecture
-            if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) {
+            if(!this.conflicting && event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) {
               event.setProp('display', 'none');
               if(!concurrentLectureSectionGroups.includes(event.extendedProps.lectureSectionGroup)) {
                 concurrentLectureSectionGroups.push(event.extendedProps.lectureSectionGroup);
@@ -427,17 +434,19 @@ export default {
                   event.setProp('classNames', ['selected', 'course-id-' + getHash(arg.event.title.substring(0, arg.event.title.indexOf(":")))]);
                   this.selectedEvents.push(event);
                 }
-                calendarApi.getEvents().forEach(function (eventTwo) { //get rid of all overlapping events of the lectures
-                  if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
-                    eventTwo.setProp('display', 'none');
-                    if(!concurrentLectureSectionGroups.includes(eventTwo.extendedProps.lectureSectionGroup)) {
-                      concurrentLectureSectionGroups.push(eventTwo.extendedProps.lectureSectionGroup);
+                if(!this.conflicting) {
+                  calendarApi.getEvents().forEach(function (eventTwo) { //get rid of all overlapping events of the lectures
+                    if (eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
+                      eventTwo.setProp('display', 'none');
+                      if (!concurrentLectureSectionGroups.includes(eventTwo.extendedProps.lectureSectionGroup)) {
+                        concurrentLectureSectionGroups.push(eventTwo.extendedProps.lectureSectionGroup);
+                      }
+                      if (!eventTwo.extendedProps.overlaid.includes(event.groupId)) {
+                        eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.concat(event.groupId));
+                      }
                     }
-                    if(!eventTwo.extendedProps.overlaid.includes(event.groupId)) {
-                      eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.concat(event.groupId));
-                    }
-                  }
-                });
+                  });
+                }
               }
               else if(event.extendedProps.isLecture === 1) { //If it's part of the same course, lecturesection group, and it is a competing section, remove it
                 if(event.groupId != arg.event.groupId) { //Check if it is not section that we want
@@ -446,21 +455,23 @@ export default {
                 }
                 else if(new Date(event.start).getTime() != new Date(arg.event.start).getTime()) { //check if it is a section we want (Math 8 Spring 2023 has two sections per class) then hide its concurrent classes
                   this.selectedEvents.push(event);
-                  calendarApi.getEvents().forEach(function (eventTwo) { //get rid of all overlapping events of the lectures
-                    if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
-                      eventTwo.setProp('display', 'none');
-                      if(!concurrentLectureSectionGroups.includes(eventTwo.extendedProps.lectureSectionGroup)) {
-                        concurrentLectureSectionGroups.push(eventTwo.extendedProps.lectureSectionGroup);
+                  if(!this.conflicting) {
+                    calendarApi.getEvents().forEach(function (eventTwo) { //get rid of all overlapping events of the lectures
+                      if (eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
+                        eventTwo.setProp('display', 'none');
+                        if (!concurrentLectureSectionGroups.includes(eventTwo.extendedProps.lectureSectionGroup)) {
+                          concurrentLectureSectionGroups.push(eventTwo.extendedProps.lectureSectionGroup);
+                        }
+                        if (!eventTwo.extendedProps.overlaid.includes(event.groupId)) {
+                          eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.concat(event.groupId));
+                        }
                       }
-                      if(!eventTwo.extendedProps.overlaid.includes(event.groupId)) {
-                        eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.concat(event.groupId));
-                      }
-                    }
-                  });
+                    });
+                  }
                 }
               }
             }
-            if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) { //Get rid of all overlapping events for this section
+            if(!this.conflicting && event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) { //Get rid of all overlapping events for this section
               event.setProp('display', 'none');
               if(!concurrentLectureSectionGroups.includes(event.extendedProps.lectureSectionGroup)) {
                 concurrentLectureSectionGroups.push(event.extendedProps.lectureSectionGroup);
@@ -475,8 +486,8 @@ export default {
         else { //If CustomEvent
           arg.event.setProp('classNames', ['selected', 'course-id-' + getHash(arg.event.title)]);
           this.selectedEvents.push(arg.event);
-          calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
-            if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) { //Get rid of all overlapping events for this customevent
+          calendarApi.getEvents().forEach(event => { //Loop through each event in calendar
+            if(!this.conflicting && event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) { //Get rid of all overlapping events for this customevent
               event.setProp( 'display', 'none' );
               if(!concurrentLectureSectionGroups.includes(event.extendedProps.lectureSectionGroup)) {
                 concurrentLectureSectionGroups.push(event.extendedProps.lectureSectionGroup);
@@ -487,44 +498,48 @@ export default {
             }
             if(event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) { //Hide the other custom event's concurrent events
               this.selectedEvents.push(event);
-              calendarApi.getEvents().forEach(function (eventTwo) {
-                if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
-                  eventTwo.setProp( 'display', 'none' );
-                  if(!concurrentLectureSectionGroups.includes(eventTwo.extendedProps.lectureSectionGroup)) {
-                    concurrentLectureSectionGroups.push(eventTwo.extendedProps.lectureSectionGroup);
+              if(!this.conflicting) {
+                calendarApi.getEvents().forEach(function (eventTwo) {
+                  if (eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Get rid of all overlapping events for this lecture AND CHECK IF IT IS ON THE SAME DATE
+                    eventTwo.setProp('display', 'none');
+                    if (!concurrentLectureSectionGroups.includes(eventTwo.extendedProps.lectureSectionGroup)) {
+                      concurrentLectureSectionGroups.push(eventTwo.extendedProps.lectureSectionGroup);
+                    }
+                    if (!eventTwo.extendedProps.overlaid.includes(event.groupId)) {
+                      eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.concat(event.groupId));
+                    }
                   }
-                  if(!eventTwo.extendedProps.overlaid.includes(event.groupId)) {
-                    eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.concat(event.groupId));
-                  }
-                }
-              });
+                });
+              }
             }
           });
         }
-        for(let k = 0; k < concurrentLectureSectionGroups.length; k++) { //Checking if all sections or all lectures of a section group is gone because of concurrency checks
-          if (concurrentLectureSectionGroups[k] != '') {
-            let numberLectures = 0;
-            let numberSections = 0;
-            calendarApi.getEvents().forEach(function (event) {
-              if (event.extendedProps.lectureSectionGroup == concurrentLectureSectionGroups[k]) { //All events that are part of the lectureSectionGroup
-                if (event.display != 'none') {
-                  if (event.extendedProps.isLecture === 2) {
-                    ++numberLectures;
-                  } else {
-                    ++numberSections;
-                  }
-                }
-              }
-            });
-            if (numberLectures == 0 || numberSections == 0) {
-              calendarApi.getEvents().forEach(event => {
-                if (event.extendedProps.lectureSectionGroup == concurrentLectureSectionGroups[k]) {
-                  event.setProp('display', 'none');
-                  if(event.classNames.includes('selected')) {
-                    this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != event.groupId);
+        if(!this.conflicting) {
+          for (let k = 0; k < concurrentLectureSectionGroups.length; k++) { //Checking if all sections or all lectures of a section group is gone because of concurrency checks
+            if (concurrentLectureSectionGroups[k] != '') {
+              let numberLectures = 0;
+              let numberSections = 0;
+              calendarApi.getEvents().forEach(function (event) {
+                if (event.extendedProps.lectureSectionGroup == concurrentLectureSectionGroups[k]) { //All events that are part of the lectureSectionGroup
+                  if (event.display != 'none') {
+                    if (event.extendedProps.isLecture === 2) {
+                      ++numberLectures;
+                    } else {
+                      ++numberSections;
+                    }
                   }
                 }
               });
+              if (numberLectures == 0 || numberSections == 0) {
+                calendarApi.getEvents().forEach(event => {
+                  if (event.extendedProps.lectureSectionGroup == concurrentLectureSectionGroups[k]) {
+                    event.setProp('display', 'none');
+                    if (event.classNames.includes('selected')) {
+                      this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != event.groupId);
+                    }
+                  }
+                });
+              }
             }
           }
         }
@@ -540,20 +555,22 @@ export default {
               if(event.extendedProps.isLecture === 1 && event.classNames.includes('selected')) { //deselect the selected sections for this lecture and then show all sections
                 event.setProp('classNames', ['unselected', 'course-id-' + getHash(arg.event.title.substring(0, arg.event.title.indexOf(":")))]);
                 this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != event.groupId);
-                calendarApi.getEvents().forEach(function (eventTwo) { //Adds all overlapping events of section
-                  if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) {
-                    eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.filter((item) => {
-                      return item != event.groupId;
-                    }));
-                    if(eventTwo.extendedProps.sectionSelected == false && eventTwo.extendedProps.relatedSelected == false && eventTwo.extendedProps.overlaid.length === 0) {
-                      eventTwo.setProp('display', 'auto')
-                      eventTwo.setProp('backgroundColor', eventTwo.extendedProps.courseId != "none" ? getBackgroundColor(eventTwo.title.slice(0, eventTwo.title.indexOf(":"))) : getBackgroundColor(eventTwo.title));
-                      if(!concurrentLectureSectionGroups.includes(eventTwo.extendedProps.lectureSectionGroup)) {
-                        concurrentLectureSectionGroups.push(eventTwo.extendedProps.lectureSectionGroup);
+                if(!this.conflicting) {
+                  calendarApi.getEvents().forEach(function (eventTwo) { //Adds all overlapping events of section
+                    if (eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) {
+                      eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.filter((item) => {
+                        return item != event.groupId;
+                      }));
+                      if (eventTwo.extendedProps.sectionSelected == false && eventTwo.extendedProps.relatedSelected == false && eventTwo.extendedProps.overlaid.length === 0) {
+                        eventTwo.setProp('display', 'auto')
+                        eventTwo.setProp('backgroundColor', eventTwo.extendedProps.courseId != "none" ? getBackgroundColor(eventTwo.title.slice(0, eventTwo.title.indexOf(":"))) : getBackgroundColor(eventTwo.title));
+                        if (!concurrentLectureSectionGroups.includes(eventTwo.extendedProps.lectureSectionGroup)) {
+                          concurrentLectureSectionGroups.push(eventTwo.extendedProps.lectureSectionGroup);
+                        }
                       }
                     }
-                  }
-                });
+                  });
+                }
               }
               // Add back all lectures and sections for a course
               event.setExtendedProp('relatedSelected', false);
@@ -563,7 +580,7 @@ export default {
                 event.setProp('backgroundColor', event.extendedProps.courseId != "none" ? getBackgroundColor(event.title.slice(0, event.title.indexOf(":"))) : getBackgroundColor(event.title));
               }
             }
-            if(event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) { //For the other lectures events that become unselected, show their concurrent events
+            if(!this.conflicting && event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) { //For the other lectures events that become unselected, show their concurrent events
               calendarApi.getEvents().forEach(function (eventTwo) {
                 if(eventTwo.groupId !== event.groupId && eventTwo.extendedProps.sectionSelected == false && eventTwo.extendedProps.relatedSelected == false && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) { //Adds all overlapping events for other lectures
                   eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.filter((item) => {
@@ -579,7 +596,7 @@ export default {
                 }
               });
             }
-            if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) { //Adds all overlapping events for this lecture
+            if(!this.conflicting && event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) { //Adds all overlapping events for this lecture
               event.setExtendedProp('overlaid', event.extendedProps.overlaid.filter((item)=>{
                 return item != arg.event.groupId;
               }));
@@ -597,7 +614,7 @@ export default {
         else if (arg.event.extendedProps.isLecture === 1) { //If Section
           arg.event.setProp('classNames', ['unselected', 'course-id-' + getHash(arg.event.title.substring(0, arg.event.title.indexOf(":")))]);
           this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != arg.event.groupId);
-          calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
+          calendarApi.getEvents().forEach(event => { //Loop through each event in calendar
             if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":")) && event.extendedProps.lectureSectionGroup == arg.event.extendedProps.lectureSectionGroup && event.extendedProps.isLecture === 1) { //If the same course, same lectureSectionGroup, and it is a section, show it
               event.setExtendedProp('sectionSelected', false);
               if(event.extendedProps.overlaid.length === 0) {
@@ -605,7 +622,7 @@ export default {
                 event.setProp('backgroundColor', event.extendedProps.courseId != "none" ? getBackgroundColor(event.title.slice(0, event.title.indexOf(":"))) : getBackgroundColor(event.title));
               }
             }
-            if(event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) {
+            if(!this.conflicting && event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) {
               calendarApi.getEvents().forEach(function (eventTwo) {
                 if(eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) {
                   eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.filter((item)=>{
@@ -621,7 +638,7 @@ export default {
                 }
               });
             }
-            if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) {
+            if(!this.conflicting && event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) {
               event.setExtendedProp('overlaid', event.extendedProps.overlaid.filter((item)=>{
                 return item != arg.event.groupId;
               }));
@@ -640,8 +657,8 @@ export default {
           arg.event.setProp('classNames', ['unselected', 'course-id-' + getHash(arg.event.title)]);
 
           this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != arg.event.groupId);
-          calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
-            if(event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) {
+          calendarApi.getEvents().forEach(event => { //Loop through each event in calendar
+            if(!this.conflicting && event.groupId === arg.event.groupId && new Date(event.start).getTime() != new Date(arg.event.start).getTime()) {
               calendarApi.getEvents().forEach(function (eventTwo) {
                 if (eventTwo.groupId !== event.groupId && new Date(eventTwo.start).getTime() < new Date(event.end).getTime() && new Date(eventTwo.end).getTime() > new Date(event.start).getTime()) {
                   eventTwo.setExtendedProp('overlaid', eventTwo.extendedProps.overlaid.filter((item) => {
@@ -657,7 +674,7 @@ export default {
                 }
               });
             }
-            if(event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) {
+            if(!this.conflicting && event.groupId !== arg.event.groupId && new Date(event.start).getTime() < new Date(arg.event.end).getTime() && new Date(event.end).getTime() > new Date(arg.event.start).getTime()) {
               event.setExtendedProp('overlaid', event.extendedProps.overlaid.filter((item)=>{
                 return item != arg.event.groupId;
               }));
@@ -671,41 +688,43 @@ export default {
             }
           });
         }
-        for(let k = 0; k < concurrentLectureSectionGroups.length; k++) {
-          if(concurrentLectureSectionGroups[k] != '') {
-            let numberLectures = 0;
-            let numberSections = 0;
-            let totalNumberSections = 0;
-            calendarApi.getEvents().forEach(function (event) {
-              if (event.extendedProps.lectureSectionGroup == concurrentLectureSectionGroups[k]) {
-                if (event.extendedProps.sectionSelected == false && event.extendedProps.relatedSelected == false && event.extendedProps.overlaid.length === 0) {
-                  if (event.extendedProps.isLecture === 2) {
-                    ++numberLectures;
-                  } else {
-                    ++numberSections;
-                  }
-                }
-                if(event.extendedProps.isLecture === 1) {
-                  ++totalNumberSections;
-                }
-              }
-            });
-            if (totalNumberSections == 0 || (numberLectures > 0 && numberSections > 0)) {
-              calendarApi.getEvents().forEach(event => {
-                if (event.extendedProps.lectureSectionGroup === concurrentLectureSectionGroups[k] && event.extendedProps.sectionSelected == false && event.extendedProps.relatedSelected == false && event.extendedProps.overlaid.length === 0) {
-                  event.setProp('display', 'auto');
-                  event.setProp('backgroundColor', event.extendedProps.courseId != "none" ? getBackgroundColor(event.title.slice(0, event.title.indexOf(":"))) : getBackgroundColor(event.title));
-                  if(event.classNames.includes('selected')) {
-                    this.selectedEvents.push(event);
-                  }
-                }
-              });
-            } else {
+        if(!this.conflicting) {
+          for (let k = 0; k < concurrentLectureSectionGroups.length; k++) {
+            if (concurrentLectureSectionGroups[k] != '') {
+              let numberLectures = 0;
+              let numberSections = 0;
+              let totalNumberSections = 0;
               calendarApi.getEvents().forEach(function (event) {
-                if (event.extendedProps.lectureSectionGroup === concurrentLectureSectionGroups[k]) {
-                  event.setProp('display', 'none');
+                if (event.extendedProps.lectureSectionGroup == concurrentLectureSectionGroups[k]) {
+                  if (event.extendedProps.sectionSelected == false && event.extendedProps.relatedSelected == false && event.extendedProps.overlaid.length === 0) {
+                    if (event.extendedProps.isLecture === 2) {
+                      ++numberLectures;
+                    } else {
+                      ++numberSections;
+                    }
+                  }
+                  if (event.extendedProps.isLecture === 1) {
+                    ++totalNumberSections;
+                  }
                 }
               });
+              if (totalNumberSections == 0 || (numberLectures > 0 && numberSections > 0)) {
+                calendarApi.getEvents().forEach(event => {
+                  if (event.extendedProps.lectureSectionGroup === concurrentLectureSectionGroups[k] && event.extendedProps.sectionSelected == false && event.extendedProps.relatedSelected == false && event.extendedProps.overlaid.length === 0) {
+                    event.setProp('display', 'auto');
+                    event.setProp('backgroundColor', event.extendedProps.courseId != "none" ? getBackgroundColor(event.title.slice(0, event.title.indexOf(":"))) : getBackgroundColor(event.title));
+                    if (event.classNames.includes('selected')) {
+                      this.selectedEvents.push(event);
+                    }
+                  }
+                });
+              } else {
+                calendarApi.getEvents().forEach(function (event) {
+                  if (event.extendedProps.lectureSectionGroup === concurrentLectureSectionGroups[k]) {
+                    event.setProp('display', 'none');
+                  }
+                });
+              }
             }
           }
         }
@@ -740,6 +759,18 @@ export default {
     saveSchedule: function () {
       //if user isn't logged in or not all events are selected, nothing happens
       if(this.finishedSchedule && this.$store.getters.userIsAuthenticated) {
+
+
+        // days	:	WMRT
+        //daysWithEvents		[4]
+        // 0	:	WEDNESDAY
+        // 1	:	MONDAY
+        // 2	:	THURSDAY
+        // 3	:	TUESDAY
+        // earliestBeginTime	:	08:00:00
+        // latestEndTime	:	20:00:00
+
+
 
         let customEventsSchedule = [];
         let selectedClassSections = [];

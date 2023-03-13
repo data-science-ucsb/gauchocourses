@@ -142,6 +142,24 @@
                     </b-dropdown-form>
                 </b-nav-item-dropdown>
 
+              <b-nav-item-dropdown
+                  v-if="currentView == 3"
+                  class="filter-drop-down"
+                  text="Conflicts">
+                <b-dropdown-header id="dropdown-header-label">
+                  <small>Allow or do not allow conflicting events to be selected.</small>
+                </b-dropdown-header>
+                <b-dropdown-form>
+                  <b-form-radio-group
+                      v-model="allowConflicting"
+                      :options="allowConflictingOptions"
+                      name="scheduleSort"
+                      switch
+                      stacked>
+                  </b-form-radio-group>
+                </b-dropdown-form>
+              </b-nav-item-dropdown>
+
                 <!-- Button that links to /user -->
                 <b-nav-item
                     v-if="showFavoritesButton" v-b-tooltip.hover title="Show favorite schedules">
@@ -217,7 +235,7 @@
                   <template v-else>
                     <p class="my-4">Once you have selected your classes, you can use this toolbar to find schedules that you like.</p>
                     <p class="my-4">
-                      Click the <strong>Change View</strong> pencil icon to visit randomly generated example schedules from your selected courses. Click the <strong>Show Favorite Schedules</strong> heart icon to look at all your favorite schedules.</p>
+                      Click the <strong>Change View</strong> pencil icon to visit randomly generated example schedules from your selected courses. Toggle <strong>Conflicts</strong> to decide whether or not to allow two events the overlap each other to both be selected. Click the <strong>Show Favorite Schedules</strong> heart icon to look at all your favorite schedules.</p>
                   </template>
                </b-modal>
 
@@ -238,14 +256,24 @@
             variant="danger">
             No schedules match your selections. Try selecting more days or more times.
         </b-alert>
+
         <b-alert
-          v-if="(schedules.length == 0 && showFavoritesButton) ? true : false"
-          :show="(schedules.length == 0 && showFavoritesButton) ? true : false"
+          v-if="(currentView != 3 && schedules.length == 0 && showFavoritesButton) ? true : false"
+          :show="(currentView != 3 && schedules.length == 0 && showFavoritesButton) ? true : false"
           variant="info"
           class="text-center">
           Your schedules will appear here. <br>
           Use the course selectors to add courses that you want to include in your schedules.
         </b-alert>
+        <b-alert
+          v-else-if="(currentView == 3 && ($store.state.selectedCourses.length == 0 && $store.state.selectedCustomEvents.length == 0)) ? true : false"
+          :show="(currentView == 3 && ($store.state.selectedCourses.length == 0 && $store.state.selectedCustomEvents.length == 0)) ? true : false"
+          variant="info"
+          class="text-center">
+          Your schedules will appear here. <br>
+          Use the course selectors to add courses that you want to include in your schedules.
+        </b-alert>
+
         <b-alert
           v-if="(schedules.length == 0 && !showFavoritesButton) ? true : false"
           :show="(schedules.length == 0 && !showFavoritesButton) ? true : false"
@@ -271,8 +299,10 @@
         </b-alert>
         <BuilderView
           v-if="currentView == 3"
-          :schedules="schedules.length">
-        </BuilderView>
+          :key="allowConflicting"
+          :conflicting="allowConflicting"
+        >
+        </BuilderView> <!--:schedules="schedules.length">-->
         <ListView
           :schedule="this.filteredAndSortedSchedules.slice((this.currentPage-1)*this.currentView, this.currentPage*this.currentView)"
           v-else-if="currentView == 10"
@@ -349,6 +379,11 @@ export default {
             quarters: [],
             savingScheduleInProgress: false,
             scheduleSavedStatus: null,
+            allowConflicting: false,
+            allowConflictingOptions: [
+              { text: 'Do not allow', value: false },
+              { text: 'Allow', value: true },
+            ],
             sorting: {
                 attributes: {
                     selected: 'totalMinutesFromMidnight',
@@ -497,7 +532,7 @@ export default {
         //Method for changing shown view
         changeView: function(onAll) {
           let arr = Object.keys(this.viewIcons);
-          if(!onAll && this.currentView == 2) {
+          if(!onAll && this.currentView == 10) {
             this.currentView = arr[(arr.indexOf(this.currentView) + 2) % arr.length];
           }
           else {
