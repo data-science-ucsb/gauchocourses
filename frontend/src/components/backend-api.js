@@ -69,7 +69,6 @@ export default {
      * @param {object} schedule The schedule to save
      */
     saveSchedule(schedule, customEvents, selectedClassSections, scheduledClassSections) {
-        console.log(JSON.stringify(schedule));
         let savableSchedule = {"selectedClassSections": selectedClassSections, "scheduledClassSections": scheduledClassSections, "customEvents": customEvents, "schedule": schedule};
         return axios_instance.post('/api/schedules/', savableSchedule)
     },

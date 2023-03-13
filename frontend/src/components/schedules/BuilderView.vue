@@ -4,9 +4,9 @@
         cols="12"
         :md="12">
       <ScheduleC
-        v-if="schedules"
         :customEvents="$store.state.selectedCustomEvents"
         :courses="$store.state.selectedCourses"
+        :conflicting="conflicting"
         class="mb-4"
       ></ScheduleC>
 
@@ -19,14 +19,14 @@ import ScheduleC from "./ScheduleC.vue";
 
 export default {
   props: {
-    schedules: {
-      type: Number,
-      required: false,
-    },
     courses: {
       type: Array,
       required: false,
     },
+    conflicting: {
+      type: Boolean,
+      required: false,
+    }
   },
   components: {
     ScheduleC,
