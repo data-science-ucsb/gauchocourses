@@ -178,9 +178,8 @@ export default {
         allDaySlot: false,
         initialView: 'timeGridWeek',
         editable: false,
-        eventClick: this.eventClick,
-        eventClassNames: ['unselected']
-      }
+        eventClick: this.eventClick
+        }
     },
     quarter: function () {
       return this.$store.state.selectedQuarter;
