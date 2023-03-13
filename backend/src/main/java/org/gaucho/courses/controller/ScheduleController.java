@@ -117,7 +117,6 @@ public class ScheduleController {
     @PostMapping(value = "/")
     @Secured("ROLE_USER")
     public ResponseEntity<?> saveSchedule(@RequestBody ScheduleControllerSaveRequest scheduleControllerSaveRequest) {
-        System.out.println(scheduleControllerSaveRequest);
 
         String authenticatedUsersEmail = userController.getUserEmail();
         boolean isCustom = scheduleControllerSaveRequest.getSelectedClassSections() != null;
@@ -206,7 +205,6 @@ public class ScheduleController {
                 .status(HttpStatus.BAD_REQUEST)
                 .body("");
         } else {
-            System.out.println(scheduleRepository.findByUserEmail(authenticatedUsersEmail));
             return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(scheduleRepository.findByUserEmail(authenticatedUsersEmail));

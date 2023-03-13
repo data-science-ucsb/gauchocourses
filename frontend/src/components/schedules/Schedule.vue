@@ -403,7 +403,6 @@ export default {
       api
         .updateScheduleName(this.schedule.id, this.scheduleName)
         .then(() =>{
-          // this.schedule.name = this.scheduleName;
           this.scheduleLocal.name = this.scheduleName;
         })
         .catch((error) => {
@@ -451,9 +450,6 @@ export default {
 </script>
 
 <style>
-/*@import "~@fullcalendar/core/main.css";*/
-/*@import "~@fullcalendar/timegrid/main.css";*/
-/*@import "~@fullcalendar/daygrid/main.css";*/
 
 .fc-col-header-cell-cushion {
   color: #2c3e50;

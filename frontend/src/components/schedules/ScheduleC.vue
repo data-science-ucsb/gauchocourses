@@ -373,7 +373,6 @@ export default {
       let concurrentLectureSectionGroups = [];
       if(!arg.event.classNames.includes('selected')) { //If it is being selected
         if(arg.event.extendedProps.isLecture === 2) { //If Lecture
-          // arg.event.setProp( 'borderColor', 'blue' );
           arg.event.setProp('classNames', ['selected', 'course-id-' + getHash(arg.event.title.substring(0, arg.event.title.indexOf(":")))]);
           this.selectedEvents.push(arg.event);
           calendarApi.getEvents().forEach(event => { //Loop through each event in calendar
@@ -426,7 +425,6 @@ export default {
               }
               else if(event.extendedProps.isLecture === 2) { //If it's part of the same course, lecturesection group, and it is this lecture, select it
                 if(!event.classNames.includes('selected')) {
-                  // event.setProp('borderColor', 'blue');
                   event.setProp('classNames', ['selected', 'course-id-' + getHash(arg.event.title.substring(0, arg.event.title.indexOf(":")))]);
                   this.selectedEvents.push(event);
                 }
@@ -476,7 +474,6 @@ export default {
         }
 
         else { //If CustomEvent
-          // arg.event.setProp( 'borderColor', 'blue' );
           arg.event.setProp('classNames', ['selected', 'course-id-' + getHash(arg.event.title)]);
           this.selectedEvents.push(arg.event);
           calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
@@ -537,16 +534,11 @@ export default {
       else { //If it is being unselected
 
         if(arg.event.extendedProps.isLecture === 2) { //If Lecture
-          // const course = this.courses.find(
-          //     (course) => course.courseId == arg.event.extendedProps.courseId
-          // );
-          // arg.event.setProp('borderColor', getBorderColor(course.deptCode));
           arg.event.setProp('classNames', ['unselected', 'course-id-' + getHash(arg.event.title.substring(0, arg.event.title.indexOf(":")))]);
           this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != arg.event.groupId);
           calendarApi.getEvents().forEach(event => { //Loop through each event in calendar
             if(arg.event.title.substring(0, arg.event.title.indexOf(":")) === event.title.substring(0, event.title.indexOf(":"))) { //If it's the same course
               if(event.extendedProps.isLecture === 1 && event.classNames.includes('selected')) { //deselect the selected sections for this lecture and then show all sections
-                // event.setProp('borderColor', getBorderColor(course.deptCode));
                 event.setProp('classNames', ['unselected', 'course-id-' + getHash(arg.event.title.substring(0, arg.event.title.indexOf(":")))]);
                 this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != event.groupId);
                 calendarApi.getEvents().forEach(function (eventTwo) { //Adds all overlapping events of section
@@ -604,11 +596,6 @@ export default {
         }
 
         else if (arg.event.extendedProps.isLecture === 1) { //If Section
-
-          // const course = this.courses.find(
-          //     (course) => course.courseId == arg.event.extendedProps.courseId
-          // );
-          // arg.event.setProp('borderColor', getBorderColor(course.deptCode));
           arg.event.setProp('classNames', ['unselected', 'course-id-' + getHash(arg.event.title.substring(0, arg.event.title.indexOf(":")))]);
           this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != arg.event.groupId);
           calendarApi.getEvents().forEach(function (event) { //Loop through each event in calendar
@@ -651,7 +638,6 @@ export default {
         }
 
         else { //If Custom Event
-          // arg.event.setProp( 'borderColor', ' black');
           arg.event.setProp('classNames', ['unselected', 'course-id-' + getHash(arg.event.title)]);
 
           this.selectedEvents = this.selectedEvents.filter(selectedEvent => selectedEvent.groupId != arg.event.groupId);
@@ -802,7 +788,7 @@ export default {
         api
             .saveSchedule(this.schedule, customEventsSchedule, selectedClassSections, scheduledClassSections)
             .then((response) => {
-              this.schedule = response.data; //TODO: test if this works, by seeing if you can delete the schedule after saving it
+              this.schedule = response.data;
               this.scheduleSavedStatus = "successful";
             })
             .catch((error) => {
@@ -840,7 +826,6 @@ export default {
       api
           .updateScheduleName(this.schedule.id, this.scheduleName)
           .then(() =>{
-            // this.schedule.name = this.scheduleName;
             this.scheduleLocal.name = this.scheduleName;
           })
           .catch((error) => {
@@ -906,9 +891,7 @@ export default {
 .fc-title {
   font-size: 11px;
 }
-a:focus {
 
-}
 .tooltip > .tooltip-inner.course-tooltip {
   text-align: left;
   font-size: 9pt;
