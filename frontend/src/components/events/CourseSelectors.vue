@@ -41,9 +41,8 @@
         ></b-form-select>
       </b-form-group>
 
-<<<<<<< HEAD
       <b-form-group class="course-selector" v-show="isOpen" label-cols="3" label-cols-md="4" label-cols-lg="5" label="Department:" label-for="deptartmentselect" label-size="sm">
-        <b-form-select  
+        <b-form-select
               size="sm"
               v-model="currentDepartment"
               :options="this.orderedDepartments"
@@ -57,23 +56,7 @@
           </template>
         </b-form-select>
       </b-form-group>
-||||||| d0ba5e7
-      <b-form-group v-show="isOpen" label-cols="3" label-cols-md="6" label-cols-lg="6" label="Department:" label-for="deptartmentselect" label-size="sm">
-        <b-form-select  
-              size="sm"
-              v-model="currentDepartment"
-              :options="this.orderedDepartments"
-              :disabled="this.departments.length == 0"
-              text-field="deptTranslation"
-              value-field="deptCode"
-              >
-          <template v-slot:first>
-            <b-form-select-option :value="null" v-if="departments.length == 0">Loading...</b-form-select-option>
-            <b-form-select-option :value="null">Any</b-form-select-option>
-          </template>
-        </b-form-select>
-      </b-form-group>
-=======
+
 <!--      <b-form-group v-show="isOpen" label-cols="3" label-cols-md="6" label-cols-lg="6" label="Department:" label-for="deptartmentselect" label-size="sm">-->
 <!--        <b-form-select  -->
 <!--              size="sm"-->
@@ -90,7 +73,6 @@
 <!--          </template>-->
 <!--        </b-form-select>-->
 <!--      </b-form-group>-->
->>>>>>> main
 
       <b-form-group class="course-selector" v-show="isOpen" label-cols="3" label-cols-md="4" label-cols-lg="5" label="Units:" label-for="unitInputs" label-size="sm">
         <b-form>
@@ -206,16 +188,16 @@ export default {
     return {
       isOpen: true,
       currentSession: null,
-      // currentDepartment: null,
-      // currentCollege: null,
-      // searchFilters: {
-      //   pageSize: 10,
-      //   minUnits: '0',
-      //   maxUnits: '5',
-      //   fullClasses: true,
-      //   graduateClass: true,
-      //   selectedRequirement: '',
-      // },
+      currentDepartment: this.$store.state.selectedDepartment,
+      currentCollege: this.$store.state.selectedCollege,
+      searchFilters: {
+        pageSize: 10,
+        minUnits: this.$store.state.selectedMinUnits,
+        maxUnits: this.$store.state.selectedMaxUnits,
+        fullClasses: this.$store.state.selectedFullClasses,
+        graduateClass: this.$store.state.selectedGraduateClasses,
+        selectedRequirement: this.$store.state.selectedRequirements,
+      },
       currentPage: 1,
       maxPages: 1,
       quarters: [],
@@ -238,7 +220,6 @@ export default {
   created: function() {
     this.quarters = this.getQuarters();
     console.log(JSON.stringify(this.quarters));
-
 
     api
       .departments()
@@ -266,69 +247,68 @@ export default {
         );
       },
     },
-    currentDepartment: {
-      get: function() {
-        return this.$store.state.selectedDepartment;
-      },
-      set: function(newDepartment) {
-        this.$nextTick(() =>
-            this.$store.commit("setSelectedDepartment", newDepartment)
-        );
-      },
-    },
-    currentCollege: {
-      get: function() {
-        return this.$store.state.selectedCollege;
-      },
-      set: function(newCollege) {
-        this.$nextTick(() =>
-            this.$store.commit("setSelectedCollege", newCollege)
-        );
-      },
-    },
-    searchFilters: {
-      get: function() {
-        let searchFiltersData = {
-          pageSize: 10,
-          minUnits: '0',
-          maxUnits: '5',
-          fullClasses: true,
-          graduateClass: true,
-          selectedRequirement: '',
-        };
-        // if(this.$store.state.selectedMinUnits) {
-          searchFiltersData.minUnits = this.$store.state.selectedMinUnits
-        // }
-        // if(this.$store.state.selectedMaxUnits) {
-          searchFiltersData.maxUnits = this.$store.state.selectedMaxUnits
-        // }
-        // if(this.$store.state.selectedFullClasses) {
-          searchFiltersData.fullClasses = this.$store.state.selectedFullClasses
-        // }
-        // if(this.$store.state.selectedGraduateClasses) {
-          searchFiltersData.graduateClass = this.$store.state.selectedGraduateClasses
-        // }
-        // if(this.$store.state.selectedRequirements) {
-          searchFiltersData.selectedRequirement = this.$store.state.selectedRequirements
-        // }
-        return searchFiltersData;
-      },
-      set: function(newSearchFilters) {
-        this.$nextTick(() => {
-          if (newSearchFilters.minUnits) {
-            this.$store.commit("setMinUnits", newSearchFilters.minUnits);
-          } else if (newSearchFilters.maxUnits) {
-            this.$store.commit("setMaxUnits", newSearchFilters.maxUnits);
-          } else if (newSearchFilters.fullClasses) {
-            this.$store.commit("setFullClasses", newSearchFilters.fullClasses);
-          } else if (newSearchFilters.graduateClass) {
-            this.$store.commit("setGraduateClass", newSearchFilters.graduateClass);
-          } else if (newSearchFilters.selectedRequirement) {
-            this.$store.commit("setSelectedRequirement", newSearchFilters.selectedRequirement);
-          }
-        });
-      },
-    },
+    // currentDepartment: {
+    //   get: function() {
+    //     return this.$store.state.selectedDepartment;
+    //   },
+    //   set: function(newDepartment) {
+    //     this.$nextTick(() =>
+    //         this.$store.commit("setSelectedDepartment", newDepartment)
+    //     );
+    //   },
+    // },
+    // currentCollege: {
+    //   get: function() {
+    //     return this.$store.state.selectedCollege;
+    //   },
+    //   set: function(newCollege) {
+    //     this.$nextTick(() =>
+    //         this.$store.commit("setSelectedCollege", newCollege)
+    //     );
+    //   },
+    // },
+    // searchFilters: {
+    //   get: function() {
+    //     let searchFiltersData = {
+    //       pageSize: 10,
+    //       minUnits: '0',
+    //       maxUnits: '5',
+    //       fullClasses: true,
+    //       graduateClass: true,
+    //       selectedRequirement: '',
+    //     };
+    //     // if(this.$store.state.selectedMinUnits) {
+    //       searchFiltersData.minUnits = this.$store.state.selectedMinUnits
+    //     // }
+    //     // if(this.$store.state.selectedMaxUnits) {
+    //       searchFiltersData.maxUnits = this.$store.state.selectedMaxUnits
+    //     // }
+    //     // if(this.$store.state.selectedFullClasses) {
+    //       searchFiltersData.fullClasses = this.$store.state.selectedFullClasses
+    //     // }
+    //     // if(this.$store.state.selectedGraduateClasses) {
+    //       searchFiltersData.graduateClass = this.$store.state.selectedGraduateClasses
+    //     // }
+    //     // if(this.$store.state.selectedRequirements) {
+    //       searchFiltersData.selectedRequirement = this.$store.state.selectedRequirements
+    //     // }
+    //     return searchFiltersData;
+    //   },
+    //   set: function(newSearchFilters) {
+    //     this.$nextTick(() => {
+    //       if (newSearchFilters.minUnits) {
+    //         this.$store.commit("setMinUnits", newSearchFilters.minUnits);
+    //       } else if (newSearchFilters.maxUnits) {
+    //         this.$store.commit("setMaxUnits", newSearchFilters.maxUnits);
+    //       } else if (newSearchFilters.fullClasses) {
+    //         this.$store.commit("setFullClasses", newSearchFilters.fullClasses);
+    //       } else if (newSearchFilters.graduateClass) {
+    //         this.$store.commit("setGraduateClass", newSearchFilters.graduateClass);
+    //       } else if (newSearchFilters.selectedRequirement) {
+    //         this.$store.commit("setSelectedRequirement", newSearchFilters.selectedRequirement);
+    //       }
+    //     });
+    //   },
 
     /**
      * Returns the array of departments ordered by their display names. Does not mutate this.departments.
@@ -367,27 +347,6 @@ export default {
     }
   },
   methods: {
-    // updateDepartment: function(newVal, oldVal, selection) {
-      // if (this.$store.state.selectedCourses.length > 0 && newVal != oldVal) {
-      //   this.$bvModal
-      //       .msgBoxConfirm('Changing your quarter or session will clear your courses and schedules.', modalOptions)
-      //       .then(ok => {
-      //         if (ok) {
-      //           this[selection] = newVal;
-      //           this.currentCourses = [];
-      //         } else { // cancel
-      //           this[selection] = oldVal; // reset
-      //         }
-      //       })
-      // }
-      // else {
-      //   this[selection] = newVal;
-      // }
-      // if(newVal != oldVal) {
-      //   this[selection] = newVal;
-      //   this.currentQuarter = newVal;
-      // }
-    // },
     isNumeric: function(str) {
       if (typeof str != "string") return false // we only process strings!  
       return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
