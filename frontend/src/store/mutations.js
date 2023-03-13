@@ -23,6 +23,7 @@ export default {
      * @param {*} schedule An optional schedule object
      */
     initializeStore(state) {
+        console.log(JSON.stringify(localStorage));
         if (localStorage.getItem('store')) {
             this.replaceState(
                 Object.assign(state, JSON.parse(localStorage.getItem('store')))
@@ -42,6 +43,45 @@ export default {
             state.selectedCourses = [];
         }
     },
+
+    setSelectedCollege: function (state, newCollege) {
+        if (state.selectedCollege != newCollege) {
+            state.selectedCollege = newCollege;
+        }
+    },
+
+    setMinUnits: function (state, newMinUnits) {
+        if (state.selectedMinUnits != newMinUnits) {
+            state.selectedMinUnits = newMinUnits;
+        }
+    },
+    setMaxUnits: function (state, newMaxUnits) {
+        if (state.selectedMaxUnits != newMaxUnits) {
+            state.selectedMaxUnits = newMaxUnits;
+        }
+    },
+    setFullClasses: function (state, newFullClasses) {
+        if (state.selectedFullClasses != newFullClasses) {
+            state.selectedFullClasses = newFullClasses;
+        }
+    },
+    setGraduateClass: function (state, newGraduateClass) {
+        if (state.selectedGraduateClasses != newGraduateClass) {
+            state.selectedGraduateClasses = newGraduateClass;
+        }
+    },
+    setSelectedRequirement: function (state, newSelectedRequirement) {
+        if (state.selectedRequirements != newSelectedRequirement) {
+            state.selectedRequirements = newSelectedRequirement;
+        }
+    },
+    setSelectedDepartment: function (state, newDepartment) {
+        if (state.selectedDepartment != newDepartment) {
+            state.selectedDepartment = newDepartment;
+        }
+    },
+
+
 
 
     /**
