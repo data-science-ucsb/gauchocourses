@@ -4,8 +4,8 @@
       <div class="event-color-block" :style="{'border-right-color': borderColor}">
         <template>
           <verte v-model="colorVal" :value="backgroundColor" picker="square" menuPosition="center" model="rgb" :enableAlpha="false">
-            <svg :class="'course-id-' + titleHash" viewBox="0 0 1 1" preserveAspectRatio="none">
-              <rect width="100%" height="100%"/>
+            <svg :class="'color-block course-id-' + titleHash" viewBox="0 0 1 1" preserveAspectRatio="none">
+              <rect/>
             </svg>
           </verte>
         </template>
@@ -96,6 +96,13 @@ export default {
   min-width: 0;
   border-right-width: 2px; 
   border-right-style: solid;
+}
+.color-block {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
 }
 .event-description-block {
   min-width: 0;
