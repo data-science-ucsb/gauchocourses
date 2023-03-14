@@ -17,8 +17,8 @@ export default new Vuex.Store({
       selectedMinUnits: '0',
       selectedMaxUnits: '5',
       selectedFullClasses: true,
-      selectedGraduateClass: true,
-      selectedRequirement: '',
+      selectedGraduateClasses: true,
+      selectedRequirement: null,
     },
     selectedSession: null,
     selectedCourses: [],
@@ -64,9 +64,9 @@ export default new Vuex.Store({
         const codes = schedule.classes.map(a => a.scheduledEnrollCodes[0]);
         var courses = [];
         await Promise.all(codes.map(code => api.coursefromEnrollCode(schedule.quarter, code)))
-          .then(responses => {
-            courses = responses.map(r => r.data.classes[0]);
-          });
+            .then(responses => {
+              courses = responses.map(r => r.data.classes[0]);
+            });
 
         courses.forEach((course) => {
           context.commit('addSelectedCourse', course);

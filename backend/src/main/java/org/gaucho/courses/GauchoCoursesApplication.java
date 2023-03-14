@@ -21,7 +21,7 @@ public class GauchoCoursesApplication {
 	}
 
 	// Required if embedded mongo does not work on local architecture
-	static { System.setProperty("os.arch", "i686_64"); }
+//	static { System.setProperty("os.arch", "i686_64"); }
 
 	public static void main(String[] args) {
 		SpringApplication.run(GauchoCoursesApplication.class, args);

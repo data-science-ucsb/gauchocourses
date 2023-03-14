@@ -10,46 +10,46 @@
       </b-form-group>
 
       <b-form-group class="course-selector" v-show="isOpen" label-cols="3" label-cols-md="4" label-cols-lg="5" label="Quarter:" label-for="quarterselect" label-size="sm">
-          <b-form-select
-              size="sm"
-              :value="currentQuarter"
-              :options="this.quarters"
-              :disabled="this.quarters.length == 0"
-              text-field="name"
-              value-field="quarter"
-              v-on:change="e => confirmUserSelection(e, currentQuarter, 'currentQuarter')"
-          >
-              <template v-slot:first v-if="this.quarters.length == 0">
-                <b-form-select-option :value="null">Loading...</b-form-select-option>
-              </template>
-          </b-form-select>
+        <b-form-select
+            size="sm"
+            :value="currentQuarter"
+            :options="this.quarters"
+            :disabled="this.quarters.length == 0"
+            text-field="name"
+            value-field="quarter"
+            v-on:change="e => confirmUserSelection(e, currentQuarter, 'currentQuarter')"
+        >
+          <template v-slot:first v-if="this.quarters.length == 0">
+            <b-form-select-option :value="null">Loading...</b-form-select-option>
+          </template>
+        </b-form-select>
       </b-form-group>
-      <b-form-group 
-        class="course-selector"
-        v-show="isOpen"
-        v-if="currentQuarterIsSummer"
-        label-cols="3"
-        label="Session:"
-        label-for="sessionselect"
-        label-size="sm"
+      <b-form-group
+          class="course-selector"
+          v-show="isOpen"
+          v-if="currentQuarterIsSummer"
+          label-cols="3"
+          label="Session:"
+          label-for="sessionselect"
+          label-size="sm"
       >
         <b-form-select
-          size="sm"
-          :value="currentSession"
-          :options="sessions"
-          v-on:change.capture="e => confirmUserSelection(e, currentSession, 'currentSession')"
+            size="sm"
+            :value="currentSession"
+            :options="sessions"
+            v-on:change.capture="e => confirmUserSelection(e, currentSession, 'currentSession')"
         ></b-form-select>
       </b-form-group>
 
       <b-form-group class="course-selector" v-show="isOpen" label-cols="3" label-cols-md="4" label-cols-lg="5" label="Department:" label-for="deptartmentselect" label-size="sm">
-        <b-form-select  
-              size="sm"
-              v-model="currentDepartment"
-              :options="this.orderedDepartments"
-              :disabled="this.departments.length == 0"
-              text-field="deptTranslation"
-              value-field="deptCode"
-              >
+        <b-form-select
+            size="sm"
+            v-model="currentDepartment"
+            :options="this.orderedDepartments"
+            :disabled="this.departments.length == 0"
+            text-field="deptTranslation"
+            value-field="deptCode"
+        >
           <template v-slot:first>
             <b-form-select-option :value="null" v-if="departments.length == 0">Loading...</b-form-select-option>
             <b-form-select-option :value="null">Any</b-form-select-option>
@@ -61,10 +61,10 @@
         <b-form>
           <b-form-row>
             <b-col cols="6">
-              <b-input size="sm" placeholder="min" v-on:blur="blurSetMin" v-on:keyup.enter="blurSetMin" v-model="checkMinUnits"></b-input>
+              <b-input size="sm" placeholder="min" @keydown="checkValidKey" @keyup="blurSetMin" v-model="searchFilters.minUnits"></b-input>
             </b-col>
             <b-col cols="6">
-              <b-input size="sm" placeholder="max" v-on:blur="blurSetMax" v-on:keyup.enter="blurSetMax" v-model="checkMaxUnits"></b-input>
+              <b-input size="sm" placeholder="max" @keydown="checkValidKey" @keyup="blurSetMax" v-model="searchFilters.maxUnits"></b-input>
             </b-col>
           </b-form-row>
         </b-form>
@@ -74,13 +74,13 @@
         <b-form>
           <b-form-row>
             <b-col cols="6">
-              <b-form-select  
-                    size="sm"
-                    v-model="currentCollege"
-                    :options="Object.keys(requirements)"
-                    :disabled="this.requirements.length == 0"
-                    v-on:change="e => searchFilters.selectedRequirement = null"
-                    >
+              <b-form-select
+                  size="sm"
+                  v-model="currentCollege"
+                  :options="Object.keys(requirements)"
+                  :disabled="this.requirements.length == 0"
+                  v-on:change="e => this.searchFilters.selectedRequirement = null"
+              >
                 <template v-slot:first>
                   <b-form-select-option :value="null" v-if="requirements.length == 0">Loading...</b-form-select-option>
                   <b-form-select-option :value="null">Any</b-form-select-option>
@@ -88,14 +88,14 @@
               </b-form-select>
             </b-col>
             <b-col cols="6">
-              <b-form-select  
-                    size="sm"
-                    v-model="searchFilters.selectedRequirement"
-                    :options="requirements[currentCollege]"
-                    :disabled="this.requirements.length == 0 || currentCollege == null"
-                    text-field="requirementCode"
-                    value-field="requirementCode"
-                    disabled-field="disabledOption">
+              <b-form-select
+                  size="sm"
+                  v-model="searchFilters.selectedRequirement"
+                  :options="requirements[currentCollege]"
+                  :disabled="this.requirements.length == 0 || currentCollege == null"
+                  text-field="requirementCode"
+                  value-field="requirementCode"
+                  disabled-field="disabledOption">
               </b-form-select>
             </b-col>
           </b-form-row>
@@ -105,7 +105,7 @@
       <b-form-row v-show="isOpen">
         <b-col>
           <b-form-group label-cols="auto" label="Grad classes" label-size="sm">
-            <b-form-checkbox style="padding-top:4px;" size="sm" v-model="searchFilters.graduateClass"></b-form-checkbox>
+            <b-form-checkbox style="padding-top:4px;" size="sm" v-model="searchFilters.graduateClasses"></b-form-checkbox>
           </b-form-group>
         </b-col>
         <b-col>
@@ -114,8 +114,8 @@
           </b-form-group>
         </b-col>
       </b-form-row>
-<!-- create a up chevron button that allows user to press and minimize the course selector card, and creating more space for class list
-      the chevron button should be at the center of the box-->
+      <!-- create a up chevron button that allows user to press and minimize the course selector card, and creating more space for class list
+            the chevron button should be at the center of the box-->
       <b-form-row>
         <b-col cols="5">
         </b-col>
@@ -179,7 +179,7 @@ export default {
         minUnits: this.$store.state.selectedSearchFilters.selectedMinUnits,
         maxUnits: this.$store.state.selectedSearchFilters.selectedMaxUnits,
         fullClasses: this.$store.state.selectedSearchFilters.selectedFullClasses,
-        graduateClass: this.$store.state.selectedSearchFilters.selectedGraduateClass,
+        graduateClasses: this.$store.state.selectedSearchFilters.selectedGraduateClasses,
         selectedRequirement: this.$store.state.selectedSearchFilters.selectedRequirement,
       },
       currentPage: 1,
@@ -197,28 +197,35 @@ export default {
       requirements: [],
       courses: [],
       isLoading: false,
-      checkMaxUnits: '5',
-      checkMinUnits: '0',
+      checkMaxUnits: this.$store.state.selectedSearchFilters.selectedMaxUnits,
+      checkMinUnits: this.$store.state.selectedSearchFilters.selectedMinUnits,
     };
   },
   created: function() {
-    console.log(this.currentDepartment);
 
     this.quarters = this.getQuarters();
 
     api
-      .departments()
-      .then(response => (this.departments = response.data))
-      .then(() => {
-        // default option is set in v-slot:first, but it doesn't trigger watch of the current department. This tricks it to update
-        this.currentDepartment = "";
-        this.currentDepartment = null;
-      });
-  
+        .departments()
+        .then(response => (this.departments = response.data))
+        .then(() => {
+          // default option is set in v-slot:first, but it doesn't trigger watch of the current department. This tricks it to update
+          this.currentDepartment = "";
+          this.currentDepartment = this.$store.state.selectedDepartment;
+        });
+
     api.requirements().then((response) => {
       let colleges = groupBy(response, 'collegeCode');
       Object.keys(colleges).forEach((college) => { colleges[college] = uniqBy(colleges[college], 'requirementCode') });
       this.requirements = colleges;
+      if (this.currentCollege != null) {
+        for (let requirementArea of this.requirements[this.currentCollege]) {
+          if (Object.values(requirementArea)[0] == this.searchFilters.selectedRequirement) {
+            return;
+          }
+        }
+      }
+      this.searchFilters.selectedRequirement = null;
     });
   },
   computed: {
@@ -228,7 +235,7 @@ export default {
       },
       set: function(newQuarter) {
         this.$nextTick(() =>
-          this.$store.commit("setSelectedQuarter", newQuarter)
+            this.$store.commit("setSelectedQuarter", newQuarter)
         );
       },
     },
@@ -243,10 +250,22 @@ export default {
      */
     lecturesConflict: function() {
       return allCombinationsOfLecturesConflict(
-        this.$store.getters.selectedClassSections.filter(
-          class_ => class_.isLecture
-        )
+          this.$store.getters.selectedClassSections.filter(
+              class_ => class_.isLecture
+          )
       );
+    },
+    selectedSearch: function() {
+      return this.searchFilters.search;
+    },
+    selectedFullClasses: function() {
+      return this.searchFilters.fullClasses;
+    },
+    selectedGraduateClasses: function() {
+      return this.searchFilters.graduateClasses;
+    },
+    selectedRequirement: function() {
+      return this.searchFilters.selectedRequirement;
     },
     /**
      * Group the selected quarter and department so we can watch them with the same handler
@@ -270,48 +289,45 @@ export default {
   },
   methods: {
     isNumeric: function(str) {
-      if (typeof str != "string") return false // we only process strings!  
+      if (typeof str != "string") return false // we only process strings!
       return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
-            !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+          !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+    },
+    checkValidKey: function(e) {
+      if (!this.isNumeric(e.key) && e.key != "Backspace") {
+        e.preventDefault();
+      }
     },
     blurSetMin: function() {
-      // checkMinUnits is a string
-      // check if string checkMinUnits can be converted into a number
-      if (!this.isNumeric(this.checkMinUnits)) {
-        this.checkMinUnits = this.searchFilters.minUnits;
-      }
-      // check if checkMinUnits is a integer
-      let intMinUnits = parseInt(this.checkMinUnits);
-      let intMaxUnits = parseInt(this.checkMaxUnits);
-      this.checkMinUnits = intMinUnits.toString();
-      // check if checkMinUnits is a positive integer
-      if (intMinUnits < 0) {
-        this.checkMinUnits = "0";
+      // check if checkMinUnits is not empty
+      if (this.searchFilters.minUnits == "") {
+        this.$store.commit("setSelectedMinUnits", "0");
+        return;
       }
       // check if checkMinUnits is greater than checkMaxUnits
-      if (intMinUnits > intMaxUnits) {
-        this.checkMinUnits = this.checkMaxUnits;
+      if (parseInt(this.searchFilters.minUnits) > parseInt(this.searchFilters.maxUnits)) {
+        this.searchFilters.minUnits = this.searchFilters.maxUnits;
       }
-      this.searchFilters.minUnits = this.checkMinUnits;
+      this.$store.commit("setSelectedMinUnits", this.searchFilters.minUnits);
     },
     blurSetMax: function() {
-      // check if checkMaxUnits is a number
-      if (!this.isNumeric(this.checkMaxUnits)) {
-        this.checkMaxUnits = this.searchFilters.maxUnits;
-      }
       // check if checkMaxUnits is a integer
-      let intMinUnits = parseInt(this.checkMinUnits);
-      let intMaxUnits = parseInt(this.checkMaxUnits);
-      this.checkMaxUnits = intMaxUnits.toString();
+      let intMinUnits = parseInt(this.searchFilters.minUnits);
+      let intMaxUnits = parseInt(this.searchFilters.maxUnits);
+      // check if maxUnits is not empty
+      if (this.searchFilters.maxUnits == "") {
+        this.$store.commit("setSelectedMaxUnits", "5");
+        return;
+      }
       // check if checkMaxUnits is less than 20
       if (intMaxUnits > 20) {
-        this.checkMaxUnits = "20";
+        this.searchFilters.maxUnits = "20";
       }
       // check if checkMaxUnits is smaller than checkMinUnits
       if (intMaxUnits < intMinUnits) {
-        this.checkMaxUnits = this.checkMinUnits;
+        this.searchFilters.maxUnits = this.searchFilters.minUnits;
       }
-      this.searchFilters.maxUnits = this.checkMaxUnits;
+      this.$store.commit("setSelectedMaxUnits", this.searchFilters.maxUnits);
     },
     toggleCourseSelector: function() {
       this.isOpen = !this.isOpen;
@@ -337,15 +353,15 @@ export default {
 
       if (this.$store.state.selectedCourses.length > 0 && newVal != oldVal) {
         this.$bvModal
-          .msgBoxConfirm('Changing your quarter or session will clear your courses and schedules.', modalOptions)
-          .then(ok => {
-            if (ok) {
-              this[selection] = newVal;
-              this.currentCourses = [];
-            } else { // cancel
-              this[selection] = oldVal; // reset
-            }
-          })
+            .msgBoxConfirm('Changing your quarter or session will clear your courses and schedules.', modalOptions)
+            .then(ok => {
+              if (ok) {
+                this[selection] = newVal;
+                this.currentCourses = [];
+              } else { // cancel
+                this[selection] = oldVal; // reset
+              }
+            })
       } else {
         this[selection] = newVal;
       }
@@ -358,9 +374,9 @@ export default {
         courseId: filters.search,
         pageNumber: this.currentPage,
         pageSize: filters.pageSize,
-        minUnits: filters.minUnits,
-        maxUnits: filters.maxUnits,
-        objLevelCode: filters.graduateClass ? "" : "U",
+        minUnits: filters.minUnits == "" ? "0" : filters.minUnits,
+        maxUnits: filters.maxUnits == "" ? "20" : filters.maxUnits,
+        objLevelCode: filters.graduateClasses ? "" : "U",
         openSections: !filters.fullClasses,
         deptCode: this.currentDepartment,
         areas: this.currentCollege ? filters.selectedRequirement : "",
@@ -406,26 +422,25 @@ export default {
         }
       }
     },
-    currentDepartment: function() { //Check if this works on "Any"
-      console.log(this.currentDepartment);
-      this.$nextTick(() =>
-          this.$store.commit("setSelectedDepartment", this.currentDepartment)
-      );
+    currentDepartment: function() {
+      this.$store.commit("setSelectedDepartment", this.currentDepartment);
     },
     currentCollege: function () {
-      console.log(this.currentCollege);
-
-      this.$nextTick(() =>
-          this.$store.commit("setSelectedCollege", this.currentCollege)
-      );
+      this.$store.commit("setSelectedCollege", this.currentCollege);
     },
-    searchFilters: function() {
-      console.log(this.searchFilters);
-      this.$nextTick(() =>
-          this.$store.commit("setSelectedSearchFilters", this.searchFilters)
-      );
+    selectedSearch: function() {
+      this.$store.commit("setSelectedSearch", this.searchFilters.search);
     },
-     /**
+    selectedRequirement: function() {
+      this.$store.commit("setSelectedRequirement", this.searchFilters.selectedRequirement);
+    },
+    selectedFullClasses: function() {
+      this.$store.commit("setSelectedFullClasses", this.searchFilters.fullClasses);
+    },
+    selectedGraduateClasses: function() {
+      this.$store.commit("setSelectedGraduateClasses", this.searchFilters.graduateClasses);
+    },
+    /**
      * When department or quarter are changed, clear the course options
      * and reload with the new set
      */
@@ -465,7 +480,7 @@ export default {
 }
 
 #addCourse:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 

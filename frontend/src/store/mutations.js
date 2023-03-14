@@ -5,10 +5,10 @@ import api from '@/components/backend-api.js';
 
 export default {
     /**
-    * Retrieves the user information object from the backend and sets is as part of the state. This is intended to be used
-    * when the application starts.
-    * @param {*} state The Vuex state
-    */
+     * Retrieves the user information object from the backend and sets is as part of the state. This is intended to be used
+     * when the application starts.
+     * @param {*} state The Vuex state
+     */
     setUserInfo: function (state) {
         api.user()
             .then(resp => state.user = resp.data ? resp.data : {})  // If the response is truthy, set the user attributes
@@ -42,38 +42,87 @@ export default {
             state.selectedCourses = [];
         }
     },
+    /**
+     * Sets the user's selected department.
+     * @param {Object} state The Vuex state
+     * @param {String} newDepartment The value of the user's selected department
+     */
     setSelectedDepartment: function (state, newDepartment) {
         if (state.selectedDepartment != newDepartment) {
             state.selectedDepartment = newDepartment;
-            alert(state.selectedDepartment);
-
         }
     },
+    /**
+     * Sets the user's selected college.
+     * @param {Object} state The Vuex state
+     * @param {String} newCollege The value of the user's selected college
+     */
     setSelectedCollege: function (state, newCollege) {
         if (state.selectedCollege != newCollege) {
             state.selectedCollege = newCollege;
         }
     },
-    setSelectedSearchFilters: function (state, newSearchFilters) {
-        if (state.selectedSearchFilters != newSearchFilters) {
-            state.selectedSearchFilters = newSearchFilters;
+    /**
+     * Sets the user's selected min units.
+     * @param {Object} state The Vuex state
+     * @param {String} newQuarter The value of the user's selected min units
+     */
+    setSelectedMinUnits: function(state, newMinUnits) {
+        if(state.selectedSearchFilters.selectedMinUnits != newMinUnits) {
+            state.selectedSearchFilters.selectedMinUnits = newMinUnits;
+        }
+    },
+    /**
+     * Sets the user's selected max units.
+     * @param {Object} state The Vuex state
+     * @param {String} newQuarter The value of the user's selected max units
+     */
+    setSelectedMaxUnits: function(state, newMaxUnits) {
+        if(state.selectedSearchFilters.selectedMaxUnits != newMaxUnits) {
+            state.selectedSearchFilters.selectedMaxUnits = newMaxUnits;
+        }
+    },
+    /**
+     * Sets the user's selected search string.
+     * @param {Object} state The Vuex state
+     * @param {String} newQuarter The value of the user's selected search string
+     */
+    setSelectedSearch: function(state, newSearch) {
+        if(state.selectedSearchFilters.selectedSearch != newSearch) {
+            state.selectedSearchFilters.selectedSearch = newSearch;
+        }
+    },
+    /**
+     * Sets the user's selected requirements.
+     * @param {Object} state The Vuex state
+     * @param {String} newQuarter The value of the user's selected requirements
+     */
+    setSelectedRequirement: function(state, newRequirement) {
+        if(state.selectedSearchFilters.selectedRequirement != newRequirement) {
+            state.selectedSearchFilters.selectedRequirement = newRequirement;
+        }
+    },
+    /**
+     * Sets the user's selected full classes
+     * @param {Object} state The Vuex state
+     * @param {String} newQuarter The value of the user's selected full classes
+     */
+    setSelectedFullClasses: function(state, newFullClasses) {
+        if(state.selectedSearchFilters.selectedFullClasses != newFullClasses) {
+            state.selectedSearchFilters.selectedFullClasses = newFullClasses;
+        }
+    },
+    /**
+     * Sets the user's selected graduate classes.
+     * @param {Object} state The Vuex state
+     * @param {String} newGraduateClasses The value of the user's selected graduate classes
+     */
+    setSelectedGraduateClasses: function(state, newGraduateClasses) {
+        if(state.selectedSearchFilters.selectedGraduateClasses != newGraduateClasses) {
+            state.selectedSearchFilters.selectedGraduateClasses = newGraduateClasses;
         }
     },
 
-
-//     this.$nextTick(() =>
-//         this.$store.commit("setSelectedDepartment", this.currentDepartment)
-//     );
-// },
-// currentCollege: function () {
-//     this.$nextTick(() =>
-//         this.$store.commit("setSelectedCollege", this.currentCollege())
-//     );
-// },
-// searchFilters: function() {
-//     this.$nextTick(() =>
-//         this.$store.commit("setSearchFilters", this.searchFilters)
-//     );
 
     /**
      * Sets the user's selected session and clears state.selectedCourses. This is idempotent, if newSession == the selected session, this does nothing.
@@ -120,9 +169,9 @@ export default {
      * Clear all courses from state.selectedCourses
      * @param {Object} state The Vuex state
      */
-     clearSelectedCourses: function(state) {
-       state.selectedCourses = [];
-     },
+    clearSelectedCourses: function(state) {
+        state.selectedCourses = [];
+    },
 
     /**
      * Changes the "selected" property on the classSection that matches "enrollCode".
@@ -176,7 +225,7 @@ export default {
             .filter(c => c.name != eventName)
     },
 
-    
+
     setClientConfiguration: function(state, configuration) {
         state.configuration = configuration;
     }
