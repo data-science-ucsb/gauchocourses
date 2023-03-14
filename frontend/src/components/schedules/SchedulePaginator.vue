@@ -302,7 +302,7 @@
           :key="allowConflicting"
           :conflicting="allowConflicting"
         >
-        </BuilderView> <!--:schedules="schedules.length">-->
+        </BuilderView>
         <ListView
           :schedule="this.filteredAndSortedSchedules.slice((this.currentPage-1)*this.currentView, this.currentPage*this.currentView)"
           v-else-if="currentView == 10"
