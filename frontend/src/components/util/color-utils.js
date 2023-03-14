@@ -65,10 +65,10 @@ const borderColors = [
 ]
 
 export function getHash (str) {
-    str = str.replace(/\s/g, "");
     var hash = 0;
     if (str == null || str.length == 0) return hash;
     else {
+        str = str.replace(/\s/g, "");
         for (let i = 0; i < str.length; i++) {
             let char = str.charCodeAt(i);
             hash = ((hash<<5)-hash) + char;
