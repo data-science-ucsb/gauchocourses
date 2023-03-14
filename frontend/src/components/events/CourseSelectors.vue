@@ -61,10 +61,10 @@
         <b-form>
           <b-form-row>
             <b-col cols="6">
-              <b-input size="sm" placeholder="min" @keydown="checkValidKey" @keyup="blurSetMin" v-model="searchFilters.minUnits"></b-input>
+              <b-input type="number" size="sm" placeholder="min" @keydown="checkValidKey" @keyup="blurSetMin" v-model="searchFilters.minUnits"></b-input>
             </b-col>
             <b-col cols="6">
-              <b-input size="sm" placeholder="max" @keydown="checkValidKey" @keyup="blurSetMax" v-model="searchFilters.maxUnits"></b-input>
+              <b-input type="number" size="sm" placeholder="max" @keydown="checkValidKey" @keyup="blurSetMax" v-model="searchFilters.maxUnits"></b-input>
             </b-col>
           </b-form-row>
         </b-form>
