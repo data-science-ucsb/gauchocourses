@@ -42,7 +42,38 @@ export default {
             state.selectedCourses = [];
         }
     },
+    setSelectedDepartment: function (state, newDepartment) {
+        if (state.selectedDepartment != newDepartment) {
+            state.selectedDepartment = newDepartment;
+            alert(state.selectedDepartment);
 
+        }
+    },
+    setSelectedCollege: function (state, newCollege) {
+        if (state.selectedCollege != newCollege) {
+            state.selectedCollege = newCollege;
+        }
+    },
+    setSelectedSearchFilters: function (state, newSearchFilters) {
+        if (state.selectedSearchFilters != newSearchFilters) {
+            state.selectedSearchFilters = newSearchFilters;
+        }
+    },
+
+
+//     this.$nextTick(() =>
+//         this.$store.commit("setSelectedDepartment", this.currentDepartment)
+//     );
+// },
+// currentCollege: function () {
+//     this.$nextTick(() =>
+//         this.$store.commit("setSelectedCollege", this.currentCollege())
+//     );
+// },
+// searchFilters: function() {
+//     this.$nextTick(() =>
+//         this.$store.commit("setSearchFilters", this.searchFilters)
+//     );
 
     /**
      * Sets the user's selected session and clears state.selectedCourses. This is idempotent, if newSession == the selected session, this does nothing.

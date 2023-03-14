@@ -9,8 +9,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     selectedQuarter: null,
-    selectedCurrentDepartment: null,
-    selectedCurrentCollege: null,
+    selectedDepartment: null,
+    selectedCollege: null,
     selectedSearchFilters: {
       selectedSearch: '',
       selectedPageSize: 10,

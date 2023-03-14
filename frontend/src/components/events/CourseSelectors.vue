@@ -171,8 +171,8 @@ export default {
     return {
       isOpen: true,
       currentSession: null,
-      currentDepartment: this.$store.state.selectedCurrentDepartment,
-      currentCollege: this.$store.state.selectedCurrentCollege,
+      currentDepartment: this.$store.state.selectedDepartment,
+      currentCollege: this.$store.state.selectedCollege,
       searchFilters: {
         search: this.$store.state.selectedSearchFilters.selectedSearch,
         pageSize: this.$store.state.selectedSearchFilters.selectedPageSize,
@@ -202,6 +202,8 @@ export default {
     };
   },
   created: function() {
+    console.log(this.currentDepartment);
+
     this.quarters = this.getQuarters();
 
     api
@@ -397,8 +399,31 @@ export default {
   watch: {
     quarters: function() {
       if(this.quarters.length != 0) {
-      this.currentQuarter = this.quarters.map(q => q.quarter).sort()[0]; //replace 0 with this.quarters.length - 1 for next quarter
+        if (this.currentQuarter != null) {
+          this.currentQuarter = this.quarters.map(q => q.quarter).sort()[this.quarters.findIndex(c => c.quarter == this.currentQuarter)];
+        } else {
+          this.currentQuarter = this.quarters.map(q => q.quarter).sort()[this.quarters.length - 1];
+        }
       }
+    },
+    currentDepartment: function() { //Check if this works on "Any"
+      console.log(this.currentDepartment);
+      this.$nextTick(() =>
+          this.$store.commit("setSelectedDepartment", this.currentDepartment)
+      );
+    },
+    currentCollege: function () {
+      console.log(this.currentCollege);
+
+      this.$nextTick(() =>
+          this.$store.commit("setSelectedCollege", this.currentCollege)
+      );
+    },
+    searchFilters: function() {
+      console.log(this.searchFilters);
+      this.$nextTick(() =>
+          this.$store.commit("setSelectedSearchFilters", this.searchFilters)
+      );
     },
      /**
      * When department or quarter are changed, clear the course options
