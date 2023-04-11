@@ -282,39 +282,7 @@ export default {
         } catch (error) {
           console.error(error);
         }
-        // axios({
-        //   method: 'post',
-        //   url: ('https://www.googleapis.com/calendar/v3/calendars/primary/events'),
-        //   headers: {
-        //     'Authorization': 'Bearer ' + ACCESS_TOKEN,
-        //     'Key': API_KEY
-        //   },
-        //   data: {
-        //     event
-        //   },
-        // })
-        // .then(response => {
-        //   // handle success
-        //   console.log('Event created:', response.data);
-        // })
-        // .catch(error => {
-        //   // handle error
-        //   console.log('ERROR, event not created');
-        // });
       }  
-
-      // const event = {
-      //   summary: 'Test Event',
-      //   description: 'Testing the Google Calendar API',
-      //   start: {
-      //     dateTime: new Date().toISOString(),
-      //     timeZone: 'UTC',
-      //   },
-      //   end: {
-      //     dateTime: new Date().toISOString(),
-      //     timeZone: 'UTC',
-      //   },
-      // };
     },
     /**
      * Parses a schedule and map each event to a Google Calendar invite.

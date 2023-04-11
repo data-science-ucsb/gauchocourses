@@ -10,6 +10,11 @@
         ref="button"
         @click="exportPDF"
     >Export to PDF</b-button>
+    <b-button
+        variant="primary"
+        ref="button"
+        @click="insertEvent"
+    >Google Calendar</b-button>
     <b-card no-body ref="schedule">
     <template v-slot:header>
       <div class="no-wrap d-flex flex-row align-items-center">
@@ -866,6 +871,59 @@ export default {
         pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width * ratio, canvas.height * ratio)
         pdf.save("schedule.pdf")
       })
+    },
+    async insertEvent() {
+      //const API_KEY = 'AIzaSyAy36_Hv2ZYPbVAnEApYakkRcJej67Ko6M';
+      //const accessToken = 'a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc';
+      
+      var eventList = this.parseScheduleToEventList(this.customEvents, this.courses);
+      
+      for (var i = 0; i < eventList.length; i++){
+        var title = eventList[i].title;
+        var startTime = eventList[i].startTime;
+        var endTime = eventList[i].endTime;
+        var daysOfWeek = eventList[i].daysOfWeek;
+        /* eslint-disable */ //testing purposes
+
+        // object -> function -> string -> url -> /api/calendar/events?start=2021-01-01T00:00:00-08:00&end=2021-01-01T23:59:59-08:00 -> string -> object
+        console.log(title);
+        console.log(startTime);
+        console.log(endTime);
+        console.log(daysOfWeek);
+        // Create Google Calendar event
+        const event = {
+          summary: title,
+          description: 'Testing the Google Calendar API',
+          start: '2021-01-01T00:00:00-08:00',
+          end: '2021-01-01T23:59:59-08:00',
+        };
+
+        try {
+          const response = await api.createCalEvent(event);
+          console.log(response.data);
+        } catch (error) {
+          console.error(error);
+        }
+        // axios({
+        //   method: 'post',
+        //   url: ('https://www.googleapis.com/calendar/v3/calendars/primary/events'),
+        //   headers: {
+        //     'Authorization': 'Bearer ' + ACCESS_TOKEN,
+        //     'Key': API_KEY
+        //   },
+        //   data: {
+        //     event
+        //   },
+        // })
+        // .then(response => {
+        //   // handle success
+        //   console.log('Event created:', response.data);
+        // })
+        // .catch(error => {
+        //   // handle error
+        //   console.log('ERROR, event not created');
+        // });
+      }  
     }
   },
 }

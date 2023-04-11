@@ -120,7 +120,7 @@ export default {
                 'Content-Type': 'application/json'
             }
         }
-        return axios_instance.post('/api/calendar/events/', event, config);
+        return axios_instance.post('https://www.googleapis.com/calendar/v3/calendars/primary/events', event, config);
     }
 }
 
