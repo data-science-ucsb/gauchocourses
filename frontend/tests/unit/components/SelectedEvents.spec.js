@@ -4,6 +4,7 @@ import BootstrapVue from 'bootstrap-vue';
 import { customEvent, courses } from '../../testing-objects';
 import Vuex from "vuex"
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import "jest-canvas-mock";
 
 const localVue = createLocalVue();
 localVue.use(BootstrapVue);

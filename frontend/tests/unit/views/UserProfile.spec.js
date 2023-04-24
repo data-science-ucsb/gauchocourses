@@ -3,7 +3,6 @@ import UserProfile from '@/views/UserProfile.vue';
 import BootstrapVue from 'bootstrap-vue';
 import { axios_instance } from '@/components/backend-api.js';
 import { schedules, userAttributes, quarters} from '../../testing-objects';
-import flushPromises from "flush-promises";
 import { RouterLinkStub } from '@vue/test-utils';
 const MockAdapter = require("axios-mock-adapter");
 

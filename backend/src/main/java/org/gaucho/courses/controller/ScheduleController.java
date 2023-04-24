@@ -11,6 +11,7 @@ import org.gaucho.courses.controller.service.LazyCartesianProductScheduler;
 import org.gaucho.courses.domain.core.Event;
 import org.gaucho.courses.domain.remote.ClassSection;
 import org.gaucho.courses.domain.scheduling.Schedule;
+import org.gaucho.courses.domain.scheduling.ScheduleSortingAttributes;
 import org.gaucho.courses.repository.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.PatchMapping;
 
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -136,6 +138,7 @@ public class ScheduleController {
             int totalUnits = scheduleControllerSaveRequest.getSchedule().getTotalUnits();
 
             scheduleControllerSaveRequest.setSchedule(customSchedule);
+
             scheduleControllerSaveRequest.getSchedule().setQuarter(quarter);
             scheduleControllerSaveRequest.getSchedule().setUserEmail(userEmail);
             scheduleControllerSaveRequest.getSchedule().setName(scheduleName);

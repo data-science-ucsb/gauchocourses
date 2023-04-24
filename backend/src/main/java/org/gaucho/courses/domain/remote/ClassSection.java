@@ -32,7 +32,8 @@ import java.util.Map;
         "restrictionMinor",
         "restrictionMinorPass",
         "concurrentCourses",
-        "instructors"
+        "instructors",
+        "backgroundColor"
 })
 @Slf4j
 @Data
@@ -71,6 +72,8 @@ public class ClassSection extends Event implements Serializable {
     public boolean isLecture(){
         return this.getSection().endsWith("00");
     }
+
+    @JsonProperty("backgroundColor")        private String backgroundColor;
 
     public ClassSection() { }
 }

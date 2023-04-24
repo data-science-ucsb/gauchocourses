@@ -40,17 +40,19 @@ public class ScheduleSortingAttributes {
      * @param scheduledEvents If Events conflict, the attributes are not calculated.
      */
     public ScheduleSortingAttributes(List<? extends Event> scheduledEvents) {
-        if (scheduledEvents.size() != 0 && !Event.eventsHaveConflicts(scheduledEvents)) {
+        if (scheduledEvents.size() != 0) {
+//            if(!Event.eventsHaveConflicts(scheduledEvents)) {
             List<TimeLocation> allTimeLocations = scheduledEvents
-                .stream()
-                .map(Event::getTimeLocations)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                    .stream()
+                    .map(Event::getTimeLocations)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
 
             calculateTotalMinutesFromMidnight(allTimeLocations);
             calculateTotalMinutesBetweenEvents(allTimeLocations);
             calculateDaysWithEvents(allTimeLocations);
             calculateMinAndMaxTimes(allTimeLocations);
+//        }
         }
     }
 

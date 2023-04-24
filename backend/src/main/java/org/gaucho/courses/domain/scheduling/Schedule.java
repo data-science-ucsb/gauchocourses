@@ -110,10 +110,12 @@ public class Schedule implements Serializable {
                     .findFirst();
             if (maybe.isPresent()) {
                 maybe.get().scheduledEnrollCodes.add(section.getEnrollCode());
+                maybe.get().backgroundColor = section.getBackgroundColor();
             } else {
                 CourseAndClassIds ids = new CourseAndClassIds();
                 ids.courseId = section.getCourseId();
                 ids.scheduledEnrollCodes.add(section.getEnrollCode());
+                ids.backgroundColor = section.getBackgroundColor();
                 this.classes.add(ids);
             }
         });

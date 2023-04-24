@@ -107,6 +107,7 @@ import api from "@/components/backend-api.js";
 import {
   getBackgroundColor,
   getBorderColor,
+  getHash
 } from "@/components/util/color-utils.js";
 import xss from "xss";
 import { Tooltip } from "bootstrap";
@@ -127,6 +128,10 @@ export default {
       required: false,
     },
     showEditButton: {
+      type: Boolean,
+      default: false,
+    },
+    onUserProfile: {
       type: Boolean,
       default: false,
     }
@@ -205,6 +210,12 @@ export default {
         const course = courses.find(
           (course) => course.courseId == classSection.courseId
         );
+        
+        const backgroundColor = (!_this.onUserProfile ? 
+                                  (classSection.name != undefined ? 
+                                    getBackgroundColor(classSection.name) : 
+                                    getBackgroundColor(classSection.courseId)) : 
+                                  classSection.backgroundColor);
 
         if (classSection.name != undefined) {
           //if it is a custom event
@@ -223,13 +234,15 @@ export default {
             ),
             startTime: classSection.timeLocations[0].beginTime,
             endTime: classSection.timeLocations[0].endTime,
-            color: getBackgroundColor(classSection.name),
+            borderColor: "black",
+            backgroundColor: backgroundColor,
             isLecture: 0,
             textColor: "black",
+            className: "selected-event" + (!_this.onUserProfile ? (" course-id-" + getHash(classSection.name)) : '')
           };
         } else {
           return classSection.scheduledEnrollCodes.map((section) =>
-            _this.eventFromEnrollCode(section, course)
+            _this.eventFromEnrollCode(section, course, backgroundColor)
           );
         }
       }
@@ -248,10 +261,10 @@ export default {
     /* Uses an enroll code and the course object to return an event object
      * that is compatible with FullCalendar.
      */
-    eventFromEnrollCode: function (enrollcode, course) {
+    eventFromEnrollCode: function (enrollcode, course, backgroundColor) {
       const section = course.classSections.find(
         (section) => section.enrollCode == enrollcode
-      );      
+      );
       const titletodisplay = course.courseId.trim() + ": " + enrollcode;
       const dayInt = {
         MONDAY: 1,
@@ -269,7 +282,7 @@ export default {
           startTime: section.timeLocations[0].beginTime,
           endTime: section.timeLocations[0].endTime,
           borderColor: getBorderColor(course.deptCode),
-          backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
+          backgroundColor: backgroundColor,
           isLecture: section.isLecture ? 2 : 1,
           //enrolledTotal is null if none enrolled
           enrolledTotal: (section.enrolledTotal ?? section.maxEnroll),
@@ -278,6 +291,7 @@ export default {
           location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
           instructor: (section.instructors[0]?.instructor ?? "TBA"),
           textColor: "black",
+          className: "selected-event" + (!this.onUserProfile ? (" course-id-" + getHash(course.courseId)) : '')
         };
       } else {
         let multipleevents = [];
@@ -289,7 +303,7 @@ export default {
           startTime: "",
           endTime: "",
           borderColor: getBorderColor(course.deptCode),
-          backgroundColor: getBackgroundColor(course.courseId.slice(7, 14)),
+          backgroundColor: backgroundColor,
           isLecture: section.isLecture ? 2 : 1,
           //enrolledTotal is null if none enrolled
           enrolledTotal: (section.enrolledTotal ?? section.maxEnroll),
@@ -298,6 +312,7 @@ export default {
           location: "",
           instructor: (section.instructors[0]?.instructor ?? "TBA"),
           textColor: "black",
+          className: "selected-event" + !this.onUserProfile ? " course-id-" + getHash(course.courseId) : ''
         };
         for (let k = 0; k < multipletimeandplace.length; k++) {
           classinfo.daysOfWeek = multipletimeandplace[k].fullDays.map((a) => dayInt[a]),
@@ -322,29 +337,40 @@ export default {
     /**
      * POSTS the given schedule to the backend for storage. Sets the quarter, name, units, and userEmail properties on the schedule.
      */
-
     saveSchedule: function (schedule) {
       if (this.$store.getters.userIsAuthenticated) {
         //if user isn't logged in, nothing happens
+        const clone = structuredClone(schedule);
+        for(let i = 0; i < clone.classes.length; ++i) {
+          if (!this.onUserProfile) {
+            clone.classes[i].backgroundColor = getBackgroundColor(clone.classes[i].courseId);
+          }
+        }
+        for(let i = 0; i < clone.customEvents.length; ++i) {
+          if (!this.onUserProfile) {
+            clone.customEvents[i].backgroundColor = getBackgroundColor(clone.customEvents[i].name);
+          }
+        }
+        //if user isn't logged in, nothing happens
         $("span").css("pointer-events", "none"); //anything in a span will be disabled
-          schedule.quarter = this.quarter;
-          schedule.userEmail = this.$store.getters.userInfo.email;
-          schedule.name = xss(this.updatedScheduleName);
-          schedule.totalUnits = this.calculateUnits(
-            schedule,
-            this.coursesComputed
-          );
+        clone.quarter = this.quarter;
+        clone.userEmail = this.$store.getters.userInfo.email;
+        clone.name = xss(this.updatedScheduleName);
+        clone.totalUnits = this.calculateUnits(
+          clone,
+          this.coursesComputed
+        );
 
-          api
-            .saveSchedule(schedule, null, null, null)
-            .then((response) => {
-              schedule.id = response.data;
-              this.scheduleSavedStatus = "successful";
-            })
-            .catch((error) => {
-              console.error(error);
-              this.scheduleSavedStatus = "failed";
-            });
+        api
+          .saveSchedule(clone, null, null, null)
+          .then((response) => {
+            schedule.id = response.data;
+            this.scheduleSavedStatus = "successful";
+          })
+          .catch((error) => {
+            console.error(error);
+            this.scheduleSavedStatus = "failed";
+          });
         $("span").css("pointer-events", "auto");
         this.$set(schedule, 'favorited', true);
         this.$forceUpdate();
@@ -377,7 +403,6 @@ export default {
       api
         .updateScheduleName(this.schedule.id, this.scheduleName)
         .then(() =>{
-          // this.schedule.name = this.scheduleName;
           this.scheduleLocal.name = this.scheduleName;
         })
         .catch((error) => {
@@ -425,9 +450,6 @@ export default {
 </script>
 
 <style>
-/*@import "~@fullcalendar/core/main.css";*/
-/*@import "~@fullcalendar/timegrid/main.css";*/
-/*@import "~@fullcalendar/daygrid/main.css";*/
 
 .fc-col-header-cell-cushion {
   color: #2c3e50;
