@@ -1,15 +1,17 @@
 <template>
   <div>
     <b-container fluid>
-      <b-row>
-          <div class="sidebar" :style="{ width: sidebarWidth + 'px', minWidth: minSidebarWidth + 'px' }">
-            <b-row>
-              <b-col sm="12" md="6" lg="12" class="p-1 home-course-selectors"><CourseSelectors class="h-100" /></b-col>
-              <b-col sm="12" md="6" lg="12" class="p-1 home-selected-events"><SelectedEvents class="h-100" /></b-col>
-            </b-row>
-            <div class="resize-handle" v-on:mousedown="startResize" v-on:mouseup="stopResize"></div>
-          </div>
-        <b-col xs="6" class="p-1"><SchedulePaginator :schedules="schedules" class="h-100"/></b-col>
+      <b-row :style="cssProps">
+        <b-col sm="12" md="12" lg="3" class="side-bar">
+          <b-row>
+            <b-col sm="12" md="6" lg="12" class="p-1 home-course-selectors"><CourseSelectors class="h-100" /></b-col>
+            <b-col sm="12" md="6" lg="12" class="p-1 home-selected-events"><SelectedEvents class="h-100" /></b-col>
+          </b-row>
+          <div class="resize-handle" v-on:mousedown="startResize" v-on:mouseup="stopResize"></div>
+        </b-col>
+        <b-col sm="12" md="12" lg="9" class="schedule-bar p-1">
+          <SchedulePaginator :schedules="schedules" class="h-100"/>
+        </b-col>
       </b-row>
     </b-container>
   </div>
@@ -31,13 +33,14 @@ export default {
     SchedulePaginator,
   },
   data: function() {
-      return {
-        schedules: [],
-        sidebarWidth: 320,
-        minSidebarWidth: 320,
-        isResizing: false
-      }
-    },
+    return {
+      schedules: [],
+      sidebarWidth: 26,
+      minSidebarWidth: 26,
+      maxSidebarWidth: 35,
+      isResizing: false
+    }
+  },
   created: function() {
       // Register event hooks
       this.$eventHub.$on('generate-schedules', this.retrieveSchedules); //Generates schedules on this event
@@ -45,18 +48,23 @@ export default {
   methods: {
     // Sidebar resizing methods
     startResize(event) {
+      
+      event.preventDefault();
+      document.body.style.cursor = "col-resize";
+
       this.isResizing = true
 
       const startX = event.clientX
       const initialWidth = this.sidebarWidth
 
       const handleMouseMove = (event) => {
-        const width = initialWidth + (event.clientX - startX)
-        this.sidebarWidth = Math.max(this.minSidebarWidth, width)
+        const width = (initialWidth + (event.clientX - startX) * 100 / window.innerWidth);
+        this.sidebarWidth = Math.min(Math.max(this.minSidebarWidth, width), this.maxSidebarWidth)
       }
 
       const handleMouseUp = () => {
         this.isResizing = false
+        document.body.style.cursor = "auto";
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', handleMouseUp)
       }
@@ -66,6 +74,7 @@ export default {
     },
     stopResize() {
       this.isResizing = false
+      document.body.style.cursor = "auto";
     },
     /**
     * Retrieves all schedules for the classSections and custom events properties.
@@ -114,30 +123,27 @@ export default {
     },
     classSections: function(){
       return this.$store.getters.selectedClassSections;
+    },
+    cssProps() {
+      return {
+        '--sidebar-lg-width': (this.sidebarWidth) + "%",
+      }
     }
   }
 };
 </script>
 
 <style>
-.sidebar {
-  overflow-x: hidden;
-  overflow-y: auto;
-  position: relative;
-  max-width: 35%;
-}
-
 .resize-handle {
   position: absolute;
   top: 0;
-  right: 0;
-  width: 3px;
+  right: -1px;
+  width: 2px;
   height: 100%;
   cursor: col-resize;
   background-color: #dddcdc;
   z-index: 1;
 }
-
 .home-course-selectors {
   height: 465px;
 }
@@ -152,6 +158,14 @@ export default {
   }
   .home-selected-events {
     height: calc(40vh - 56px/2);
+  }
+  .side-bar.col-lg-3 {
+    max-width: 35%;
+    flex-basis: var(--sidebar-lg-width);
+  }
+  .schedule-bar.col-lg-9 {
+    min-width: 65%;
+    flex-basis: calc(100% - var(--sidebar-lg-width));
   }
 }
 </style>

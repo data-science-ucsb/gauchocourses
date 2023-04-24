@@ -66,5 +66,8 @@ export default {
 }
 .fc-timegrid-body table { 
   width: 100% !important; 
-  }
+}
+.fc-scrollgrid {
+  border: 0px !important;
+}
 </style>
