@@ -9,6 +9,7 @@
           :schedule="schedule"
           :courses="$store.state.selectedCourses"
           :showEditButton="showEditButton"
+          :onUserProfile="onUserProfile"
           class="mb-4"
         ></Schedule>
       </b-col>
@@ -36,6 +37,10 @@ export default {
       required: false,
     },
     showEditButton: {
+        type: Boolean,
+        default: false
+    },
+    onUserProfile: {
         type: Boolean,
         default: false
     }
@@ -66,5 +71,8 @@ export default {
 }
 .fc-timegrid-body table { 
   width: 100% !important; 
-  }
+}
+.fc-scrollgrid {
+  border: 0px !important;
+}
 </style>

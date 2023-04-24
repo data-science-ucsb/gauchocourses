@@ -70,7 +70,7 @@ export default {
      */
     saveSchedule(schedule, customEvents, selectedClassSections, scheduledClassSections) {
         let savableSchedule = {"selectedClassSections": selectedClassSections, "scheduledClassSections": scheduledClassSections, "customEvents": customEvents, "schedule": schedule};
-        return axios_instance.post('/api/schedules/', savableSchedule,)
+        return axios_instance.post('/api/schedules/', savableSchedule)
     },
     /**
      * Gets the schedules for the specified user email address.

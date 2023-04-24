@@ -14,23 +14,22 @@
             no-body
             style="height: 100%"
         >
-        <template v-slot:header>
-          <b class="float-left mt-1">Selected Courses</b>
-          <div id="conflictingEventIcon" class="ml-2 mb-0">
-            <font-awesome-icon
-              v-if="$store.getters.selectionsAreConflicting"
-              size="lg"
-              icon='info-circle'
-              :style="{ color: 'red' }"/>
-            <b-tooltip target="conflictingEventIcon">Some of your chosen lectures are conflicting! Click the edit button to deselect the conflicting lecture(s).</b-tooltip>
-          </div>
-          <a @click="$eventHub.$emit('start-new-custom-course', 0)">
-              <div id="addCustomEventIcon" class="float-right add-event-button-outline">
-                  <font-awesome-icon icon="calendar-plus"/>
-                  <small class="ml-1" for="addCustomEventIcon">Add custom event</small>
-                  <b-tooltip target="addCustomEventIcon">Add custom event</b-tooltip>
-              </div>
-          </a>
+        <template>
+            <div id="selected-courses-header" class="card-header">
+                <div id="selected-courses-title"><b>Selected Courses</b></div>
+                <div id="conflictingEventIcon">
+                    <font-awesome-icon
+                    v-if="$store.getters.selectionsAreConflicting"
+                    icon='info-circle'
+                    :style="{ color: 'red' }"/>
+                    <b-tooltip target="conflictingEventIcon">Some of your chosen lectures are conflicting! Click the edit button to deselect the conflicting lecture(s).</b-tooltip>
+                </div>
+                <div @click="$eventHub.$emit('start-new-custom-course', 0)" id="addCustomEventIcon" class="float-right add-event-button-outline">
+                    <font-awesome-icon icon="calendar-plus"/>
+                    <small style="margin-left: 3px" for="addCustomEventIcon">Custom</small>
+                    <b-tooltip target="addCustomEventIcon">Add custom event</b-tooltip>
+                </div>
+            </div>
         </template>
         <div class="event-card-body" >
             <template v-if="$store.state.selectedCourses.length == 0 & $store.state.selectedCustomEvents.length == 0">
@@ -150,17 +149,28 @@ export default {
     height: 100%;
 }
 
-.event-color-block {
-    width: 5%;
-    border-right-width: 2px;
-    border-right-style: solid;
+.edit-event {
+    margin-right: 0.2rem;
+}
+
+#selected-courses-header {
+    padding: 10px 6px 10px 5px;
 }
 
 #addCustomEventIcon:hover {
     cursor: pointer;
 }
 
+#addCustomEventIcon, #conflictingEventIcon, #selected-courses-title {
+    display: inline-block;
+}
+
+#selected-courses-title {
+    padding-right: 3px;
+}
+
 .add-event-button-outline {
+    margin-top: -2px;
     border-style: solid;
     border-color: rgba(44, 62, 80, 0.75);
     border-width: 1px;

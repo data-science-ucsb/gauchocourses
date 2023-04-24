@@ -1,9 +1,11 @@
 <template>
-  <EventListItem
-    :title="course.fullCourseNumber"
+  <EventListItem v-if="isValid"
+    :title="course.courseId"
     :borderColor="borderColor"
     :backgroundColor="backgroundColor"
     :full="full"
+    :randomId="randomId"
+    :custom=false
   >
     <template v-slot:subtext>
       <strong>{{ displayUnits }}</strong>
@@ -61,17 +63,31 @@ export default {
      */
     backgroundColor: function() {
       // TODO: Once we have class definitions on the frontend, consolidate any usages of "getColor" stuff to the class definitions.
-      return getBackgroundColor(this.course.courseId.slice(7, 14));
+      let ctx = document.createElement('canvas').getContext('2d');
+      ctx.fillStyle = getBackgroundColor(this.course.courseId);
+      return ctx.fillStyle;
     },
+    /**
+     * Returns whether or not a course is completely full
+     */
     full: function() {
-      let full = true;
-      this.course.classSections.forEach((classSection) => {
-        if (classSection.enrolledTotal < classSection.maxEnroll) {
-          full = false;
+      for (let i = 0; i < this.course.classSections.length; i++) {
+        if (this.course.classSections[i].enrolledTotal < this.course.classSections[i].maxEnroll) {
+          return false;
         }
-        // console.log(classSection.enrolledTotal - classSection.maxEnroll);
-      });
-      return full;
+      }
+      return true;
+    },
+    /**
+     * Returns whether or not a course is cancelled or still TBA
+     */
+    isValid: function() {
+      for (let i = 0; i < this.course.classSections.length; i++) {
+        if (this.course.classSections[i].timeLocations?.length != 0 && this.course.classSections[i].classClosed?.trim() != "Y" && this.course.classSections[i].courseCancelled?.trim() != "C") {
+          return true;
+        }
+      }
+      return false;
     },
     /**
      * Returns the requirements fulfilled by the course, grouped by the college.
@@ -97,7 +113,13 @@ export default {
           " units"
         );
       }
-    }
+    },
+    /**
+     * Returns short id used by popovers so that they are only binded to one course.
+     */
+    randomId: function() {
+      return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    },
   }
 };
 </script>

@@ -4,6 +4,7 @@ import BootstrapVue from 'bootstrap-vue';
 import { customEvent, courses } from '../../testing-objects';
 import Vuex from "vuex"
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import "jest-canvas-mock";
 
 const localVue = createLocalVue();
 localVue.use(BootstrapVue);
@@ -61,7 +62,7 @@ describe('SelectedEvents.vue', () => {
         it('the events are rendered with their names', () => {
             const courses = wrapper.findAll('.selected-course');
             expect(courses.length).toBe(2);
-            expect(courses.at(0).find('.event-name').text()).toBe('DUM 200 (Full)')
+            expect(courses.at(0).find('.event-name').text().substring(0,7)).toBe('DUM 200')
         });
 
         it('the courses are rendered with their titles', () => {

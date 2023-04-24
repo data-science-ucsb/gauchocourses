@@ -40,17 +40,19 @@ public class ScheduleSortingAttributes {
      * @param scheduledEvents If Events conflict, the attributes are not calculated.
      */
     public ScheduleSortingAttributes(List<? extends Event> scheduledEvents) {
-        if (scheduledEvents.size() != 0 && !Event.eventsHaveConflicts(scheduledEvents)) {
+        if (scheduledEvents.size() != 0) {
+//            if(!Event.eventsHaveConflicts(scheduledEvents)) {
             List<TimeLocation> allTimeLocations = scheduledEvents
-                .stream()
-                .map(Event::getTimeLocations)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                    .stream()
+                    .map(Event::getTimeLocations)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
 
             calculateTotalMinutesFromMidnight(allTimeLocations);
             calculateTotalMinutesBetweenEvents(allTimeLocations);
             calculateDaysWithEvents(allTimeLocations);
             calculateMinAndMaxTimes(allTimeLocations);
+//        }
         }
     }
 
@@ -74,20 +76,8 @@ public class ScheduleSortingAttributes {
 
     private void calculateTotalMinutesBetweenEvents(List<TimeLocation> allTimesAndPlaces) {
         Map<DayOfWeek, List<TimeLocation>> groupedTimes = new HashMap<>();
-
-        // Group timeLocations by day in groupedTimes
-        allTimesAndPlaces.forEach((TimeLocation timeLocation) ->
-            timeLocation.getFullDays().forEach((DayOfWeek dayOfWeek) -> {
-                // TODO: clean this up using Map.computeIfAbsent(...)
-                if (groupedTimes.containsKey(dayOfWeek)) {
-                    groupedTimes.get(dayOfWeek).add(timeLocation);
-                } else {
-                    groupedTimes.put(dayOfWeek, new ArrayList<>());
-                    groupedTimes.get(dayOfWeek).add(timeLocation);
-                }
-            })
-        );
-
+        groupTimeLocationByDay(groupedTimes, allTimesAndPlaces);
+        
         // Sort the values. TODO: Replace List<TimeLocation> with SortedSet<TimeLocation>
         groupedTimes
             .values()
@@ -102,21 +92,9 @@ public class ScheduleSortingAttributes {
     }
 
     private void calculateTotalMinutesFromMidnight(List<TimeLocation> allTimesAndPlaces) {
+        // clearing an preexisting map doesn't work; a new pointer reference is needed
         Map<DayOfWeek, List<TimeLocation>> groupedTimes = new HashMap<>();
-
-        // Group timeLocations by day in groupedTimes
-        // TODO: This is redundant (see other method). This piece can be shared across all the "compute*" methods.
-        allTimesAndPlaces.forEach((TimeLocation timeLocation) ->
-            timeLocation.getFullDays().forEach((DayOfWeek dayOfWeek) -> {
-                // TODO: clean this up using Map.computeIfAbsent(...)
-                if (groupedTimes.containsKey(dayOfWeek)) {
-                    groupedTimes.get(dayOfWeek).add(timeLocation);
-                } else {
-                    groupedTimes.put(dayOfWeek, new ArrayList<>());
-                    groupedTimes.get(dayOfWeek).add(timeLocation);
-                }
-            })
-        );
+        groupTimeLocationByDay(groupedTimes, allTimesAndPlaces);
 
         this.totalMinutesFromMidnight = groupedTimes
             .values()
@@ -138,6 +116,22 @@ public class ScheduleSortingAttributes {
             .map(TimeLocation::getFullDays)
             .flatMap(Collection::stream)
             .collect(Collectors.toSet());
+    }
+
+    private void groupTimeLocationByDay(Map<DayOfWeek, List<TimeLocation>> groupedTimes, List<TimeLocation> allTimesAndPlaces)
+    {
+        // Group timeLocations by day in groupedTimes
+        allTimesAndPlaces.forEach((TimeLocation timeLocation) ->
+            timeLocation.getFullDays().forEach((DayOfWeek dayOfWeek) -> {
+                // TODO: clean this up using Map.computeIfAbsent(...)
+                if (groupedTimes.containsKey(dayOfWeek)) {
+                    groupedTimes.get(dayOfWeek).add(timeLocation);
+                } else {
+                    groupedTimes.put(dayOfWeek, new ArrayList<>());
+                    groupedTimes.get(dayOfWeek).add(timeLocation);
+                }
+            })
+        );
     }
 
 }
