@@ -13,7 +13,7 @@
     <b-button
         variant="primary"
         ref="button"
-        @click="insertEvent"
+        @click="exportToCSV"
     >Google Calendar</b-button>
     <b-card no-body ref="schedule">
     <template v-slot:header>
@@ -887,6 +887,106 @@ export default {
         pdf.save("schedule.pdf")
       })
     },
+    exportToCSV() {
+      var eventList = this.parseScheduleToEventList(this.customEvents, this.courses);
+      /* eslint-disable */ //testing purposes
+      console.log(eventList);
+      const subject_array = [];
+      const start_date_array = [];
+      const end_date_array = [];
+      const start_time_array = [];
+      const end_time_array = [];
+      const location_array = [];
+      const days_array = [];
+      const daysMap = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+      const events = [];
+      
+      for (var i = 0; i < eventList.length; i++){
+        var title = eventList[i].title;
+        var startTime = eventList[i].startTime;
+        var endTime = eventList[i].endTime;
+        var location = eventList[i].location;
+        var daysOfWeek = eventList[i].daysOfWeek;
+        
+        subject_array.push(title);
+        //start_date_array.push(startDate);
+        //end_date_array.push(endDate);
+        start_time_array.push(startTime);
+        end_time_array.push(endTime);
+        location_array.push(location);
+
+        var days = daysOfWeek.map(day => daysMap[day]);
+        days_array.push(days);
+      }
+
+      // replace these with the start and end dates of the quarter
+      const quarterStartDate = new Date('2023-09-25');
+      const quarterEndDate = new Date('2023-12-08');
+      
+      for (var j = 0; j < subject_array.length; j++) {
+        // create recurring events for the quarter
+        var currentDate = new Date(quarterStartDate);
+        while (currentDate <= quarterEndDate) {
+          // check if the current date matches the days of the week the class meets
+          var dayOfWeek = daysMap[currentDate.getDay()];
+          if (days_array[j].includes(dayOfWeek)) {
+            console.log(days_array[j])
+            const event = {
+              subject: subject_array[j],
+              startDate: currentDate.toLocaleDateString(),
+              endDate: currentDate.toLocaleDateString(),
+              startTime: start_time_array[j],
+              endTime: end_time_array[j],
+              location: location_array[j],
+              daysOfWeek: days_array[j],
+            };
+            events.push(event);
+          }
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+      }
+
+      // for (var j = 0; j < subject_array.length; j++) {
+      //   const event = {
+      //     subject: subject_array[j],
+      //     //startDate: start_date_array[i],
+      //     //endDate: end_date_array[i],
+      //     startTime: start_time_array[j],
+      //     endTime: end_time_array[j],
+      //     location: location_array[j],
+      //     daysOfWeek: days_array[j],
+      //   };
+      //   events.push(event);
+      // }
+
+      const filename = 'events.csv';
+      const rows = [['Subject', 'Start Date', 'End Date', 'Start Time', 'End Time', 'Location']];
+
+      for (let i = 0; i < events.length; i++) {
+        const row = [
+          events[i].subject,
+          events[i].startDate,
+          events[i].endDate,
+          events[i].startTime,
+          events[i].endTime,
+          events[i].location,
+          events[i].daysOfWeek,
+        ];
+        rows.push(row);
+      }
+
+      let csvContent = '';
+      rows.forEach(function (rowArray) {
+        const row = rowArray.join(',');
+        csvContent += row + '\r\n';
+      });
+
+      const link = document.createElement('a');
+      link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
+      link.download = filename;
+      link.click();
+    },
     async insertEvent() {
       //const API_KEY = 'AIzaSyAy36_Hv2ZYPbVAnEApYakkRcJej67Ko6M';
       //const accessToken = 'a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc';
@@ -919,25 +1019,6 @@ export default {
         } catch (error) {
           console.error(error);
         }
-        // axios({
-        //   method: 'post',
-        //   url: ('https://www.googleapis.com/calendar/v3/calendars/primary/events'),
-        //   headers: {
-        //     'Authorization': 'Bearer ' + ACCESS_TOKEN,
-        //     'Key': API_KEY
-        //   },
-        //   data: {
-        //     event
-        //   },
-        // })
-        // .then(response => {
-        //   // handle success
-        //   console.log('Event created:', response.data);
-        // })
-        // .catch(error => {
-        //   // handle error
-        //   console.log('ERROR, event not created');
-        // });
       }  
     }
   },

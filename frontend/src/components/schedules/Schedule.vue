@@ -7,7 +7,7 @@
 <div>
   <div style="display: flex;">
     <b-button variant="primary" ref="button" @click="exportPDF">Export to PDF</b-button>
-    <b-button variant="info" ref="button" @click="insertEvent">Google Calendar</b-button>
+    <b-button variant="info" ref="button" @click="exportToCSV">Google Calendar</b-button>
   </div>
   <b-card no-body ref="schedule">
     <template v-slot:header>
@@ -112,10 +112,8 @@ import {
 import xss from "xss";
 import axios from 'axios';
 import { Tooltip } from "bootstrap";
-import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
-const API_KEY = 'AIzaSyAy36_Hv2ZYPbVAnEApYakkRcJej67Ko6M';
-const ACCESS_TOKEN = 'ya29.a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc-geyMOkTsxwqOVYnA29wMRslYcHJhgaCgYKATgSARESFQGbdwaIJT5a7TEyaOSlDYb4KQ9yEw0163';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export default {
   components: {
@@ -265,6 +263,38 @@ export default {
       console.log(totalevents)
       return totalevents;
     },
+    exportToCSV() {
+      const events = [
+        { subject: 'Meeting', startDate: '2023-05-01', startTime: '09:00', endTime: '10:00', location: 'Room A' },
+        { subject: 'Presentation', startDate: '2023-05-02', startTime: '13:00', endTime: '14:30', location: 'Room B' },
+        { subject: 'Training', startDate: '2023-05-03', startTime: '10:00', endTime: '12:00', location: 'Room C' },
+      ];
+
+      const filename = 'events.csv';
+      const rows = [['Subject', 'Start Date', 'Start Time', 'End Time', 'Location']];
+
+      for (let i = 0; i < events.length; i++) {
+        const row = [
+          events[i].subject,
+          events[i].startDate,
+          events[i].startTime,
+          events[i].endTime,
+          events[i].location,
+        ];
+        rows.push(row);
+      }
+
+      let csvContent = '';
+      rows.forEach(function (rowArray) {
+        const row = rowArray.join(',');
+        csvContent += row + '\r\n';
+      });
+
+      const link = document.createElement('a');
+      link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
+      link.download = filename;
+      link.click();
+    }, 
     async insertEvent() {
       //const API_KEY = 'AIzaSyAy36_Hv2ZYPbVAnEApYakkRcJej67Ko6M';
       //const accessToken = 'a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc';
