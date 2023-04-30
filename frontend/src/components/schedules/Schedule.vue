@@ -83,7 +83,16 @@
             size="sm" />
             </router-link>
         </div>
-        
+        <div
+            class="export"
+            v-b-tooltip.hover.topleft title="Export PDF">
+          <font-awesome-icon
+              class="export-button"
+              icon="file-download"
+              color="#007aff"
+              @click="exportPDF">
+          </font-awesome-icon>
+        </div>
       </div>
     </template>
 
@@ -593,5 +602,12 @@ export default {
   position: relative;
   padding-left: 10px;
 }
-
+.export {
+  margin-left: auto;
+  margin-right: 16px;
+}
+.export-button:hover {
+  cursor: pointer;
+  color: #0056b2;
+}
 </style>
