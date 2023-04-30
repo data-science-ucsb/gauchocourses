@@ -7,7 +7,7 @@
 <div>
   <div style="display: flex;">
     <b-button variant="primary" ref="button" @click="exportPDF">Export to PDF</b-button>
-    <b-button variant="info" ref="button" @click="exportCSV">Google Calendar</b-button>
+    <b-button variant="primary" ref="button" @click="exportCSV">Google Calendar</b-button>
   </div>
   <b-card no-body ref="schedule">
     <template v-slot:header>
@@ -104,13 +104,13 @@ import FullCalendar from "@fullcalendar/vue";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import $ from "jquery";
 import api from "@/components/backend-api.js";
+import { getQuarters } from '@/components/util/util-methods.js';
 import {
   getBackgroundColor,
   getBorderColor,
   getHash
 } from "@/components/util/color-utils.js";
 import xss from "xss";
-import axios from 'axios';
 import { Tooltip } from "bootstrap";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -151,6 +151,8 @@ export default {
     };
   },
   created: function () {
+    this.quarters = this.getQuarters();
+
     this.schedule.classes.forEach((course) => {
       const match = this.courses.find(item => item.courseId == course.courseId);
       if (match != undefined) {
@@ -175,6 +177,16 @@ export default {
     .finally(() => this.doneLoading = true);
   },
   computed: {
+    currentQuarter: {
+      get: function() {
+        return this.$store.state.selectedQuarter;
+      },
+      set: function(newQuarter) {
+        this.$nextTick(() =>
+            this.$store.commit("setSelectedQuarter", newQuarter)
+        );
+      },
+    },
     /**
      * The schedules array is mapped to a format that can be passed to the WeeklySchedule component.
      * This array has the same length as the schedules array.
@@ -205,6 +217,9 @@ export default {
     },
   },
   methods: {
+    getQuarters: function() {
+      return getQuarters();
+    },
     /**
      * Parses a schedule and maps the enroll codes to the data format for WeeklySchedule from courses.
      */
@@ -263,10 +278,8 @@ export default {
       return totalevents;
     },
     exportCSV() {
-      // var eventList = this.parseScheduleToEventList(this.customEvents, this.courses);
       var eventList = this.parseScheduleToEventList(this.schedule, this.coursesComputed);
-      /* eslint-disable */ //testing purposes
-      console.log(JSON.stringify(eventList));
+      var currQuarterInfo = this.quarters.find(obj => obj.quarter === this.currentQuarter);
       const subject_array = [];
       const start_time_array = [];
       const end_time_array = [];
@@ -292,9 +305,8 @@ export default {
         days_array.push(days);
       }
 
-      // replace these with the start and end dates of the quarter
-      const quarterStartDate = new Date('2023-09-25');
-      const quarterEndDate = new Date('2023-12-08');
+      const quarterStartDate = new Date((currQuarterInfo['firstDayOfClasses']).substring(0,10));
+      const quarterEndDate = new Date((currQuarterInfo['lastDayOfClasses']).substring(0,10));
       
       for (var j = 0; j < subject_array.length; j++) {
         // create recurring events for the quarter
@@ -357,55 +369,6 @@ export default {
       link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
       link.download = filename;
       link.click();
-    },
-    /**
-     * Parses a schedule and map each event to a Google Calendar invite.
-     */
-    createEvent: function () {
-
-      var eventList = this.parseScheduleToEventList(this.schedule, this.courses);
-
-      for (var i = 0; i < eventList.length; i++){
-        var title = eventList[i].title;
-        var startTime = eventList[i].startTime;
-        var endTime = eventList[i].endTime;
-        var daysOfWeek = eventList[i].daysOfWeek;
-        /* eslint-disable */ //testing purposes
-        console.log(title);
-        console.log(startTime);
-        console.log(endTime);
-        console.log(daysOfWeek);
-        // Create Google Calendar event
-        const event = {
-          summary: title,
-          start: {
-            dateTime: startTime,
-            timeZone: 'America/Los_Angeles',
-          },
-          end: {
-            dateTime: endTime,
-            timeZone: 'America/Los_Angeles',
-          },
-        };
-
-        axios.post('/api/calendar/create-event', {
-          headers: {
-            'Authorization': 'Bearer ' + ACCESS_TOKEN,
-            'Key': API_KEY
-          },
-          data: {
-            event
-          },
-        })
-        .then(response => {
-          // handle success
-          console.log('Event created:', response.data);
-        })
-        .catch(error => {
-          // handle error
-          console.log('ERROR, event not created');
-        });
-      }  
     },
     /* Uses an enroll code and the course object to return an event object
      * that is compatible with FullCalendar.

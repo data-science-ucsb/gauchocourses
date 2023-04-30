@@ -107,6 +107,7 @@ import FullCalendar from "@fullcalendar/vue";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import $ from "jquery";
 import api from "@/components/backend-api.js";
+import { getQuarters } from '@/components/util/util-methods.js';
 
 import {
   getBackgroundColor,
@@ -167,8 +168,19 @@ export default {
   },
   created: function () {
     this.doneLoading = true;
+    this.quarters = this.getQuarters();
   },
   computed: {
+    currentQuarter: {
+      get: function() {
+        return this.$store.state.selectedQuarter;
+      },
+      set: function(newQuarter) {
+        this.$nextTick(() =>
+            this.$store.commit("setSelectedQuarter", newQuarter)
+        );
+      },
+    },
     /**
      * The schedules array is mapped to a format that can be passed to the WeeklySchedule component.
      * This array has the same length as the schedules array.
@@ -226,6 +238,9 @@ export default {
     }
   },
   methods: {
+    getQuarters: function() {
+      return getQuarters();
+    },
     /**
      * Parses a schedule and maps the enroll codes to the data format for WeeklySchedule from courses.
      */
@@ -888,13 +903,9 @@ export default {
       })
     },
     exportCSV() {
-      // var eventList = this.parseScheduleToEventList(this.customEvents, this.courses);
       var eventList = this.selectedEvents;
-      /* eslint-disable */ //testing purposes
-      console.log(JSON.stringify(eventList));
+      var currQuarterInfo = this.quarters.find(obj => obj.quarter === this.currentQuarter);
       const subject_array = [];
-      // const start_date_array = [];
-      // const end_date_array = [];
       const start_time_array = [];
       const end_time_array = [];
       const location_array = [];
@@ -916,22 +927,14 @@ export default {
         const DayString = startDateTime.toLocaleDateString('en-US', { weekday: 'long' });
 
         subject_array.push(title);
-        //start_date_array.push(startDate);
-        //end_date_array.push(endDate);
         start_time_array.push(startTimeString);
         end_time_array.push(endTimeString);
         location_array.push(location);
-
         days_array.push(DayString);
       }
 
-      console.log(start_time_array)
-      console.log(end_time_array)
-      console.log(days_array)
-
-      // replace these with the start and end dates of the quarter
-      const quarterStartDate = new Date('2023-09-25');
-      const quarterEndDate = new Date('2023-12-08');
+      const quarterStartDate = new Date((currQuarterInfo['firstDayOfClasses']).substring(0,10));
+      const quarterEndDate = new Date((currQuarterInfo['lastDayOfClasses']).substring(0,10));
       
       for (var j = 0; j < subject_array.length; j++) {
         // create recurring events for the quarter
