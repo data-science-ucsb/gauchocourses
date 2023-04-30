@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "html2canvas": "^1.4.1",
-    "jspdf": "^2.5.1",
-    "moment": "^2.29.4",
-    "verte": "^0.0.12"
-  }
-}
