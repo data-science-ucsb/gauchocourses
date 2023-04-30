@@ -5,16 +5,6 @@
 -->
 <template>
   <div>
-    <b-button
-        variant="primary"
-        ref="button"
-        @click="exportPDF"
-    >Export to PDF</b-button>
-    <b-button
-        variant="primary"
-        ref="button"
-        @click="exportCSV"
-    >Google Calendar</b-button>
     <b-card no-body ref="schedule">
     <template v-slot:header>
       <div class="no-wrap d-flex flex-row align-items-center">
@@ -87,15 +77,25 @@
             </b-col>
           </b-row>
         </b-popover>
-        <div
-            class="export"
-            v-b-tooltip.hover.topleft title="Export PDF">
-          <font-awesome-icon
-              class="export-button"
-              icon="file-download"
-              color="#007aff"
-              @click="exportPDF">
-          </font-awesome-icon>
+        <div class="export">
+          <div
+              v-b-tooltip.hover.topleft title="Export PDF">
+            <font-awesome-icon
+                class="export-button"
+                icon="file-download"
+                color="#007aff"
+                @click="exportPDF">
+            </font-awesome-icon>
+          </div>
+          <div 
+            v-b-tooltip.hover.topleft title="Export Google Calendar">
+            <font-awesome-icon
+                class="export-button"
+                icon="calendar"
+                color="#007aff"
+                @click="exportCSV">
+            </font-awesome-icon>
+          </div>
         </div>
       </div>
     </template>
@@ -1061,6 +1061,8 @@ export default {
 .export {
   margin-left: auto;
   margin-right: 16px;
+  display: flex;
+  gap: 12px;
 }
 .export-button:hover {
   cursor: pointer;
