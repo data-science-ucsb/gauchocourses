@@ -950,7 +950,6 @@ export default {
               startTime: start_time_array[j],
               endTime: end_time_array[j],
               location: location_array[j],
-              daysOfWeek: days_array[j],
             };
             events.push(event);
           }
@@ -969,7 +968,6 @@ export default {
           events[i].startTime,
           events[i].endTime,
           events[i].location,
-          events[i].daysOfWeek,
         ];
         rows.push(row);
       }

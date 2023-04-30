@@ -322,26 +322,12 @@ export default {
               startTime: start_time_array[j],
               endTime: end_time_array[j],
               location: location_array[j],
-              daysOfWeek: days_array[j],
             };
             events.push(event);
           }
           currentDate.setDate(currentDate.getDate() + 1);
         }
       }
-
-      // for (var j = 0; j < subject_array.length; j++) {
-      //   const event = {
-      //     subject: subject_array[j],
-      //     //startDate: start_date_array[i],
-      //     //endDate: end_date_array[i],
-      //     startTime: start_time_array[j],
-      //     endTime: end_time_array[j],
-      //     location: location_array[j],
-      //     daysOfWeek: days_array[j],
-      //   };
-      //   events.push(event);
-      // }
 
       const filename = 'events.csv';
       const rows = [['Subject', 'Start Date', 'End Date', 'Start Time', 'End Time', 'Location']];
@@ -354,7 +340,6 @@ export default {
           events[i].startTime,
           events[i].endTime,
           events[i].location,
-          events[i].daysOfWeek,
         ];
         rows.push(row);
       }
