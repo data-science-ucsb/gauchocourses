@@ -7,7 +7,7 @@
 <div>
   <div style="display: flex;">
     <b-button variant="primary" ref="button" @click="exportPDF">Export to PDF</b-button>
-    <b-button variant="info" ref="button" @click="exportToCSV">Google Calendar</b-button>
+    <b-button variant="info" ref="button" @click="exportCSV">Google Calendar</b-button>
   </div>
   <b-card no-body ref="schedule">
     <template v-slot:header>
@@ -260,26 +260,89 @@ export default {
       customevents.forEach((item) => {
         totalevents.push(item);
       });
-      console.log(totalevents)
       return totalevents;
     },
-    exportToCSV() {
-      const events = [
-        { subject: 'Meeting', startDate: '2023-05-01', startTime: '09:00', endTime: '10:00', location: 'Room A' },
-        { subject: 'Presentation', startDate: '2023-05-02', startTime: '13:00', endTime: '14:30', location: 'Room B' },
-        { subject: 'Training', startDate: '2023-05-03', startTime: '10:00', endTime: '12:00', location: 'Room C' },
-      ];
+    exportCSV() {
+      // var eventList = this.parseScheduleToEventList(this.customEvents, this.courses);
+      var eventList = this.parseScheduleToEventList(this.schedule, this.coursesComputed);
+      /* eslint-disable */ //testing purposes
+      console.log(JSON.stringify(eventList));
+      const subject_array = [];
+      const start_time_array = [];
+      const end_time_array = [];
+      const location_array = [];
+      const days_array = [];
+      const daysMap = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+      const events = [];
+      
+      for (var i = 0; i < eventList.length; i++){
+        var title = eventList[i].title;
+        var startTime = eventList[i].startTime;
+        var endTime = eventList[i].endTime;
+        var location = eventList[i].location;
+        var daysOfWeek = eventList[i].daysOfWeek;
+        
+        subject_array.push(title);
+        start_time_array.push(startTime);
+        end_time_array.push(endTime);
+        location_array.push(location);
+
+        var days = daysOfWeek.map(day => daysMap[day]);
+        days_array.push(days);
+      }
+
+      // replace these with the start and end dates of the quarter
+      const quarterStartDate = new Date('2023-09-25');
+      const quarterEndDate = new Date('2023-12-08');
+      
+      for (var j = 0; j < subject_array.length; j++) {
+        // create recurring events for the quarter
+        var currentDate = new Date(quarterStartDate);
+        while (currentDate <= quarterEndDate) {
+          // check if the current date matches the days of the week the class meets
+          var dayOfWeek = daysMap[currentDate.getDay()];
+          if (days_array[j].includes(dayOfWeek)) {
+            const event = {
+              subject: subject_array[j],
+              startDate: currentDate.toLocaleDateString(),
+              endDate: currentDate.toLocaleDateString(),
+              startTime: start_time_array[j],
+              endTime: end_time_array[j],
+              location: location_array[j],
+              daysOfWeek: days_array[j],
+            };
+            events.push(event);
+          }
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+      }
+
+      // for (var j = 0; j < subject_array.length; j++) {
+      //   const event = {
+      //     subject: subject_array[j],
+      //     //startDate: start_date_array[i],
+      //     //endDate: end_date_array[i],
+      //     startTime: start_time_array[j],
+      //     endTime: end_time_array[j],
+      //     location: location_array[j],
+      //     daysOfWeek: days_array[j],
+      //   };
+      //   events.push(event);
+      // }
 
       const filename = 'events.csv';
-      const rows = [['Subject', 'Start Date', 'Start Time', 'End Time', 'Location']];
+      const rows = [['Subject', 'Start Date', 'End Date', 'Start Time', 'End Time', 'Location']];
 
       for (let i = 0; i < events.length; i++) {
         const row = [
           events[i].subject,
           events[i].startDate,
+          events[i].endDate,
           events[i].startTime,
           events[i].endTime,
           events[i].location,
+          events[i].daysOfWeek,
         ];
         rows.push(row);
       }
@@ -294,39 +357,6 @@ export default {
       link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
       link.download = filename;
       link.click();
-    }, 
-    async insertEvent() {
-      //const API_KEY = 'AIzaSyAy36_Hv2ZYPbVAnEApYakkRcJej67Ko6M';
-      //const accessToken = 'a0AVvZVsoMWlMiHjWqhRGESDjJraYnvD8VqITRaXTHFc9BFpqE3lBQH6TxWM4Tm2CKoQPzW6xpFYIivhjdFs_1FetRrNCgJWwzY_y8tPUGRs9BQgNfbvWRgQvqQpFfvc';
-      
-      var eventList = this.parseScheduleToEventList(this.schedule, this.courses);
-      
-      for (var i = 0; i < eventList.length; i++){
-        var title = eventList[i].title;
-        var startTime = eventList[i].startTime;
-        var endTime = eventList[i].endTime;
-        var daysOfWeek = eventList[i].daysOfWeek;
-        /* eslint-disable */ //testing purposes
-
-        // object -> function -> string -> url -> /api/calendar/events?start=2021-01-01T00:00:00-08:00&end=2021-01-01T23:59:59-08:00 -> string -> object
-        console.log(title);
-        console.log(startTime);
-        console.log(endTime);
-        console.log(daysOfWeek);
-        // Create Google Calendar event
-        const event = {
-          summary: title,
-          start: '2021-01-01T00:00:00-08:00',
-          end: '2021-01-01T23:59:59-08:00',
-        };
-
-        try {
-          const response = await api.createCalEvent(event);
-          console.log(response.data);
-        } catch (error) {
-          console.error(error);
-        }
-      }  
     },
     /**
      * Parses a schedule and map each event to a Google Calendar invite.
