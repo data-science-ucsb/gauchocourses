@@ -11,6 +11,9 @@ export default {
     quarters(datetoday) {
         return axios_instance.get('/remote/academics/quartercalendar/v1/quarters?date='+datetoday+'/');
     },
+    // sessions(quarter) {
+    //     return axios_instance.get('/remote/academics/quartercalendar/v1/sessions/?quarter='+quarter+'/');
+    // },
     departments() {
         return axios_instance.get('/remote/students/lookups/v1/departments?includeInactive=false/');
     },

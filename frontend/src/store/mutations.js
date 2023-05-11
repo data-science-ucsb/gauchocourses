@@ -125,14 +125,14 @@ export default {
 
 
     /**
-     * Sets the user's selected session and clears state.selectedCourses. This is idempotent, if newSession == the selected session, this does nothing.
+     * TODO: (Not a TODO, note that if we want to reset the schedule for each session, then have to uncomment) Sets the user's selected session and DOES NOT clear state.selectedCourses. This is idempotent, if newSession == the selected session, this does nothing.
      * @param {Object} state The Vuex state
      * @param {String} newQuarter The value of the user's selected quarter
      */
     setSelectedSession: function (state, newSession) {
         if (state.selectedSession != newSession) {
             state.selectedSession = newSession;
-            state.selectedCourses = [];
+            // state.selectedCourses = [];
         }
     },
 

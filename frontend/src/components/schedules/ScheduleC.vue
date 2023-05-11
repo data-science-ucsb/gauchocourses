@@ -336,6 +336,7 @@ export default {
           enrollCode: section.enrollCode,
           location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
           instructor: (section.instructors[0]?.instructor ?? "TBA"),
+          session: section.session,
           textColor: "black",
         };
       } else {
@@ -362,6 +363,7 @@ export default {
           maxEnroll: section.maxEnroll,
           enrollCode: section.enrollCode,
           location: "",
+          session: section.session,
           instructor: (section.instructors[0]?.instructor ?? "TBA"),
         };
         for (let k = 0; k < multipletimeandplace.length; k++) {
@@ -744,18 +746,20 @@ export default {
     },
     eventDidMount: function(info) {
       if (info.event.extendedProps.isLecture != 0) {
-        return new Tooltip(info.el, {
-          title: "<b>" + info.event.extendedProps.courseId + " — " + (info.event.extendedProps.isLecture == 1 ? "Section" : "Lecture") + "</b><br>" +
-                 "Instructor: " + info.event.extendedProps.instructor + "<br>" +
-                 "Seats: " + info.event.extendedProps.enrolledTotal + "/" + info.event.extendedProps.maxEnroll + "<br>" +
-                 "Location: " + info.event.extendedProps.location + "<br>" +
-                 "Enroll Code: " + info.event.extendedProps.enrollCode + "<br>",
-          html: true,
-          template: '<div class="tooltip course-tooltip" role="tooltip"><div class="arrow"></div><div class="tooltip-inner course-tooltip"></div></div>',
-          placement: "top",
-          trigger: "hover",
-          container: "body",
-        });
+        let session = info.event.extendedProps.session ? "Session: " + info.event.extendedProps.session : ""
+          return new Tooltip(info.el, {
+            title: "<b>" + info.event.extendedProps.courseId + " — " + (info.event.extendedProps.isLecture == 1 ? "Section" : "Lecture") + "</b><br>" +
+                "Instructor: " + info.event.extendedProps.instructor + "<br>" +
+                "Seats: " + info.event.extendedProps.enrolledTotal + "/" + info.event.extendedProps.maxEnroll + "<br>" +
+                "Location: " + info.event.extendedProps.location + "<br>" +
+                "Enroll Code: " + info.event.extendedProps.enrollCode + "<br>" +
+                session,
+            html: true,
+            template: '<div class="tooltip course-tooltip" role="tooltip"><div class="arrow"></div><div class="tooltip-inner course-tooltip"></div></div>',
+            placement: "top",
+            trigger: "hover",
+            container: "body",
+          });
       }
     },
     // /**

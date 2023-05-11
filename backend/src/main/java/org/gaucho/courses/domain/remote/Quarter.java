@@ -29,5 +29,4 @@ public class Quarter implements Serializable {
     private String lastDayToAddUnderGrad;
     private String lastDayToAddGrad;
     private String lastDayThirdWeek;
-
 }

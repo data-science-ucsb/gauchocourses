@@ -7,6 +7,7 @@ import org.gaucho.courses.domain.remote.Class;
 import org.gaucho.courses.domain.remote.ClassSection;
 import org.gaucho.courses.domain.remote.Department;
 import org.gaucho.courses.domain.remote.Quarter;
+import org.gaucho.courses.domain.remote.Session;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
@@ -79,6 +80,17 @@ public class GatewayService {
             return null;
         }
     }
+
+//    @Cacheable(value="sessions", key="#allQueryParams")
+//    public Session[] getSessions(Map<String, String> allQueryParams, HttpServletRequest request) {
+//        try {
+//            return proxyRequest(Session[].class, request, allQueryParams);
+//        } catch (URISyntaxException e) {
+//            log.error("Exception thrown when proxying request. Nested exception is:");
+//            log.error(e.getMessage());
+//            return null;
+//        }
+//    }
 
     @Cacheable(value="classes", key="#allQueryParams")
     public Gateway.PaginatedClasses getClassSections(Map<String, String> allQueryParams, HttpServletRequest request) {

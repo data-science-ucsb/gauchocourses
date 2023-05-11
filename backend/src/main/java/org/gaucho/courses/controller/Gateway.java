@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.gaucho.courses.controller.service.GatewayService;
 import org.gaucho.courses.domain.remote.Department;
 import org.gaucho.courses.domain.remote.Quarter;
+import org.gaucho.courses.domain.remote.Session;
 import org.gaucho.courses.domain.remote.Class;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -46,6 +47,21 @@ public class Gateway {
                 .body(null);
         }
     }
+
+//    @RequestMapping("academics/quartercalendar/v1/sessions/**")
+//    public ResponseEntity<Session[]> getSessions(@RequestParam Map<String, String> allQueryParams, HttpServletRequest request) {
+//        final Session[] sessions = service.getSessions(allQueryParams, request);
+//        if (sessions != null) {
+//            return ResponseEntity
+//                    .ok()
+//                    .cacheControl(cacheControl)
+//                    .body(sessions);
+//        } else {
+//            return ResponseEntity
+//                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(null);
+//        }
+//    }
 
     @RequestMapping("academics/curriculums/v1/classes/**")
     public ResponseEntity<PaginatedClasses> getClassSections(@RequestParam Map<String, String> allQueryParams, HttpServletRequest request) {

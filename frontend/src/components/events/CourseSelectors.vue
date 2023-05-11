@@ -24,6 +24,7 @@
           </template>
         </b-form-select>
       </b-form-group>
+
       <b-form-group
           class="course-selector"
           v-show="isOpen"
@@ -35,11 +36,19 @@
       >
         <b-form-select
             size="sm"
-            :value="currentSession"
+            v-model="currentSession"
             :options="sessions"
-            v-on:change.capture="e => confirmUserSelection(e, currentSession, 'currentSession')"
-        ></b-form-select>
+            :disabled="this.sessions.length == 0"
+            text-field="text"
+            value-field="vale"
+        >
+          <template v-slot:first>
+            <b-form-select-option :value="null" v-if="sessions.length == 0">Loading...</b-form-select-option>
+            <b-form-select-option :value="null" v-else>Any</b-form-select-option>
+          </template>
+        </b-form-select> <!-- Note: Not needed v-on:change.capture="e => confirmUserSelection(e, currentSession, 'currentSession')"-->
       </b-form-group>
+
 
       <b-form-group class="course-selector" v-show="isOpen" label-cols="3" label-cols-md="4" label-cols-lg="5" label="Department:" label-for="deptartmentselect" label-size="sm">
         <b-form-select
@@ -52,7 +61,7 @@
         >
           <template v-slot:first>
             <b-form-select-option :value="null" v-if="departments.length == 0">Loading...</b-form-select-option>
-            <b-form-select-option :value="null">Any</b-form-select-option>
+            <b-form-select-option :value="null" v-else>Any</b-form-select-option>
           </template>
         </b-form-select>
       </b-form-group>
@@ -83,7 +92,7 @@
               >
                 <template v-slot:first>
                   <b-form-select-option :value="null" v-if="requirements.length == 0">Loading...</b-form-select-option>
-                  <b-form-select-option :value="null">Any</b-form-select-option>
+                  <b-form-select-option :value="null" v-else>Any</b-form-select-option>
                 </template>
               </b-form-select>
             </b-col>
@@ -160,6 +169,7 @@
 import api from "@/components/backend-api";
 import { allCombinationsOfLecturesConflict } from "@/components/util/event-methods.js";
 import { getQuarters } from '@/components/util/util-methods.js';
+import { getSessions } from '@/components/util/util-methods.js';
 import CourseListItem from "@/components/events/ListItems/CourseListItem.vue";
 import { debounce, groupBy, uniqBy, sortBy } from "lodash";
 
@@ -170,7 +180,7 @@ export default {
   data: function() {
     return {
       isOpen: true,
-      currentSession: null,
+      currentSession: this.$store.state.selectedSession,
       currentDepartment: this.$store.state.selectedDepartment,
       currentCollege: this.$store.state.selectedCollege,
       searchFilters: {
@@ -185,14 +195,16 @@ export default {
       currentPage: 1,
       maxPages: 1,
       quarters: [],
-      sessions: [
+      //TODO: Pull sessions from all the courses listed?
+      sessions:[
         { vale: "00000A  ", text: "A" },
         { vale: "00000B  ", text: "B" },
         { vale: "00000C  ", text: "C" },
         { vale: "00000D  ", text: "D" },
         { vale: "00000E  ", text: "E" },
-        { vale: "00000F  ", text: "F" }
-      ],
+        { vale: "00000F  ", text: "F" },
+        { vale: "00000G  ", text: "G" },
+      ],        // "00000D  "
       departments: [],
       requirements: [],
       courses: [],
@@ -202,8 +214,8 @@ export default {
     };
   },
   created: function() {
-
     this.quarters = this.getQuarters();
+    // this.sessions = this.getSessions(this.currentQuarter);
 
     api
         .departments()
@@ -271,7 +283,7 @@ export default {
      * Group the selected quarter and department so we can watch them with the same handler
      */
     selectedQuarterAndDepartmentAndFilters: function() {
-      return [this.currentQuarter, this.currentDepartment, this.searchFilters];
+      return [this.currentQuarter, this.currentDepartment, this.currentSession, this.searchFilters];
     },
     /**
      * Returns boolean to indicate whether the currently selected quarter is a summer quarter.
@@ -282,9 +294,10 @@ export default {
     },
     /**
      * If the current quarter is a summer quarter, this returns the courses filtered by session.
+     * Ideally, this would be used, but currently it just re-fetches courses from UCSB API, which is slower (but not noticeable).
      */
     filteredCourses: function() {
-      return this.currentQuarterIsSummer ? this.courses.filter(c => c.session == this.currentSession) : this.courses;
+      return this.currentQuarterIsSummer ? this.courses.filter(c => c.classSections[0].session == this.currentSession) : this.courses;
     }
   },
   methods: {
@@ -335,6 +348,9 @@ export default {
     getQuarters: function() {
       return getQuarters();
     },
+    getSessions: function(quarter) {
+      return getSessions(quarter);
+    },
     /*
     * Method for adding selected courses to the store
     */
@@ -379,6 +395,7 @@ export default {
         objLevelCode: filters.graduateClasses ? "" : "U",
         openSections: !filters.fullClasses,
         deptCode: this.currentDepartment,
+        session: this.currentQuarterIsSummer ? this.currentSession : null,
         areas: this.currentCollege ? filters.selectedRequirement : "",
       }
 
@@ -413,6 +430,7 @@ export default {
     }
   },
   watch: {
+    //TODO: When currentQuarters is changed, remove the available courses and immediately say "Loading... otherwise users will be able to add classes from one quarter to another." Right now, it's not updating fast enough.
     quarters: function() {
       if(this.quarters.length != 0) {
         if (this.currentQuarter != null) {
@@ -421,6 +439,9 @@ export default {
           this.currentQuarter = this.quarters.map(q => q.quarter).sort()[this.quarters.length - 1];
         }
       }
+    },
+    currentSession: function() {
+      this.$store.commit("setSelectedSession", this.currentSession);
     },
     currentDepartment: function() {
       this.$store.commit("setSelectedDepartment", this.currentDepartment);

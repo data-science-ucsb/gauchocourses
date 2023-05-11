@@ -61,6 +61,16 @@ export function getQuarters(){
   return quarters;
 }
 
+// export function getSessions(quarter) {
+//     var sessions = [];
+//     Promise.all([api.sessions(quarter)])
+//         .then(responses => responses.forEach(resp => sessions.push(resp.data[0])))
+//         .catch(err => {
+//             err;
+//         });
+//     console.log(sessions);
+//     return sessions;
+// }
 
 /**
  * Used as a default method parameter value to assert that the parameter cannot be empty.

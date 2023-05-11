@@ -310,6 +310,7 @@
           :courses="$store.state.selectedCourses">
         </ListView>
         <ScheduleView
+          :key="schedulesToRender"
           :schedules="schedulesToRender"
           :numShow="currentView"
           :showEditButton="showEditButton"
@@ -579,7 +580,7 @@ export default {
 
           if (this.$store.state.selectedCourses.length > 0 && newVal != oldVal) {
             this.$bvModal
-              .msgBoxConfirm('Changing your quarter or session will clear your courses and schedules.', modalOptions)
+              .msgBoxConfirm('Changing your quarter will clear your courses and schedules.', modalOptions)
               .then(ok => {
                 if (ok) {
                   this[selection] = newVal;
@@ -590,7 +591,6 @@ export default {
           } else {
             this[selection] = newVal;
           }
-
           this.currentView = "4";
 
         },
