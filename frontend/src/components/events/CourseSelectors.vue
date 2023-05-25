@@ -113,12 +113,12 @@
 
       <b-form-row v-show="isOpen">
         <b-col>
-          <b-form-group label-cols="auto" label="Grad classes" label-size="sm">
+          <b-form-group label-cols="auto" label="Include Grad classes" label-size="sm">
             <b-form-checkbox style="padding-top:4px;" size="sm" v-model="searchFilters.graduateClasses"></b-form-checkbox>
           </b-form-group>
         </b-col>
         <b-col>
-          <b-form-group label-cols="auto" label="Full classes" label-size="sm">
+          <b-form-group label-cols="auto" label="Include Full classes" label-size="sm">
             <b-form-checkbox style="padding-top:4px;" size="sm" v-model="searchFilters.fullClasses"></b-form-checkbox>
           </b-form-group>
         </b-col>

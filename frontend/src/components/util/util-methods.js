@@ -44,15 +44,32 @@ export function getQuarters(){
   var nextquarter = "";
   var dd = String(today.getDate()).padStart(2, "0");
   var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
-  var mmnextquarter = String(today.getMonth() + 4).padStart(2, "0"); //January is 0!
-  var yyyy = today.getFullYear();
+    var mmnexthalfquarter = String(today.getMonth() + 2).padStart(2, "0"); //January is 0!
 
+    var mmnextquarter = String(today.getMonth() + 4).padStart(2, "0"); //January is 0!
+  var mmnextnextquarter = String(today.getMonth() + 8).padStart(2, "0");
+  var yyyy = today.getFullYear();
   today = yyyy + mm + dd;
   nextquarter = yyyy + mmnextquarter + dd;
+  var nexthalfquarter = yyyy+ mmnexthalfquarter + dd;
+  var nextnextquarter = yyyy+ mmnextnextquarter + dd;
+
+  //TODO: This roundabout method can be shortened if we pull from UCSB's quartercalendar to see the exact dates
 
   // Get the current and next quarters. Select the next quarter.
-  Promise.all([api.quarters(today), api.quarters(nextquarter)])
-    .then(responses => responses.forEach(resp => quarters.push(resp.data[0])))
+  Promise.all([api.quarters(today), api.quarters(nexthalfquarter), api.quarters(nextquarter), api.quarters(nextnextquarter)])
+    .then(responses => {
+        responses.forEach(resp => quarters.push(resp.data[0]))
+        if(quarters[2].category == quarters[3].category){ //Remove duplicate quarters
+            quarters.pop();
+        }
+        if(quarters[1].category == quarters[2].category) {
+            quarters.splice(1, 1);
+        }
+        if(quarters[0].category == quarters[1].category) {
+            quarters.splice(0, 1);
+        }
+    })
     .catch(err => {
       err;
       // ToDo. This is a critical code path, so if this fails then we should render
