@@ -77,15 +77,25 @@
             </b-col>
           </b-row>
         </b-popover>
-        <div
-            class="export"
-            v-b-tooltip.hover.topleft title="Export PDF">
-          <font-awesome-icon
-              class="export-button"
-              icon="file-download"
-              color="#007aff"
-              @click="exportPDF">
-          </font-awesome-icon>
+        <div class="export">
+          <div
+              v-b-tooltip.hover.topleft title="Export PDF">
+            <font-awesome-icon
+                class="export-button"
+                icon="file-download"
+                color="#007aff"
+                @click="exportPDF">
+            </font-awesome-icon>
+          </div>
+          <div 
+            v-b-tooltip.hover.topleft title="Export Google Calendar">
+            <font-awesome-icon
+                class="export-button"
+                icon="calendar"
+                color="#007aff"
+                @click="exportCSV">
+            </font-awesome-icon>
+          </div>
         </div>
       </div>
     </template>
@@ -107,6 +117,7 @@ import FullCalendar from "@fullcalendar/vue";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import $ from "jquery";
 import api from "@/components/backend-api.js";
+import { getQuarters } from '@/components/util/util-methods.js';
 
 import {
   getBackgroundColor,
@@ -167,8 +178,19 @@ export default {
   },
   created: function () {
     this.doneLoading = true;
+    this.quarters = this.getQuarters();
   },
   computed: {
+    currentQuarter: {
+      get: function() {
+        return this.$store.state.selectedQuarter;
+      },
+      set: function(newQuarter) {
+        this.$nextTick(() =>
+            this.$store.commit("setSelectedQuarter", newQuarter)
+        );
+      },
+    },
     /**
      * The schedules array is mapped to a format that can be passed to the WeeklySchedule component.
      * This array has the same length as the schedules array.
@@ -226,6 +248,9 @@ export default {
     }
   },
   methods: {
+    getQuarters: function() {
+      return getQuarters();
+    },
     /**
      * Parses a schedule and maps the enroll codes to the data format for WeeklySchedule from courses.
      */
@@ -886,7 +911,88 @@ export default {
         pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width * ratio, canvas.height * ratio)
         pdf.save("schedule.pdf")
       })
-    }
+    },
+    exportCSV() {
+      var eventList = this.selectedEvents;
+      var currQuarterInfo = this.quarters.find(obj => obj.quarter === this.currentQuarter);
+      const subject_array = [];
+      const start_time_array = [];
+      const end_time_array = [];
+      const location_array = [];
+      const days_array = [];
+      const daysMap = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const events = [];
+      
+      for (var i = 0; i < eventList.length; i++){
+        var title = eventList[i].title;
+        var startTime = eventList[i].start;
+        var endTime = eventList[i].end;
+        var location = eventList[i].location;
+
+        const startDateTime = new Date(startTime);
+        const endDateTime = new Date(endTime);
+
+        const startTimeString = startDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const endTimeString = endDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const DayString = startDateTime.toLocaleDateString('en-US', { weekday: 'long' });
+
+        subject_array.push(title);
+        start_time_array.push(startTimeString);
+        end_time_array.push(endTimeString);
+        location_array.push(location);
+        days_array.push(DayString);
+      }
+
+      const quarterStartDate = new Date((currQuarterInfo['firstDayOfClasses']).substring(0,10));
+      const quarterEndDate = new Date((currQuarterInfo['lastDayOfClasses']).substring(0,10));
+      
+      for (var j = 0; j < subject_array.length; j++) {
+        // create recurring events for the quarter
+        var currentDate = new Date(quarterStartDate);
+        while (currentDate <= quarterEndDate) {
+          // check if the current date matches the days of the week the class meets
+          var dayOfWeek = daysMap[currentDate.getDay()];
+          if (days_array[j].includes(dayOfWeek)) {
+            const event = {
+              subject: subject_array[j],
+              startDate: currentDate.toLocaleDateString(),
+              endDate: currentDate.toLocaleDateString(),
+              startTime: start_time_array[j],
+              endTime: end_time_array[j],
+              location: location_array[j],
+            };
+            events.push(event);
+          }
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+      }
+
+      const filename = 'events.csv';
+      const rows = [['Subject', 'Start Date', 'End Date', 'Start Time', 'End Time', 'Location']];
+
+      for (let i = 0; i < events.length; i++) {
+        const row = [
+          events[i].subject,
+          events[i].startDate,
+          events[i].endDate,
+          events[i].startTime,
+          events[i].endTime,
+          events[i].location,
+        ];
+        rows.push(row);
+      }
+
+      let csvContent = '';
+      rows.forEach(function (rowArray) {
+        const row = rowArray.join(',');
+        csvContent += row + '\r\n';
+      });
+
+      const link = document.createElement('a');
+      link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
+      link.download = filename;
+      link.click();
+    },
   },
 }
 </script>
@@ -955,6 +1061,8 @@ export default {
 .export {
   margin-left: auto;
   margin-right: 16px;
+  display: flex;
+  gap: 12px;
 }
 .export-button:hover {
   cursor: pointer;
