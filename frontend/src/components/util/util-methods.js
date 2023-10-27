@@ -41,26 +41,36 @@ export function formatTime(timeString) {
 export function getQuarters(){
     var quarters = [];
     var today = new Date();
-    var nextquarter = "";
     var dd = String(today.getDate()).padStart(2, "0");
-    var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
-    var mmnexthalfquarter = String(today.getMonth() + 2).padStart(2, "0"); //January is 0!
 
-
-    var mmnextquarter = String(today.getMonth() + 4).padStart(2, "0"); //January is 0!
-    var mmnextnextquarter = String(today.getMonth() + 8).padStart(2, "0");
     var yyyy = today.getFullYear();
-    today = yyyy + mm + dd;
-    nextquarter = yyyy + mmnextquarter + dd;
-    var nexthalfquarter = yyyy+ mmnexthalfquarter + dd;
-    var nextnextquarter = yyyy+ mmnextnextquarter + dd;
+    var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+    var thisquarter = `${yyyy}${mm}${dd}`;
+
+    var future = new Date(today);
+
+    future.setMonth(today.getMonth() + 2);
+    yyyy = future.getFullYear();
+    mm = String(future.getMonth() + 1).padStart(2, '0');
+    var nexthalfquarter = `${yyyy}${mm}${dd}`;
+
+    future.setMonth(future.getMonth() + 2);
+    yyyy = future.getFullYear();
+    mm = String(future.getMonth() + 1).padStart(2, '0');
+    var nextquarter = `${yyyy}${mm}${dd}`;
+
+    future.setMonth(future.getMonth() + 4);
+    yyyy = future.getFullYear();
+    mm = String(future.getMonth() + 1).padStart(2, '0');
+    var nextnextquarter = `${yyyy}${mm}${dd}`;
+
 
 
     //TODO: This roundabout method can be shortened if we pull from UCSB's quartercalendar to see the exact dates
 
 
     // Get the current and next quarters. Select the next quarter.
-    Promise.all([api.quarters(today), api.quarters(nexthalfquarter), api.quarters(nextquarter), api.quarters(nextnextquarter)])
+    Promise.all([api.quarters(thisquarter), api.quarters(nexthalfquarter), api.quarters(nextquarter), api.quarters(nextnextquarter)])
         .then(responses => {
             responses.forEach(resp => quarters.push(resp.data[0]))
             if(quarters[2].category == quarters[3].category){ //Remove duplicate quarters

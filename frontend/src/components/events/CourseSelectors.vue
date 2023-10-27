@@ -386,7 +386,7 @@ export default {
       try {
         resp = await api.coursesWithFilters(this.currentQuarter, filterQuery);
       } catch(error) {
-        alert("Error occured while fetching search results. Please refresh the page and try again.");
+        // alert("Error occured while fetching search results. Please refresh the page and try again.");
         console.error(error);
       }
 
