@@ -576,8 +576,9 @@ export default {
 
 /* Transparent background. Fix for issue #78 */
 .fc .fc-timegrid-col.fc-day-today {
-  background-color: #dee2e600;
+  background-color: #dee2e600 !important;
 }
+
 #inner-box > * {
   position: absolute;
   top: 50%;

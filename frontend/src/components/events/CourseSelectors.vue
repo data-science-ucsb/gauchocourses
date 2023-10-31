@@ -359,7 +359,14 @@ export default {
                 this[selection] = newVal;
                 this.currentCourses = [];
               } else { // cancel
-                this[selection] = oldVal; // reset
+                this[selection] = oldVal;
+                // not preferred, but works
+                if (selection == "currentQuarter") {
+                  document.querySelector('[for="quarterselect"]').nextElementSibling.firstElementChild.value = oldVal;
+                }
+                else if (selection == "currentSession") {
+                  document.querySelector('[for="sessionselect"]').nextElementSibling.firstElementChild.value = oldVal;
+                }
               }
             })
       } else {
