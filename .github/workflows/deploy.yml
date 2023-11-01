@@ -42,8 +42,7 @@ jobs:
 
       - name: Build and push to AWS ECR
         run: |
-          docker build -t gauchocourses-cr:${{ github.sha }} .
-          docker tag gauchocourses-cr:${{ github.sha }} 380357184503.dkr.ecr.us-east-1.amazonaws.com/gauchocourses-cr:${{ github.sha }}
+          docker build -t 380357184503.dkr.ecr.us-east-1.amazonaws.com/gauchocourses-cr:${{ github.sha }} .
           docker push 380357184503.dkr.ecr.us-east-1.amazonaws.com/gauchocourses-cr:${{ github.sha }}
 
       - name: Log in to GitHub Container Registry
