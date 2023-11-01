@@ -182,13 +182,13 @@
 	<profiles>
     	<profile>
 			<id>dev</id>
-			<!-- <dependencies> -->
-                <!-- <dependency>
+			<dependencies>
+                <dependency>
 					<groupId>de.flapdoodle.embed</groupId>
 					<artifactId>de.flapdoodle.embed.mongo</artifactId>
 					<version>2.2.0</version>
-				</dependency> -->
-            <!-- </dependencies> -->
+				</dependency>
+            </dependencies>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
