@@ -41,11 +41,10 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build and push to AWS ECR
-        env:
-          SHA: ${{ github.sha }}
         run: |
-          docker build -t 380357184503.dkr.ecr.us-east-1.amazonaws.com/gauchocourses-cr:$SHA .
-          docker push 380357184503.dkr.ecr.us-east-1.amazonaws.com/gauchocourses-cr:$SHA
+          docker build -t 380357184503.dkr.ecr.us-east-1.amazonaws.com/gauchocourses-cr:${{ github.sha }} .
+          docker images
+          docker push 380357184503.dkr.ecr.us-east-1.amazonaws.com/gauchocourses-cr:${{ github.sha }}
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
