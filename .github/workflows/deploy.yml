@@ -29,12 +29,16 @@ jobs:
           drive: docker
           install: true
 
+      - name: Setup AWS ECR details
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
       - name: Login to AWS ECR
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set default.region us-east-1
-          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 380357184503.dkr.ecr.us-east-1.amazonaws.com
+        id: login-pf-aws-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build and push to AWS ECR
         run: |
