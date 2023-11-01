@@ -44,9 +44,8 @@ jobs:
         env:
           SHA: ${{ github.sha }}
         run: |
-          docker build -t gauchocourses-cr:${SHA} .
-          docker tag gauchocourses-cr:${SHA} 380357184503.dkr.ecr.us-east-1.amazonaws.com/gauchocourses-cr:${SHA}
-          docker push 380357184503.dkr.ecr.us-east-1.amazonaws.com/gauchocourses-cr:${SHA}
+          docker build -t 380357184503.dkr.ecr.us-east-1.amazonaws.com/gauchocourses-cr:$SHA .
+          docker push 380357184503.dkr.ecr.us-east-1.amazonaws.com/gauchocourses-cr:$SHA
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
