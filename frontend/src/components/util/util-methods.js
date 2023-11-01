@@ -44,43 +44,37 @@ export function getQuarters(){
     var dd = String(today.getDate()).padStart(2, "0");
 
     var yyyy = today.getFullYear();
-    var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+    var mm = String(today.getMonth() + 1).padStart(2, "0"); // months are 0-indexed
     var thisquarter = `${yyyy}${mm}${dd}`;
 
     var future = new Date(today);
 
-    future.setMonth(today.getMonth() + 2);
+    future.setMonth(today.getMonth() + 2); // 2 months from today
     yyyy = future.getFullYear();
-    mm = String(future.getMonth() + 1).padStart(2, '0');
+    mm = String(future.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
     var nexthalfquarter = `${yyyy}${mm}${dd}`;
 
-    future.setMonth(future.getMonth() + 2);
+    future.setMonth(future.getMonth() + 2); // 4 months from today
     yyyy = future.getFullYear();
-    mm = String(future.getMonth() + 1).padStart(2, '0');
+    mm = String(future.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
     var nextquarter = `${yyyy}${mm}${dd}`;
 
-    future.setMonth(future.getMonth() + 4);
-    yyyy = future.getFullYear();
-    mm = String(future.getMonth() + 1).padStart(2, '0');
-    var nextnextquarter = `${yyyy}${mm}${dd}`;
+    // future.setMonth(future.getMonth() + 2); // 6 months from today
+    // yyyy = future.getFullYear();
+    // mm = String(future.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+    // var nextnextquarter = `${yyyy}${mm}${dd}`;
 
+    //TODO: This roundabout method can be more efficent if we pull from UCSB's quartercalendar to see the exact dates
 
-
-    //TODO: This roundabout method can be shortened if we pull from UCSB's quartercalendar to see the exact dates
-
-
+    var seen = new Set();
     // Get the current and next quarters. Select the next quarter.
-    Promise.all([api.quarters(thisquarter), api.quarters(nexthalfquarter), api.quarters(nextquarter), api.quarters(nextnextquarter)])
+    Promise.all([api.quarters(thisquarter), api.quarters(nexthalfquarter), api.quarters(nextquarter)])
         .then(responses => {
-            responses.forEach(resp => quarters.push(resp.data[0]))
-            if(quarters[2].category == quarters[3].category){ //Remove duplicate quarters
-                quarters.pop();
-            }
-            if(quarters[1].category == quarters[2].category) {
-                quarters.splice(1, 1);
-            }
-            if(quarters[0].category == quarters[1].category) {
-                quarters.splice(0, 1);
+            for (let i = 0; i < responses.length; i++) { // Remove duplicates
+              if (!seen.has(responses[i].data[0].category)) {
+                seen.add(responses[i].data[0].category);
+                quarters.push(responses[i].data[0]);
+              }
             }
         })
         .catch(err => {

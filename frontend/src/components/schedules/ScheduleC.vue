@@ -1007,10 +1007,11 @@ export default {
   color: #2c3e50;
 }
 
-/* Transparent background. Fix for issue #78 */
+/* Transparent background. Fix for issue #80 and #78 */
 .fc .fc-timegrid-col.fc-day-today {
-  background-color: #dee2e600;
+  background-color: #dee2e600 !important;
 }
+
 .fc-event {
   cursor: pointer;
 }
