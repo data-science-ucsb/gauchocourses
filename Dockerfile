@@ -1,7 +1,7 @@
 # Docker multi-stage build
 
-FROM --platform=linux/amd64 maven:3.6.3-openjdk-8
-# FROM maven:3.6.3-openjdk-8
+# FROM --platform=linux/amd64 maven:3.6.3-openjdk-8
+FROM maven:3.6.3-openjdk-8
 
 ADD . /project
 WORKDIR /project
