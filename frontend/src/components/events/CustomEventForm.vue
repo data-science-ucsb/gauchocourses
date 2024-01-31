@@ -17,7 +17,7 @@
           <b-col cols='12'>
             <p>
               Create custom events for times that you want to block off. Use this for things like CLAS,
-              club meetings, or weekly beer die tournaments.
+              club meetings, or weekly movie nights.
             </p>
           </b-col>
         </b-row>

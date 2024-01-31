@@ -330,7 +330,7 @@ export default {
       const section = course.classSections.find(
           (section) => section.enrollCode == enrollcode
       );
-      let titletodisplay = course.courseId.trim() + ": " + enrollcode;
+      let titletodisplay = course.courseId.trim() + (section.timeLocations[0]?.building ? ": " + section.timeLocations[0].building + " " + section.timeLocations[0].room : "");
       const dayInt = {
         MONDAY: 1,
         TUESDAY: 2,
@@ -356,7 +356,7 @@ export default {
           lectureSectionGroup: section.lectureSectionGroup,
           relatedSelected: false,
           //enrolledTotal is null if none enrolled
-          enrolledTotal: (section.enrolledTotal ?? section.maxEnroll),
+          enrolledTotal: (section.enrolledTotal ?? 0),
           maxEnroll: section.maxEnroll,
           enrollCode: section.enrollCode,
           location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
@@ -383,7 +383,7 @@ export default {
           lectureSectionGroup: section.lectureSectionGroup,
           relatedSelected: false, //FOR Lectures and Sections
           //enrolledTotal is null if none enrolled
-          enrolledTotal: (section.enrolledTotal ?? section.maxEnroll),
+          enrolledTotal: (section.enrolledTotal ?? 0),
           maxEnroll: section.maxEnroll,
           enrollCode: section.enrollCode,
           location: "",
@@ -772,7 +772,7 @@ export default {
         return new Tooltip(info.el, {
           title: "<b>" + info.event.extendedProps.courseId + " — " + (info.event.extendedProps.isLecture == 1 ? "Section" : "Lecture") + "</b><br>" +
                  "Instructor: " + info.event.extendedProps.instructor + "<br>" +
-                 "Seats: " + info.event.extendedProps.enrolledTotal + "/" + info.event.extendedProps.maxEnroll + "<br>" +
+                 "Enrolled: " + (info.event.extendedProps.maxEnroll ? (info.event.extendedProps.enrolledTotal ?? "0") + "/" + info.event.extendedProps.maxEnroll : "TBA") + "<br>" +
                  "Location: " + info.event.extendedProps.location + "<br>" +
                  "Enroll Code: " + info.event.extendedProps.enrollCode + "<br>",
           html: true,
@@ -1047,6 +1047,9 @@ export default {
 .fc-timegrid-event-harness {
   background-color: white;
   border-radius: 3px;
+}
+.fc-event-title {
+  font-size: 12px;
 }
 </style>
 

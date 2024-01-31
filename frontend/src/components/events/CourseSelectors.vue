@@ -471,6 +471,7 @@ export default {
 .course-search-results {
   overflow-y: scroll;
   flex: 1 1 0%;
+  overscroll-behavior: contain;
 }
 
 #course-selectors {
