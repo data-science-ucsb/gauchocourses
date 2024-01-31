@@ -22,7 +22,7 @@
                     v-if="$store.getters.selectionsAreConflicting"
                     icon='info-circle'
                     :style="{ color: 'red' }"/>
-                    <b-tooltip target="conflictingEventIcon">Some of your chosen lectures are conflicting! Click the edit button to deselect the conflicting lecture(s).</b-tooltip>
+                    <b-tooltip target="conflictingEventIcon">Some of your chosen courses conflict with each other!</b-tooltip>
                 </div>
                 <div @click="$eventHub.$emit('start-new-custom-course', 0)" id="addCustomEventIcon" class="float-right add-event-button-outline">
                     <font-awesome-icon icon="calendar-plus"/>

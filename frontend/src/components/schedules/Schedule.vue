@@ -380,7 +380,7 @@ export default {
       const section = course.classSections.find(
         (section) => section.enrollCode == enrollcode
       );
-      const titletodisplay = course.courseId.trim() + ": " + enrollcode;
+      let titletodisplay = course.courseId.trim() +  (section.timeLocations[0]?.building ? ": " + section.timeLocations[0].building + " " + section.timeLocations[0].room : "");
       const dayInt = {
         MONDAY: 1,
         TUESDAY: 2,
@@ -400,7 +400,7 @@ export default {
           backgroundColor: backgroundColor,
           isLecture: section.isLecture ? 2 : 1,
           //enrolledTotal is null if none enrolled
-          enrolledTotal: (section.enrolledTotal ?? section.maxEnroll),
+          enrolledTotal: (section.enrolledTotal ?? 0),
           maxEnroll: section.maxEnroll,
           enrollCode: section.enrollCode,
           location: section.timeLocations[0].building + " " + section.timeLocations[0].room,
@@ -421,7 +421,7 @@ export default {
           backgroundColor: backgroundColor,
           isLecture: section.isLecture ? 2 : 1,
           //enrolledTotal is null if none enrolled
-          enrolledTotal: (section.enrolledTotal ?? section.maxEnroll),
+          enrolledTotal: (section.enrolledTotal ?? 0),
           maxEnroll: section.maxEnroll,
           enrollCode: section.enrollCode,
           location: "",
@@ -533,7 +533,7 @@ export default {
         return new Tooltip(info.el, {
           title: "<b>" + info.event.extendedProps.courseId + " — " + (info.event.extendedProps.isLecture == 1 ? "Section" : "Lecture") + "</b><br>" +
                  "Instructor: " + info.event.extendedProps.instructor + "<br>" +
-                 "Seats: " + info.event.extendedProps.enrolledTotal + "/" + info.event.extendedProps.maxEnroll + "<br>" +
+                 "Enrolled: " + (info.event.extendedProps.maxEnroll ? (info.event.extendedProps.enrolledTotal ?? "0") + "/" + info.event.extendedProps.maxEnroll : "TBA") + "<br>" +
                  "Location: " + info.event.extendedProps.location + "<br>" +
                  "Enroll Code: " + info.event.extendedProps.enrollCode + "<br>",
           html: true,
@@ -595,6 +595,10 @@ export default {
 
 .fc-title {
   font-size: 11px;
+}
+
+.fc-event-title {
+  font-size: 12px;
 }
 
 .tooltip > .tooltip-inner.course-tooltip {

@@ -235,7 +235,7 @@
                   <template v-else>
                     <p class="my-4">Once you have selected your classes, you can use this toolbar to find schedules that you like.</p>
                     <p class="my-4">
-                      Click the <strong>Change View</strong> pencil icon to visit randomly generated example schedules from your selected courses. Toggle <strong>Conflicts</strong> to decide whether or not to allow two events the overlap each other to both be selected. Click the <strong>Show Favorite Schedules</strong> heart icon to look at all your favorite schedules.</p>
+                      Click the <strong>Change View</strong> pencil icon to visit randomly generated example schedules from your selected courses. Toggle <strong>Conflicts</strong> to decide whether or not to allow two events the overlap each other for both to be selected. Click the <strong>Show Favorite Schedules</strong> heart icon to look at all your favorite schedules.</p>
                   </template>
                </b-modal>
 

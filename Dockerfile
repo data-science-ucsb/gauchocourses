@@ -1,7 +1,7 @@
 # Docker multi-stage build
 
-# FROM --platform=linux/amd64 maven:3.6.3-openjdk-8
-FROM maven:3.6.3-openjdk-8
+FROM --platform=linux/amd64 maven:3.6.3-openjdk-8
+# FROM maven:3.6.3-openjdk-8
 
 ADD . /project
 WORKDIR /project
@@ -19,3 +19,10 @@ ENV JAVA_OPTS=""
 
 EXPOSE 80
 ENTRYPOINT ["java", "-jar", "app.jar"]
+
+
+# Guide To Deploy To Heroku, will document this somewhere else later:
+# docker build -t gauchocourses --no-cache --platform linux/amd64 .
+# docker tag gauchocourses registry.heroku.com/gauchocourses/web
+# docker push registry.heroku.com/gauchocourses/web
+# heroku container:release web -a gauchocourses
