@@ -12,8 +12,8 @@ FROM openjdk:8-jdk
 
 LABEL maintainer="DS@UCSB"
 
-# COPY --from=0 /project/backend/target/*.jar /app.jar
-COPY /backend/target/*.jar /app.jar
+COPY --from=0 /project/backend/target/*.jar /app.jar
+# COPY /backend/target/*.jar /app.jar
 
 ENV JAVA_OPTS=""
 
