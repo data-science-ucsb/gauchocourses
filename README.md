@@ -10,9 +10,9 @@ Made with <3 by Data Science coders.
 >
 > GauchoCourses is no longer actively maintained.
 >
-> Data Science UCSB deprecated this project on **[DEPRECATION DATE]** due to limited usage and no significant web traffic during the preceding six months, while the application continued to require hosting, monitoring, dependency maintenance, credential management, and security oversight.
+> Data Science UCSB deprecated this project on **July 11, 2026** due to limited usage and no significant web traffic during the preceding six months, while the application continued to require hosting, monitoring, dependency maintenance, credential management, and security oversight.
 >
-> The hosted application will be decommissioned on **[SHUTDOWN DATE]**. After that date, course search, schedule generation, Google sign-in, and access to saved schedules will no longer be available.
+> The hosted application will be decommissioned on **July 17, 2026**. After that date, course search, schedule generation, Google sign-in, and access to saved schedules will no longer be available.
 >
 > Users should save or export any schedule information they wish to retain before the shutdown date.
 >
